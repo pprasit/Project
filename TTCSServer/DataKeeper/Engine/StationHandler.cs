@@ -293,6 +293,8 @@ namespace DataKeeper.Engine
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
                 {
+                    db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
+
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
