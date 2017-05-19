@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTCSServer", "TTCSServer\TTCSServer.csproj", "{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTCSConnection", "TTCSConnection\TTCSConnection.csproj", "{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleck", "Fleck\Fleck.csproj", "{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1E44AEE-5EAD-46AA-B9BF-879B46D70ED1}"
+	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,23 +41,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://pakawatproject.visualstudio.com/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = DataKeeper\\DataKeeper.csproj
-		SccProjectName1 = DataKeeper
-		SccLocalPath1 = DataKeeper
-		SccProjectUniqueName2 = TTCSServer\\TTCSServer.csproj
-		SccProjectName2 = TTCSServer
-		SccLocalPath2 = TTCSServer
-		SccProjectUniqueName3 = TTCSConnection\\TTCSConnection.csproj
-		SccProjectName3 = TTCSConnection
-		SccLocalPath3 = TTCSConnection
-		SccProjectUniqueName4 = Fleck\\Fleck.csproj
-		SccProjectName4 = Fleck
-		SccLocalPath4 = Fleck
 	EndGlobalSection
 EndGlobal
