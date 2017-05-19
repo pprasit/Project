@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTCSServer", "TTCSServer\TTCSServer.csproj", "{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataKeeper", "DataKeeper\DataKeeper.csproj", "{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TTCSConnection", "TTCSConnection\TTCSConnection.csproj", "{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleck", "Fleck\Fleck.csproj", "{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://pakawatproject.visualstudio.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = DataKeeper\\DataKeeper.csproj
+		SccProjectName1 = DataKeeper
+		SccLocalPath1 = DataKeeper
+		SccProjectUniqueName2 = TTCSServer\\TTCSServer.csproj
+		SccProjectName2 = TTCSServer
+		SccLocalPath2 = TTCSServer
+		SccProjectUniqueName3 = TTCSConnection\\TTCSConnection.csproj
+		SccProjectName3 = TTCSConnection
+		SccLocalPath3 = TTCSConnection
+		SccProjectUniqueName4 = Fleck\\Fleck.csproj
+		SccProjectName4 = Fleck
+		SccLocalPath4 = Fleck
+	EndGlobalSection
+EndGlobal

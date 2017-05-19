@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="../Script/jquery-ui.css" rel="stylesheet" />
+    <link href="../script/mainpagecss.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <div id="MainTab">
+            <ul>
+                <li><a href="#tabs-1">Telescope</a></li>
+                <li><a href="#tabs-2">Dome</a></li>
+                <li><a href="#tabs-3">Weather</a></li>
+            </ul>
+            <div id="tabs-1">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="text-align:right">Telescope Az :</td>
+                        <!--<td style="padding-left:5px;"><input id="TelescopeAz" type="text" value="" style="width:700px; height:300px;" /></td>-->                        
+                        <td><textarea id="TelescopeAz" rows="20" cols="20" style="width:700px; height:300px;"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right">Telescope Altitude :</td>
+                        <td style="padding-left:5px;"><input id="TelescopeAl" type="text" value="" style="width:150px; height:30px;" /></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="tabs-2">Phasellus mattis tincidunt nibh. Cras orci urna, blandit id, pretium vel, aliquet ornare, felis. Maecenas scelerisque sem non nisl. Fusce sed lorem in enim dictum bibendum.</div>
+            <div id="tabs-3">Nam dui erat, auctor a, dignissim quis, sollicitudin eu, felis. Pellentesque nisi urna, interdum eget, sagittis et, consequat vestibulum, lacus. Mauris porttitor ullamcorper augue.</div>
+        </div>
+    </div>
+
+    <script src="../script/external/jquery/jquery.js"></script>
+    <script src="../script/jquery-ui.js"></script>
+    <script src="../MainPageScript.js"></script>
+    <script src="Script/Telescope24UI.js"></script>
+    <script src="Script/Telescope24Script.js"></script>
+</body>
+</html>

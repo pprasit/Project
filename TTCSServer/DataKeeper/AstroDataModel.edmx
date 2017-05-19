@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="AstroDatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="LogTB">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="StationName" Type="nvarchar(max)" />
+          <Property Name="LogDateTime" Type="datetime" />
+          <Property Name="UserID" Type="nvarchar" MaxLength="50" />
+          <Property Name="Note" Type="nvarchar(max)" />
+          <Property Name="Problem" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="ScriptTB">
+          <Key>
+            <PropertyRef Name="BlockID" />
+            <PropertyRef Name="ExecutionNumber" />
+          </Key>
+          <Property Name="BlockID" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BlockName" Type="nvarchar(max)" />
+          <Property Name="StationName" Type="nvarchar(max)" />
+          <Property Name="ExecutionTimeStart" Type="datetime" />
+          <Property Name="ExecutionTimeEnd" Type="datetime" />
+          <Property Name="CommandCounter" Type="int" />
+          <Property Name="ExecutionNumber" Type="int" Nullable="false" />
+          <Property Name="DelayTime" Type="int" />
+          <Property Name="DeviceName" Type="nvarchar(max)" />
+          <Property Name="DeviceCategory" Type="nvarchar(max)" />
+          <Property Name="CommandName" Type="nvarchar(max)" />
+          <Property Name="Owner" Type="nvarchar(max)" />
+          <Property Name="Parameter" Type="nvarchar(max)" />
+          <Property Name="ScriptState" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="UserTB">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar(max)" />
+          <Property Name="UserLoginName" Type="nvarchar(max)" />
+          <Property Name="UserLoginPassword" Type="nvarchar(max)" />
+          <Property Name="UserPermissionType" Type="nvarchar(max)" />
+        </EntityType>
+        <Association Name="FK_LogTB_UserTB">
+          <End Role="UserTB" Type="Self.UserTB" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="LogTB" Type="Self.LogTB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserTB">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="LogTB">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AstroDatabaseModelStoreContainer">
+          <EntitySet Name="LogTB" EntityType="Self.LogTB" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ScriptTB" EntityType="Self.ScriptTB" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserTB" EntityType="Self.UserTB" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_LogTB_UserTB" Association="Self.FK_LogTB_UserTB">
+            <End Role="UserTB" EntitySet="UserTB" />
+            <End Role="LogTB" EntitySet="LogTB" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="AstroDatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
+          <EntitySet Name="LogTBs" EntityType="AstroDatabaseModel.LogTB" />
+          <EntitySet Name="UserTBs" EntityType="AstroDatabaseModel.UserTB" />
+          <AssociationSet Name="FK_LogTB_UserTB" Association="AstroDatabaseModel.FK_LogTB_UserTB">
+            <End Role="UserTB" EntitySet="UserTBs" />
+            <End Role="LogTB" EntitySet="LogTBs" />
+          </AssociationSet>
+          <EntitySet Name="ScriptTBs" EntityType="AstroDatabaseModel.ScriptTB" />
+        </EntityContainer>
+        <EntityType Name="LogTB">
+          <Key>
+            <PropertyRef Name="LogID" />
+          </Key>
+          <Property Name="LogID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StationName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LogDateTime" Type="DateTime" Precision="3" />
+          <Property Name="UserID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Problem" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="UserTB" Relationship="AstroDatabaseModel.FK_LogTB_UserTB" FromRole="LogTB" ToRole="UserTB" />
+        </EntityType>
+        <EntityType Name="UserTB">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserLoginName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserLoginPassword" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserPermissionType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="LogTBs" Relationship="AstroDatabaseModel.FK_LogTB_UserTB" FromRole="UserTB" ToRole="LogTB" />
+        </EntityType>
+        <Association Name="FK_LogTB_UserTB">
+          <End Type="AstroDatabaseModel.UserTB" Role="UserTB" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="AstroDatabaseModel.LogTB" Role="LogTB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserTB">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="LogTB">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ScriptTB">
+          <Key>
+            <PropertyRef Name="BlockID" />
+            <PropertyRef Name="ExecutionNumber" />
+          </Key>
+          <Property Name="BlockID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BlockName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StationName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ExecutionTimeStart" Type="DateTime" Precision="3" />
+          <Property Name="ExecutionTimeEnd" Type="DateTime" Precision="3" />
+          <Property Name="CommandCounter" Type="Int32" />
+          <Property Name="ExecutionNumber" Type="Int32" Nullable="false" />
+          <Property Name="DelayTime" Type="Int32" />
+          <Property Name="DeviceName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="DeviceCategory" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CommandName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Owner" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Parameter" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ScriptState" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="AstroDatabaseModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="AstroDatabaseModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LogTBs">
+            <EntityTypeMapping TypeName="AstroDatabaseModel.LogTB">
+              <MappingFragment StoreEntitySet="LogTB">
+                <ScalarProperty Name="Problem" ColumnName="Problem" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="LogDateTime" ColumnName="LogDateTime" />
+                <ScalarProperty Name="StationName" ColumnName="StationName" />
+                <ScalarProperty Name="LogID" ColumnName="LogID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserTBs">
+            <EntityTypeMapping TypeName="AstroDatabaseModel.UserTB">
+              <MappingFragment StoreEntitySet="UserTB">
+                <ScalarProperty Name="UserPermissionType" ColumnName="UserPermissionType" />
+                <ScalarProperty Name="UserLoginPassword" ColumnName="UserLoginPassword" />
+                <ScalarProperty Name="UserLoginName" ColumnName="UserLoginName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ScriptTBs">
+            <EntityTypeMapping TypeName="AstroDatabaseModel.ScriptTB">
+              <MappingFragment StoreEntitySet="ScriptTB">
+                <ScalarProperty Name="ScriptState" ColumnName="ScriptState" />
+                <ScalarProperty Name="Parameter" ColumnName="Parameter" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="CommandName" ColumnName="CommandName" />
+                <ScalarProperty Name="DeviceCategory" ColumnName="DeviceCategory" />
+                <ScalarProperty Name="DeviceName" ColumnName="DeviceName" />
+                <ScalarProperty Name="DelayTime" ColumnName="DelayTime" />
+                <ScalarProperty Name="ExecutionNumber" ColumnName="ExecutionNumber" />
+                <ScalarProperty Name="CommandCounter" ColumnName="CommandCounter" />
+                <ScalarProperty Name="ExecutionTimeEnd" ColumnName="ExecutionTimeEnd" />
+                <ScalarProperty Name="ExecutionTimeStart" ColumnName="ExecutionTimeStart" />
+                <ScalarProperty Name="StationName" ColumnName="StationName" />
+                <ScalarProperty Name="BlockName" ColumnName="BlockName" />
+                <ScalarProperty Name="BlockID" ColumnName="BlockID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
