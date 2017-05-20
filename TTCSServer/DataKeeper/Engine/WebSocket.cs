@@ -157,17 +157,21 @@ namespace DataKeeper.Interface
                 {
                     Task MessageTask = Task.Run(() =>
                     {
-                        //Console.WriteLine("Message -> IP : " + socket.ConnectionInfo.ClientIpAddress + " Port : " + socket.ConnectionInfo.ClientPort + " Mesage : " + message);
-                        WSConnection ThisConnection = AllConnection.FirstOrDefault(Item => Item.Key == socket.ConnectionInfo.ClientIpAddress + socket.ConnectionInfo.ClientPort).Value;
-
-                        if (ThisConnection != null)
+                        try
                         {
-                            ThisConnection.Messages.Add(message);
-                            OnMessageHandler(ThisConnection, message);
+                            //Console.WriteLine("Message -> IP : " + socket.ConnectionInfo.ClientIpAddress + " Port : " + socket.ConnectionInfo.ClientPort + " Mesage : " + message);
+                            WSConnection ThisConnection = AllConnection.FirstOrDefault(Item => Item.Key == socket.ConnectionInfo.ClientIpAddress + socket.ConnectionInfo.ClientPort).Value;
 
-                            MethodInfo method = ObjMainPage.GetType().GetMethod("RelayMessageToMonitoring");
-                            method.Invoke(ObjMainPage, new object[] { message });
+                            if (ThisConnection != null)
+                            {
+                                ThisConnection.Messages.Add(message);
+                                OnMessageHandler(ThisConnection, message);
+
+                                MethodInfo method = ObjMainPage.GetType().GetMethod("RelayMessageToMonitoring");
+                                method.Invoke(ObjMainPage, new object[] { message });
+                            }
                         }
+                        catch { }
                     });
                 };
             });
@@ -362,7 +366,7 @@ namespace DataKeeper.Interface
             ThisScript.Owner = null;
             ThisScript.DelayTime = null;
             ThisScript.Parameter = new List<Object>();
-            ThisScript.ScriptState = SCRIPTSTATE.WAITINGSERVER;            
+            ThisScript.ScriptState = SCRIPTSTATE.WAITINGSERVER;
 
             foreach (String ThisStr in SplitedParameter)
             {
@@ -460,7 +464,7 @@ namespace DataKeeper.Interface
                     }
                 }
             }
-            
+
             ReturnKnowType CommandResult = CommandDefinition.VerifyCommand(ThisScript.StationName, ThisScript.DeviceCategory, ThisScript.CommandName, ParameterStrs.ToArray());
 
             if (CommandResult.ReturnType == ReturnStatus.FAILED)
@@ -471,7 +475,7 @@ namespace DataKeeper.Interface
                 Object[] Values = CommandDefinition.ValueConvertion(ParameterStrs.ToArray());
                 ThisScript.Parameter = Values.ToList();
 
-                ScriptManager.NewScriptFromSocket(ThisScript, ThisConnection); 
+                ScriptManager.NewScriptFromSocket(ThisScript, ThisConnection);
             }
         }
 

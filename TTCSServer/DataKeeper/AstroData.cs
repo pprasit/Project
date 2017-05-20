@@ -337,18 +337,18 @@ namespace DataKeeper
                 ExistingStation.NewASTROSERVERInformation(DeviceName, FieldName, Value, DataTimestamp);
         }
 
-        public static ReturnKnowType ScriptHandler(BlockStructure ThisScript)
+        public static ReturnKnowType ScriptHandler(STATIONNAME StationDestination, ScriptStructure[] ThisScriptList)
         {
-            StationHandler ThisSite = KeeperData.FirstOrDefault(Item => Item.StationName == ThisScript.StationName);
+            StationHandler ThisSite = KeeperData.FirstOrDefault(Item => Item.StationName == StationDestination);
 
             if (ThisSite != null)
             {
                 Boolean AckState = false;
 
-                if (ThisScript.StationName == STATIONNAME.ASTROSERVER)
+                if (StationDestination == STATIONNAME.ASTROSERVER)
                     AckState = true;
                 else
-                    return ThisSite.SendScriptToStation(ThisScript);
+                    return ThisSite.SendScriptToStation(ThisScriptList);
 
                 return ReturnKnowType.DefineReturn(ReturnStatus.SUCESSFUL, null, AckState);
             }

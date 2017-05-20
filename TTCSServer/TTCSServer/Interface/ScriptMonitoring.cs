@@ -121,7 +121,7 @@ namespace TTCSServer.Interface
 
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
-            ScriptManager.RefreshDBScript();
+            ScriptManager.LoadScriptFromDB();
             AddScriptToGrid();
         }
 
@@ -129,7 +129,7 @@ namespace TTCSServer.Interface
         {
             if (MessageBox.Show("Do you want to remove all script from database?", "Message", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                ScriptManager.ClearAllScript();
+                ScriptManager.RemoveAllScriptDB();
                 AddScriptToGrid();
             }
         }
@@ -145,7 +145,7 @@ namespace TTCSServer.Interface
                         String BlockID = ScriptGrid[1, e.RowIndex].Value.ToString();
                         int ExecutionNumber = Convert.ToInt32(ScriptGrid[3, e.RowIndex].Value);
 
-                        if (!ScriptManager.DeleteScript(BlockID, ExecutionNumber))
+                        if (!ScriptManager.RemoveScript(BlockID, ExecutionNumber))
                             MessageBox.Show("Can not delete selected script from database.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                         AddScriptToGrid();

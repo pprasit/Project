@@ -228,7 +228,7 @@ namespace DataKeeper.Engine
             ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ASTROHEVENDOME).Value;
             if (ExistingInformation != null)
             {
-                INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;/////////////////////////////////////////////////////
+                INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
                 {
                     db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
@@ -471,7 +471,7 @@ namespace DataKeeper.Engine
             }
         }
 
-        public ReturnKnowType SendScriptToStation(BlockStructure ThisScriptr)
+        public ReturnKnowType SendScriptToStation(ScriptStructure[] ThisScriptList)
         {
             Boolean ResultState = false;
             String Message = "";
@@ -481,7 +481,7 @@ namespace DataKeeper.Engine
                 try
                 {
                     MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnScriptSET");
-                    MInfo.Invoke(ServerCallBackObject, new Object[] { ThisScriptr.ScriptList.Values.ToList() });
+                    MInfo.Invoke(ServerCallBackObject, new Object[] { ThisScriptList.ToList() });
                     ResultState = true;
                 }
                 catch (Exception e)
