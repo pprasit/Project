@@ -231,8 +231,11 @@ namespace DataKeeper.Engine
                         }
 
                         db.SaveChanges();
-                        UpdateScriptToMonitoring();
+                        UpdateScriptToMonitoring();                        
+                    }
 
+                    if(ThisBuffer != null)
+                    {
                         String Message = "";
                         Boolean IsAllScriptRecived = IsBlockComplete(ExistingScript, out Message);
                         if (IsAllScriptRecived)
@@ -242,11 +245,6 @@ namespace DataKeeper.Engine
                         }
                         else
                             WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), Message, "Script_OK");
-                    }
-
-                    if(ThisBuffer != null)
-                    {
-
                     }
 
                     Thread.Sleep(1);
