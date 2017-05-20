@@ -25,6 +25,7 @@ namespace TTCSServer.Interface
         public void AddScriptToGrid()
         {
             List<ScriptTB> AllScript = ScriptManager.GetScriptList();
+            AllScript = AllScript.OrderBy(Item => Item.BlockID).ThenBy(Item => Item.ExecutionNumber).ToList();
 
             ThreadClearDataGridRow();
             foreach (ScriptTB ThisScript in AllScript)

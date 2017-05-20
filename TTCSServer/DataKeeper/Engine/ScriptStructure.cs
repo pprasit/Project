@@ -12,7 +12,7 @@ using System.Web.Script.Serialization;
 
 namespace DataKeeper.Engine
 {
-    public enum SCRIPTSTATE { WAITINGSERVER, WAITINGSTATION, EXECUTING, CANCELED, EXECUTED }
+    public enum SCRIPTSTATE { WAITINGSERVER, WAITINGSTATION, SENDINGTOSTATION, EXECUTING, CANCELED, EXECUTED }
 
     public class ScriptBuffer
     {
@@ -183,7 +183,8 @@ namespace DataKeeper.Engine
 
                 return true;
             }
-            catch {
+            catch
+            {
                 return false;
             }
         }
@@ -214,7 +215,7 @@ namespace DataKeeper.Engine
                         else  //Existing Block name
                         {
                             ScriptTB ExistingBlockScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockName == ThisBuffer.Script.BlockName && Item.Value.ExecutionNumber == ThisBuffer.Script.ExecutionNumber).Value;
-                            
+
                             if (ExistingBlockScript == null)  //New execution number
                             {
                                 ExistingBlockScript = ThisBuffer.Script;
@@ -231,37 +232,59 @@ namespace DataKeeper.Engine
                         }
 
                         db.SaveChanges();
-                        UpdateScriptToMonitoring();                        
+                        UpdateScriptToMonitoring();
                     }
 
-                    if(ThisBuffer != null)
-                    {
-                        //String Message = "";
-                        //Boolean IsAllScriptRecived = IsBlockComplete(ExistingScript, out Message);
-                        //if (IsAllScriptRecived)
-                        //{
-                        //    SendScript(ExistingScript);
-                        //    WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), "All script is sending to client.", "Script_Success");
-                        //}
-                        //else
-                        //    WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), Message, "Script_OK");
-                    }
-
-                    Thread.Sleep(1);
+                    ResponseToClient(ThisBuffer);
+                    ResponseToStation();
                 }
             });
         }
 
-        public static void SendScript(ScriptTB CompletedScript)
+        private static void ResponseToClient(ScriptBuffer ThisBuffer)
+        {
+            if (ThisBuffer != null)
+            {
+                String Message = "";
+                Boolean IsAllScriptRecived = IsBlockComplete(ThisBuffer.Script, out Message);
+                if (IsAllScriptRecived)
+                    WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), "All script is sending to client.", "Script_Success");
+                else
+                    WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), Message, "Script_OK");
+            }
+        }
+
+        private static void ResponseToStation()
+        {
+            if (ScriptDBBuffer.Count > 0)
+            {
+                List<ScriptTB> WaitingScriptList = ScriptDBBuffer.Values.Where(Item => Item.ScriptState == "CREATED" || Item.ScriptState == "WAITINGSERVER" && Item.ExecutionNumber == 1).ToList();
+
+                if (WaitingScriptList.Count > 0)
+                    foreach (ScriptTB WaitingScript in WaitingScriptList)
+                    {
+                        String Message = "";
+                        Boolean IsAllScriptRecived = IsBlockComplete(WaitingScript, out Message);
+                        if (IsAllScriptRecived)
+                            SendScriptToStation(WaitingScript);
+                    }
+            }
+
+            Thread.Sleep(10);
+        }
+
+        public static void SendScriptToStation(ScriptTB CompletedScript)
         {
             STATIONNAME DestinationStation = STATIONNAME.NULL;
-            List<KeyValuePair<String, ScriptTB>> ScriptArr = ScriptDBBuffer.Where(Item => Item.Value.BlockID == CompletedScript.BlockID).ToList();
+            List<ScriptTB> ScriptArr = ScriptDBBuffer.Values.Where(Item => Item.BlockID == CompletedScript.BlockID).ToList();
             ScriptStructure[] StructureArr = ConvertScriptTBToScriptStructure(ScriptArr);
 
-            foreach (ScriptStructure ThisScript in StructureArr)
+            foreach (ScriptTB ThisScript in ScriptArr)
             {
-                DestinationStation = ThisScript.StationName;
-                ThisScript.ScriptState = SCRIPTSTATE.WAITINGSERVER;
+                DestinationStation = TTCSHelper.StationStrConveter(ThisScript.StationName);
+                ThisScript.ScriptState = SCRIPTSTATE.WAITINGSERVER.ToString();
+
+                UpdateScriptToMonitoring(ThisScript.BlockID, ThisScript.ExecutionNumber, ThisScript.ScriptState.ToString());
             }
 
             StationHandler ThisStation = AstroData.GetStationObject(DestinationStation);
@@ -269,32 +292,37 @@ namespace DataKeeper.Engine
             {
                 StructureArr.OrderBy(Item => Item.ExecutionNumber);
                 AstroData.ScriptHandler(DestinationStation, StructureArr);
+
+                foreach (ScriptTB ThisScript in ScriptArr)
+                    ThisScript.ScriptState = SCRIPTSTATE.SENDINGTOSTATION.ToString();
             }
+
+            db.SaveChanges();
         }
 
         private static Boolean IsBlockComplete(ScriptTB ScriptToCheck, out String Message)
         {
-            List<KeyValuePair<String, ScriptTB>> AvaliableScripts = ScriptDBBuffer.Where(Item => Item.Value.BlockID == ScriptToCheck.BlockID).ToList();
-            String[] MissingScript = GetMissingScript(ScriptToCheck, AvaliableScripts);
+            List<KeyValuePair<String, ScriptTB>> BlockScript = ScriptDBBuffer.Where(Item => Item.Value.BlockID == ScriptToCheck.BlockID).ToList();
+            String[] MissingScript = GetMissingScript(ScriptToCheck, BlockScript);
 
             if (MissingScript.Count() > 0)
             {
-                Message = "Script " + ScriptToCheck.ExecutionNumber + " successful add to the system but waiting for script number (" + String.Join(", ", MissingScript) + ")";
+                Message = "Block Name : "+ ScriptToCheck.BlockName + ", Script : " + ScriptToCheck.ExecutionNumber + " successful add to the system but waiting for script number (" + String.Join(", ", MissingScript) + ")";
                 return false;
             }
             else
             {
-                Message = "Script " + ScriptToCheck.ExecutionNumber + " successful add to the system. All script is ready to send.";
+                Message = "Block Name : " + ScriptToCheck.BlockName + ", Script : " + ScriptToCheck.ExecutionNumber + " successful add to the system. All script is ready to send.";
                 return true;
             }
         }
 
-        private static String[] GetMissingScript(ScriptTB ScriptToCheck, List<KeyValuePair<String, ScriptTB>> AvaliableScripts)
+        private static String[] GetMissingScript(ScriptTB ScriptToCheck, List<KeyValuePair<String, ScriptTB>> BlockScript)
         {
             Boolean[] ScriptReciveState = new Boolean[ScriptToCheck.CommandCounter.Value];
             ScriptReciveState[ScriptToCheck.ExecutionNumber - 1] = true;
 
-            foreach (KeyValuePair<String, ScriptTB> ThisScript in AvaliableScripts)
+            foreach (KeyValuePair<String, ScriptTB> ThisScript in BlockScript)
                 ScriptReciveState[ThisScript.Value.ExecutionNumber - 1] = true;
 
             List<String> Missing = new List<String>();
@@ -307,6 +335,15 @@ namespace DataKeeper.Engine
             return Missing.ToArray();
         }
 
+        private static void UpdateScriptToMonitoring(String BlockID, int ExecutionNumber, String ScriptState)
+        {
+            if (ScriptMonitoring != null)
+            {
+                MethodInfo MInfo = ScriptMonitoring.GetType().GetMethod("UpdateScriptGrid");
+                MInfo.Invoke(ScriptMonitoring, new Object[] { BlockID, ExecutionNumber, ScriptState });
+            }
+        }
+
         private static void UpdateScriptToMonitoring()
         {
             if (ScriptMonitoring != null)
@@ -316,32 +353,32 @@ namespace DataKeeper.Engine
             }
         }
 
-        private static ScriptStructure[] ConvertScriptTBToScriptStructure(List<KeyValuePair<String, ScriptTB>> ScriptTBArr)
+        private static ScriptStructure[] ConvertScriptTBToScriptStructure(List<ScriptTB> ScriptTBArr)
         {
             List<ScriptStructure> ScriptStructureList = new List<ScriptStructure>();
 
-            foreach (KeyValuePair<String, ScriptTB> ThisScript in ScriptTBArr)
+            foreach (ScriptTB ThisScript in ScriptTBArr)
             {
                 ScriptStructure NewSturcture = new ScriptStructure();
-                NewSturcture.BlockID = ThisScript.Value.BlockID;
-                NewSturcture.BlockName = ThisScript.Value.BlockName;
-                NewSturcture.CommandCounter = ThisScript.Value.CommandCounter.Value;
-                NewSturcture.CommandName = ThisScript.Value.CommandName;
-                NewSturcture.DelayTime = ThisScript.Value.DelayTime;
-                NewSturcture.DeviceCategory = TTCSHelper.DeviceCategoryStrConverter(ThisScript.Value.DeviceCategory);
-                NewSturcture.DeviceName = TTCSHelper.DeviceNameStrConverter(ThisScript.Value.DeviceName);
-                NewSturcture.ExecutionNumber = ThisScript.Value.ExecutionNumber;
-                NewSturcture.ExecutionTimeEnd = ThisScript.Value.ExecutionTimeEnd;
-                NewSturcture.ExecutionTimeStart = ThisScript.Value.ExecutionTimeStart;
-                NewSturcture.Owner = ThisScript.Value.Owner;
+                NewSturcture.BlockID = ThisScript.BlockID;
+                NewSturcture.BlockName = ThisScript.BlockName;
+                NewSturcture.CommandCounter = ThisScript.CommandCounter.Value;
+                NewSturcture.CommandName = ThisScript.CommandName;
+                NewSturcture.DelayTime = ThisScript.DelayTime;
+                NewSturcture.DeviceCategory = TTCSHelper.DeviceCategoryStrConverter(ThisScript.DeviceCategory);
+                NewSturcture.DeviceName = TTCSHelper.DeviceNameStrConverter(ThisScript.DeviceName);
+                NewSturcture.ExecutionNumber = ThisScript.ExecutionNumber;
+                NewSturcture.ExecutionTimeEnd = ThisScript.ExecutionTimeEnd;
+                NewSturcture.ExecutionTimeStart = ThisScript.ExecutionTimeStart;
+                NewSturcture.Owner = ThisScript.Owner;
 
                 NewSturcture.Parameter = new List<Object>();
-                String[] ValueStr = ThisScript.Value.Parameter.Split(new char[] { ',' });
+                String[] ValueStr = ThisScript.Parameter.Split(new char[] { ',' });
                 foreach (String ThisValue in ValueStr)
                     NewSturcture.Parameter.Add(ThisValue); ;
 
-                NewSturcture.ScriptState = TTCSHelper.ScriptStateStrConverter(ThisScript.Value.ScriptState);
-                NewSturcture.StationName = TTCSHelper.StationStrConveter(ThisScript.Value.StationName);
+                NewSturcture.ScriptState = TTCSHelper.ScriptStateStrConverter(ThisScript.ScriptState);
+                NewSturcture.StationName = TTCSHelper.StationStrConveter(ThisScript.StationName);
 
                 ScriptStructureList.Add(NewSturcture);
             }
