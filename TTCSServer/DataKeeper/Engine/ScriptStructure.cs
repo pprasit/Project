@@ -236,15 +236,15 @@ namespace DataKeeper.Engine
 
                     if(ThisBuffer != null)
                     {
-                        String Message = "";
-                        Boolean IsAllScriptRecived = IsBlockComplete(ExistingScript, out Message);
-                        if (IsAllScriptRecived)
-                        {
-                            SendScript(ExistingScript);
-                            WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), "All script is sending to client.", "Script_Success");
-                        }
-                        else
-                            WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), Message, "Script_OK");
+                        //String Message = "";
+                        //Boolean IsAllScriptRecived = IsBlockComplete(ExistingScript, out Message);
+                        //if (IsAllScriptRecived)
+                        //{
+                        //    SendScript(ExistingScript);
+                        //    WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), "All script is sending to client.", "Script_Success");
+                        //}
+                        //else
+                        //    WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), Message, "Script_OK");
                     }
 
                     Thread.Sleep(1);
