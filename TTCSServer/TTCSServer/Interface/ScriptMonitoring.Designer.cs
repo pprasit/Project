@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.BtnSendToStation = new System.Windows.Forms.Button();
             this.BtnClose = new System.Windows.Forms.Button();
             this.BtnRefresh = new System.Windows.Forms.Button();
             this.BtnClearAll = new System.Windows.Forms.Button();
             this.ScriptGrid = new System.Windows.Forms.DataGridView();
-            this.BtnSendToStation = new System.Windows.Forms.Button();
             this.Column14 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -49,12 +49,18 @@
             this.Column12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column13 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column15 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ScriptLifeTime = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.ScriptLifeTime);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.BtnSendToStation);
             this.panel1.Controls.Add(this.BtnClose);
             this.panel1.Controls.Add(this.BtnRefresh);
@@ -65,6 +71,17 @@
             this.panel1.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.panel1.Size = new System.Drawing.Size(1334, 41);
             this.panel1.TabIndex = 0;
+            // 
+            // BtnSendToStation
+            // 
+            this.BtnSendToStation.Dock = System.Windows.Forms.DockStyle.Right;
+            this.BtnSendToStation.Location = new System.Drawing.Point(1198, 5);
+            this.BtnSendToStation.Name = "BtnSendToStation";
+            this.BtnSendToStation.Size = new System.Drawing.Size(136, 36);
+            this.BtnSendToStation.TabIndex = 3;
+            this.BtnSendToStation.Text = "Send To Station";
+            this.BtnSendToStation.UseVisualStyleBackColor = true;
+            this.BtnSendToStation.Click += new System.EventHandler(this.BtnSendToStation_Click);
             // 
             // BtnClose
             // 
@@ -131,17 +148,6 @@
             this.ScriptGrid.TabIndex = 1;
             this.ScriptGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.ScriptGrid_CellMouseClick);
             this.ScriptGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.ScriptGrid_CellMouseDoubleClick);
-            // 
-            // BtnSendToStation
-            // 
-            this.BtnSendToStation.Dock = System.Windows.Forms.DockStyle.Right;
-            this.BtnSendToStation.Location = new System.Drawing.Point(1198, 5);
-            this.BtnSendToStation.Name = "BtnSendToStation";
-            this.BtnSendToStation.Size = new System.Drawing.Size(136, 36);
-            this.BtnSendToStation.TabIndex = 3;
-            this.BtnSendToStation.Text = "Send To Station";
-            this.BtnSendToStation.UseVisualStyleBackColor = true;
-            this.BtnSendToStation.Click += new System.EventHandler(this.BtnSendToStation_Click);
             // 
             // Column14
             // 
@@ -243,6 +249,43 @@
             this.Column15.ReadOnly = true;
             this.Column15.Width = 30;
             // 
+            // ScriptLifeTime
+            // 
+            this.ScriptLifeTime.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ScriptLifeTime.FormattingEnabled = true;
+            this.ScriptLifeTime.Items.AddRange(new object[] {
+            "0.5",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"});
+            this.ScriptLifeTime.Location = new System.Drawing.Point(544, 12);
+            this.ScriptLifeTime.Name = "ScriptLifeTime";
+            this.ScriptLifeTime.Size = new System.Drawing.Size(121, 21);
+            this.ScriptLifeTime.TabIndex = 8;
+            this.ScriptLifeTime.SelectedIndexChanged += new System.EventHandler(this.ScriptLifeTime_SelectedIndexChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(671, 17);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(31, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Days";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(452, 17);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(86, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Script Life Time :";
+            // 
             // ScriptMonitoring
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -261,6 +304,7 @@
             this.Text = "Script Monitoring";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScriptMonitoring_FormClosing);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptGrid)).EndInit();
             this.ResumeLayout(false);
 
@@ -289,5 +333,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column13;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column15;
+        private System.Windows.Forms.ComboBox ScriptLifeTime;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
     }
 }

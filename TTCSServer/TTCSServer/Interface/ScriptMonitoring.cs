@@ -20,6 +20,9 @@ namespace TTCSServer.Interface
         {
             InitializeComponent();
             AddScriptToGrid();
+
+            ScriptLifeTime.Text = Properties.Settings.Default.ScriptLifeTimeValue.ToString();
+            ScriptManager.ScriptLifeTimeValue = Properties.Settings.Default.ScriptLifeTimeValue;
         }
 
         public void AddScriptToGrid()
@@ -190,6 +193,13 @@ namespace TTCSServer.Interface
             }
 
 
+        }
+
+        private void ScriptLifeTime_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ScriptManager.ScriptLifeTimeValue = Convert.ToDouble(ScriptLifeTime.Text);
+            Properties.Settings.Default.ScriptLifeTimeValue = ScriptManager.ScriptLifeTimeValue;
+            Properties.Settings.Default.Save();
         }
     }
 }
