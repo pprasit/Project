@@ -39,8 +39,9 @@ namespace DataKeeper.Engine
             var document = new BsonDocument
                     {
                         { "Values", Value },
+                        { "State", State },
                         { "LoginDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss") },
-                        { "LogoutDate", null },
+                        { "LogoutDate", "" },
                         { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") }
                     };
 
@@ -57,8 +58,8 @@ namespace DataKeeper.Engine
             {
                 var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
                 var builder = Builders<BsonDocument>.Filter;
-                var filter = builder.Eq("Values", Value) & builder.Eq("LogoutDate", "");
-                var update = Builders<BsonDocument>.Update.Set("LogoutDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+                var filter = builder.Eq("Values", Value) & builder.Eq("State", "LOGIN") & builder.Eq("LogoutDate", "");
+                var update = Builders<BsonDocument>.Update.Set("State", State).Set("LogoutDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss"));
                 
                 await collection.UpdateManyAsync(filter, update);
             });

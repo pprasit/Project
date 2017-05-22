@@ -389,8 +389,6 @@ namespace DataKeeper.Engine
                         db.insert_user_logout(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
                     }
                 }
-               
-                //db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
             }
 
             if (ExistingInformation != null)
