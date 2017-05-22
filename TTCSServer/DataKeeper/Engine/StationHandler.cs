@@ -371,13 +371,18 @@ namespace DataKeeper.Engine
                 ScriptManager.ScriptInformationIdentification(StationName, DeviceName, FieldName, Value, DataTimestamp);
             }
 
-            if (ASTROCLIENT.ASTROCLIENT_LASTESTUSER_NAME == FieldName && Value.ToString() != "NULL")
+            if (ASTROCLIENT.ASTROCLIENT_LASTESTUSER_NAME == FieldName)
             {
                 String[] temp_value = Value.ToString().Split(',');
                 DateTime dt = Convert.ToDateTime(temp_value[2]);
 
                 //ASTROCLIENT.ASTROCLIENT_LASTESTUSER_STATE
-                db.insert_user(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
+
+                if(temp_value[0].ToString() != "NULL")
+                {
+                    db.insert_user(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
+                }
+               
                 //db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
             }
 
