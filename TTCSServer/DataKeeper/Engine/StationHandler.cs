@@ -380,7 +380,14 @@ namespace DataKeeper.Engine
 
                 if(temp_value[0].ToString() != "NULL")
                 {
-                    db.insert_user(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
+                    if(temp_value[1].ToString() == "LOGIN")
+                    {
+                        db.insert_user_login(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
+                    }
+                    else
+                    {
+                        db.insert_user_logout(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
+                    }
                 }
                
                 //db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);

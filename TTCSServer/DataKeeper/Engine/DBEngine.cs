@@ -34,13 +34,13 @@ namespace DataKeeper.Engine
             });
         }
 
-        public void insert_user(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
+        public void insert_user_login(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
         {
             var document = new BsonDocument
                     {
                         { "Values", Value },
-                        { "State", State },
-                        { "AccessDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss") },
+                        { "LoginDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss") },
+                        { "LogoutDate", null },
                         { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") }
                     };
 
@@ -48,6 +48,19 @@ namespace DataKeeper.Engine
             {
                 var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
                 await collection.InsertOneAsync(document);
+            });
+        }
+
+        public void insert_user_logout(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
+        {
+            Task TTask = Task.Run(async () =>
+            {
+                var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
+                var builder = Builders<BsonDocument>.Filter;
+                var filter = builder.Eq("Values", Value) & builder.Eq("LogoutDate", "");
+                var update = Builders<BsonDocument>.Update.Set("LogoutDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+                
+                await collection.UpdateManyAsync(filter, update);
             });
         }
     }
