@@ -33,5 +33,22 @@ namespace DataKeeper.Engine
                 await collection.InsertOneAsync(document);
             });
         }
+
+        public void insert_user(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
+        {
+            var document = new BsonDocument
+                    {
+                        { "Values", Value },
+                        { "State", State },
+                        { "AccessDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss") },
+                        { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") }
+                    };
+
+            Task TTask = Task.Run(async () =>
+            {
+                var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
+                await collection.InsertOneAsync(document);
+            });
+        }
     }
 }
