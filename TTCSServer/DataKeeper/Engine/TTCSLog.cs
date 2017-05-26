@@ -140,7 +140,20 @@ namespace DataKeeper.Engine
             if (TTCSLogGrid.RowCount == 500)
                 TTCSLogGrid.Rows.RemoveAt(0);
 
-            TTCSLogGrid.Rows.Add(LogDate.ToString("MM/dd/yyyy HH:mm:ss.fff"), Message, LogDataType.ToString(), StationName.ToString(), Value, UserID.ToString());
+            String OldMessage = TTCSLogGrid.RowCount > 0 ? TTCSLogGrid[1, TTCSLogGrid.RowCount - 1].Value.ToString() : "";
+            String[] SplitStr = OldMessage.Split(new String[] { " ##" }, StringSplitOptions.None);
+            if (Message == SplitStr[0])
+            {
+                if (SplitStr.Count() > 1)
+                {
+                    int Count = Convert.ToInt32(SplitStr[1]);
+                    TTCSLogGrid[1, TTCSLogGrid.RowCount - 1].Value = SplitStr[0] + " ##" + (Count + 1).ToString();
+                }
+                else
+                    TTCSLogGrid[1, TTCSLogGrid.RowCount - 1].Value = TTCSLogGrid[1, TTCSLogGrid.RowCount - 1].Value + " ##2";
+            }
+            else
+                TTCSLogGrid.Rows.Add(LogDate.ToString("MM/dd/yyyy HH:mm:ss.fff"), Message, LogDataType.ToString(), StationName.ToString(), Value, UserID.ToString());
 
             if (LogDataType == LogType.COMMUNICATION)
                 TTCSLogGrid.Rows[TTCSLogGrid.RowCount - 1].Cells[2].Style = new DataGridViewCellStyle { ForeColor = Color.Blue };

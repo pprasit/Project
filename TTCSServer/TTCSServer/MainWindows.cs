@@ -24,6 +24,7 @@ namespace TTCSServer
         private ServiceHost TCPService;
         private PackageMonitoring ObjPackageMonitoring = null;
         private ScriptMonitoring ObjScriptMonitoring = null;
+        private UserMonitoring ObjUserMonitoring = null;
 
         public MainWindows()
         {
@@ -449,6 +450,15 @@ namespace TTCSServer
 
             ObjScriptMonitoring.Owner = this;
             ObjScriptMonitoring.Show();
+        }
+
+        private void BtnUserManagenment_Click(object sender, EventArgs e)
+        {
+            if (ObjUserMonitoring == null)
+                ObjUserMonitoring = new UserMonitoring();
+
+            ObjUserMonitoring.Owner = this;
+            ObjUserMonitoring.Show();
         }
     }
 }

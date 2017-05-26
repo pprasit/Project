@@ -117,6 +117,7 @@
     <Compile Include="Engine\TTCSCommandHelp.cs" />
     <Compile Include="Engine\AstroServerHandler.cs" />
     <Compile Include="Engine\TTCSLog.cs" />
+    <Compile Include="Engine\UserManagement.cs" />
     <Compile Include="Engine\WebSocket.cs" />
     <Compile Include="FITSHandler.cs" />
     <Compile Include="Helper.cs" />

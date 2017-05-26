@@ -62,29 +62,32 @@ namespace DataKeeper.Engine
 
                 return ValueList;
             }
-
-
-
         }
 
         #region User
 
-        public static Object SyncUser(DATAACTION Action, List<Object[]> TableField)
+        public static Object SyncUser(DATAACTION Action, List<Object[]> TableField, STATIONNAME StationName)
         {
             if (Action == DATAACTION.SYNCALL)
-            {
                 return SyncExistingUser(TableField);
-            }
-            else if (Action == DATAACTION.UPDATE)
-            {
-                UpdateUser(TableField);
-            }
+            else if (Action == DATAACTION.UPDATE || Action == DATAACTION.INSERT)
+                UpdateUser(TableField, StationName);
+            else if (Action == DATAACTION.DELETE)
+                DeleteUser(TableField);
 
             return null;
         }
 
-        private static void UpdateUser(List<Object[]> TableField)
+        private static void DeleteUser(List<Object[]> TableField)
         {
+            db = new Entities();
+            db.UserTBs.Remove(db.UserTBs.FirstOrDefault(Item => Item.UserID == TableField.ElementAt(0)[0].ToString()));
+            db.SaveChangesAsync();
+        }
+
+        private static void UpdateUser(List<Object[]> TableField, STATIONNAME StationName)
+        {
+            db = new Entities();
             UserTB CheckUser = new UserTB();
             CheckUser.UserID = TableField.ElementAt(0)[0].ToString();
             CheckUser.UserName = TableField.ElementAt(0)[1].ToString();
@@ -92,11 +95,41 @@ namespace DataKeeper.Engine
             CheckUser.UserLoginPassword = TableField.ElementAt(0)[3].ToString();
             CheckUser.UserPermissionType = TableField.ElementAt(0)[4].ToString();
 
-            UserTB ExistingUser = db.UserTBs.FirstOrDefault(Item => Item.UserID == CheckUser.UserID);
-            ExistingUser.UserName = CheckUser.UserName;
-            ExistingUser.UserLoginName = CheckUser.UserLoginName;
-            ExistingUser.UserLoginPassword = CheckUser.UserLoginPassword;
-            ExistingUser.UserPermissionType = CheckUser.UserPermissionType;
+            UserTB ThisUser = db.UserTBs.FirstOrDefault(Item => Item.UserID == CheckUser.UserID);
+
+            if (ThisUser == null)
+            {
+                ThisUser = new UserTB();
+                ThisUser.UserID = CheckUser.UserID;
+                ThisUser.UserName = CheckUser.UserName;
+                ThisUser.UserLoginName = CheckUser.UserLoginName;
+                ThisUser.UserLoginPassword = CheckUser.UserLoginPassword;
+                ThisUser.UserPermissionType = CheckUser.UserPermissionType;
+                ThisUser.UserStationPermission = StationName.ToString();
+
+                db.UserTBs.Add(ThisUser);
+            }
+            else
+            {
+                ThisUser.UserName = CheckUser.UserName;
+                ThisUser.UserLoginName = CheckUser.UserLoginName;
+                ThisUser.UserLoginPassword = CheckUser.UserLoginPassword;
+                ThisUser.UserPermissionType = CheckUser.UserPermissionType;
+
+                if (ThisUser.UserStationPermission == null)
+                    ThisUser.UserStationPermission = StationName.ToString();
+                else
+                {
+                    if (ThisUser.UserStationPermission.Trim() != "")
+                    {
+                        if (ThisUser.UserStationPermission != "All Station")
+                            ThisUser.UserStationPermission = "," + StationName.ToString();
+                    }
+                    else
+                        ThisUser.UserStationPermission = StationName.ToString();
+                }
+            }
+
             db.SaveChangesAsync();
         }
 
@@ -160,6 +193,7 @@ namespace DataKeeper.Engine
 
         private static void UpdateLog(String StationName, List<Object[]> TableField)
         {
+            db = new Entities();
             LogTB CheckLog = new LogTB();
             CheckLog.LogID = TableField.ElementAt(0)[0].ToString();
             CheckLog.StationName = TableField.ElementAt(0)[0].ToString();
@@ -179,6 +213,7 @@ namespace DataKeeper.Engine
 
         private static void DeleteLog(String LogID)
         {
+            db = new Entities();
             db.LogTBs.Remove(db.LogTBs.FirstOrDefault(Item => Item.LogID == LogID));
             db.SaveChangesAsync();
         }

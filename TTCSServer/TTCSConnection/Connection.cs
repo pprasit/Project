@@ -70,7 +70,7 @@ namespace TTCSConnection
         public Object DatabaseSync(STATIONNAME StationName, String TableName, DATAACTION Action, List<Object[]> Value)
         {
             if (TableName == "UserTB")
-                return DatabaseSynchronization.SyncUser(Action, Value);
+                return DatabaseSynchronization.SyncUser(Action, Value, StationName);
             else
                 return DatabaseSynchronization.SyncLog(StationName.ToString(), Action, Value);
         }

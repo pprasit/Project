@@ -27,7 +27,7 @@ namespace DataKeeper
     
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<LogTB> LogTBs { get; set; }
-        public virtual DbSet<UserTB> UserTBs { get; set; }
         public virtual DbSet<ScriptTB> ScriptTBs { get; set; }
+        public virtual DbSet<UserTB> UserTBs { get; set; }
     }
 }

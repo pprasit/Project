@@ -112,6 +112,18 @@
     <Compile Include="Interface\SettingWindows.Designer.cs">
       <DependentUpon>SettingWindows.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\UserModification.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface\UserModification.Designer.cs">
+      <DependentUpon>UserModification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\UserMonitoring.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface\UserMonitoring.Designer.cs">
+      <DependentUpon>UserMonitoring.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interface\UserSessionHandler.cs" />
     <Compile Include="Interface\WebHosting.cs" />
     <Compile Include="MainWindows.cs">
@@ -136,6 +148,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\SettingWindows.resx">
       <DependentUpon>SettingWindows.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\UserModification.resx">
+      <DependentUpon>UserModification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\UserMonitoring.resx">
+      <DependentUpon>UserMonitoring.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindows.resx">
       <DependentUpon>MainWindows.cs</DependentUpon>

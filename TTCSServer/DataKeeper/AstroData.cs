@@ -375,6 +375,21 @@ namespace DataKeeper
             return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#TT003) Failed to relay set command to station.", false);
         }
 
+        public static ReturnKnowType UpdateStationUser(String UserID, String UserName, String UserLoginName, String UserLoginPassword, String UserPermissionType, String USerStationPermission,String StationName, DATAACTION UserAction)
+        {
+            STATIONNAME ThisStationName = TTCSHelper.StationStrConveter(StationName);
+            StationHandler ThisSite = KeeperData.FirstOrDefault(Item => Item.StationName == ThisStationName);
+
+            if (ThisSite != null)
+            {
+                ReturnKnowType ThisResult = ThisSite.UpdateStationUser(UserID, UserName, UserLoginName, UserLoginPassword, UserPermissionType, USerStationPermission, UserAction);
+                if (ThisResult.ReturnType == ReturnStatus.SUCESSFUL)
+                    return ThisResult;
+            }
+
+            return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#TT004) Can not update user data to station. Will try again.", false);
+        }
+
         public static ReturnKnowType GRBHandler(String Ra, String Dec, String FOV, DateTime UpdateTIme)
         {
             StationHandler ThisSite = KeeperData.FirstOrDefault(Item => Item.StationName == STATIONNAME.TNO);

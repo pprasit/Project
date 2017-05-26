@@ -33,6 +33,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindows));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.BtnScriptManager = new System.Windows.Forms.Button();
             this.BtnSetup = new System.Windows.Forms.Button();
             this.StationStatus = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -82,7 +83,7 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label7 = new System.Windows.Forms.Label();
-            this.BtnScriptManager = new System.Windows.Forms.Button();
+            this.BtnUserManagenment = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TTCSLogGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -102,6 +103,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.BtnUserManagenment);
             this.groupBox1.Controls.Add(this.BtnScriptManager);
             this.groupBox1.Controls.Add(this.BtnSetup);
             this.groupBox1.Controls.Add(this.StationStatus);
@@ -115,6 +117,16 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Station Information";
+            // 
+            // BtnScriptManager
+            // 
+            this.BtnScriptManager.Location = new System.Drawing.Point(435, 28);
+            this.BtnScriptManager.Name = "BtnScriptManager";
+            this.BtnScriptManager.Size = new System.Drawing.Size(75, 23);
+            this.BtnScriptManager.TabIndex = 5;
+            this.BtnScriptManager.Text = "Script";
+            this.BtnScriptManager.UseVisualStyleBackColor = true;
+            this.BtnScriptManager.Click += new System.EventHandler(this.BtnScriptManager_Click);
             // 
             // BtnSetup
             // 
@@ -130,7 +142,7 @@
             // 
             this.StationStatus.AutoSize = true;
             this.StationStatus.ForeColor = System.Drawing.Color.Red;
-            this.StationStatus.Location = new System.Drawing.Point(561, 33);
+            this.StationStatus.Location = new System.Drawing.Point(678, 32);
             this.StationStatus.Name = "StationStatus";
             this.StationStatus.Size = new System.Drawing.Size(37, 13);
             this.StationStatus.TabIndex = 3;
@@ -139,7 +151,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(516, 33);
+            this.label2.Location = new System.Drawing.Point(633, 32);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 13);
             this.label2.TabIndex = 2;
@@ -669,15 +681,15 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Avaliable Device";
             // 
-            // BtnScriptManager
+            // BtnUserManagenment
             // 
-            this.BtnScriptManager.Location = new System.Drawing.Point(435, 28);
-            this.BtnScriptManager.Name = "BtnScriptManager";
-            this.BtnScriptManager.Size = new System.Drawing.Size(75, 23);
-            this.BtnScriptManager.TabIndex = 5;
-            this.BtnScriptManager.Text = "Script";
-            this.BtnScriptManager.UseVisualStyleBackColor = true;
-            this.BtnScriptManager.Click += new System.EventHandler(this.BtnScriptManager_Click);
+            this.BtnUserManagenment.Location = new System.Drawing.Point(516, 28);
+            this.BtnUserManagenment.Name = "BtnUserManagenment";
+            this.BtnUserManagenment.Size = new System.Drawing.Size(75, 23);
+            this.BtnUserManagenment.TabIndex = 5;
+            this.BtnUserManagenment.Text = "User";
+            this.BtnUserManagenment.UseVisualStyleBackColor = true;
+            this.BtnUserManagenment.Click += new System.EventHandler(this.BtnUserManagenment_Click);
             // 
             // MainWindows
             // 
@@ -769,6 +781,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column11;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
         private System.Windows.Forms.Button BtnScriptManager;
+        private System.Windows.Forms.Button BtnUserManagenment;
     }
 }
 

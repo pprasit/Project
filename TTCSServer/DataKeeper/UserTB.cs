@@ -25,6 +25,7 @@ namespace DataKeeper
         public string UserLoginName { get; set; }
         public string UserLoginPassword { get; set; }
         public string UserPermissionType { get; set; }
+        public string UserStationPermission { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LogTB> LogTBs { get; set; }

@@ -7,9 +7,9 @@
       <Diagram DiagramId="59f8e00f022c45a6a48e7d8a67d52fe2" Name="Diagram1">
         <EntityTypeShape EntityType="AstroDatabaseModel.sysdiagram" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AstroDatabaseModel.LogTB" Width="1.5" PointX="6.375" PointY="0.75" />
-        <EntityTypeShape EntityType="AstroDatabaseModel.UserTB" Width="1.5" PointX="4.625" PointY="0.75" />
-        <AssociationConnector Association="AstroDatabaseModel.FK_LogTB_UserTB" />
         <EntityTypeShape EntityType="AstroDatabaseModel.ScriptTB" Width="1.5" PointX="0.875" PointY="0.75" />
+        <EntityTypeShape EntityType="AstroDatabaseModel.UserTB" Width="1.5" PointX="4.5" PointY="1.375" />
+        <AssociationConnector Association="AstroDatabaseModel.FK_LogTB_UserTB" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

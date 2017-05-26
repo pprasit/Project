@@ -55,6 +55,7 @@
           <Property Name="UserLoginName" Type="nvarchar(max)" />
           <Property Name="UserLoginPassword" Type="nvarchar(max)" />
           <Property Name="UserPermissionType" Type="nvarchar(max)" />
+          <Property Name="UserStationPermission" Type="nvarchar(max)" />
         </EntityType>
         <Association Name="FK_LogTB_UserTB">
           <End Role="UserTB" Type="Self.UserTB" Multiplicity="0..1">
@@ -97,12 +98,12 @@
         <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
           <EntitySet Name="LogTBs" EntityType="AstroDatabaseModel.LogTB" />
+          <EntitySet Name="ScriptTBs" EntityType="AstroDatabaseModel.ScriptTB" />
           <EntitySet Name="UserTBs" EntityType="AstroDatabaseModel.UserTB" />
           <AssociationSet Name="FK_LogTB_UserTB" Association="AstroDatabaseModel.FK_LogTB_UserTB">
             <End Role="UserTB" EntitySet="UserTBs" />
             <End Role="LogTB" EntitySet="LogTBs" />
           </AssociationSet>
-          <EntitySet Name="ScriptTBs" EntityType="AstroDatabaseModel.ScriptTB" />
         </EntityContainer>
         <EntityType Name="LogTB">
           <Key>
@@ -116,31 +117,6 @@
           <Property Name="Problem" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="UserTB" Relationship="AstroDatabaseModel.FK_LogTB_UserTB" FromRole="LogTB" ToRole="UserTB" />
         </EntityType>
-        <EntityType Name="UserTB">
-          <Key>
-            <PropertyRef Name="UserID" />
-          </Key>
-          <Property Name="UserID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="UserLoginName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="UserLoginPassword" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="UserPermissionType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="LogTBs" Relationship="AstroDatabaseModel.FK_LogTB_UserTB" FromRole="UserTB" ToRole="LogTB" />
-        </EntityType>
-        <Association Name="FK_LogTB_UserTB">
-          <End Type="AstroDatabaseModel.UserTB" Role="UserTB" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="AstroDatabaseModel.LogTB" Role="LogTB" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="UserTB">
-              <PropertyRef Name="UserID" />
-            </Principal>
-            <Dependent Role="LogTB">
-              <PropertyRef Name="UserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="ScriptTB">
           <Key>
             <PropertyRef Name="BlockID" />
@@ -161,6 +137,32 @@
           <Property Name="Parameter" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ScriptState" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="UserTB">
+          <Key>
+            <PropertyRef Name="UserID" />
+          </Key>
+          <Property Name="UserID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserLoginName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserLoginPassword" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserPermissionType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserStationPermission" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="LogTBs" Relationship="AstroDatabaseModel.FK_LogTB_UserTB" FromRole="UserTB" ToRole="LogTB" />
+        </EntityType>
+        <Association Name="FK_LogTB_UserTB">
+          <End Type="AstroDatabaseModel.UserTB" Role="UserTB" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="AstroDatabaseModel.LogTB" Role="LogTB" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserTB">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="LogTB">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -190,17 +192,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="UserTBs">
-            <EntityTypeMapping TypeName="AstroDatabaseModel.UserTB">
-              <MappingFragment StoreEntitySet="UserTB">
-                <ScalarProperty Name="UserPermissionType" ColumnName="UserPermissionType" />
-                <ScalarProperty Name="UserLoginPassword" ColumnName="UserLoginPassword" />
-                <ScalarProperty Name="UserLoginName" ColumnName="UserLoginName" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ScriptTBs">
             <EntityTypeMapping TypeName="AstroDatabaseModel.ScriptTB">
               <MappingFragment StoreEntitySet="ScriptTB">
@@ -218,6 +209,18 @@
                 <ScalarProperty Name="StationName" ColumnName="StationName" />
                 <ScalarProperty Name="BlockName" ColumnName="BlockName" />
                 <ScalarProperty Name="BlockID" ColumnName="BlockID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserTBs">
+            <EntityTypeMapping TypeName="AstroDatabaseModel.UserTB">
+              <MappingFragment StoreEntitySet="UserTB">
+                <ScalarProperty Name="UserStationPermission" ColumnName="UserStationPermission" />
+                <ScalarProperty Name="UserPermissionType" ColumnName="UserPermissionType" />
+                <ScalarProperty Name="UserLoginPassword" ColumnName="UserLoginPassword" />
+                <ScalarProperty Name="UserLoginName" ColumnName="UserLoginName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -501,7 +501,7 @@ namespace DataKeeper.Engine
             }
         }
 
-        public ReturnKnowType RelayCommandToStation(DEVICECATEGORY DeviceCategory, DEVICENAME DeviceName, dynamic CommandName, Object[] Values)
+        public ReturnKnowType UpdateStationUser(String UserID, String UserName, String UserLoginName, String UserLoginPassword, String UserPermissionType, String UserStationPermission, DATAACTION UserAction)
         {
             Boolean ResultState = false;
             String Message = "";
@@ -510,32 +510,9 @@ namespace DataKeeper.Engine
             {
                 try
                 {
-                    if (DeviceName == DEVICENAME.ASTROPARK_SERVER)
-                    {
-                        if ((ASTROSERVERSET)CommandName == ASTROSERVERSET.ASTROSERVER_DATABASE_SYNC)
-                        {
-                            List<Object[]> AllValue = DatabaseSynchronization.SyncDataFromServer(Values[0].ToString(), Values[1].ToString());
-
-                            MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnDatabaseSync");
-                            MInfo.Invoke(ServerCallBackObject, new Object[] { AllValue });
-                            ResultState = true;
-                        }
-                    }
-                    else
-                    {
-                        String MethodName = null;
-                        switch (DeviceCategory)
-                        {
-                            case DEVICECATEGORY.TS700MM: MethodName = "OnTS700MMSET"; break;
-                            case DEVICECATEGORY.IMAGING: MethodName = "OnIMAGINGSET"; break;
-                            case DEVICECATEGORY.ASTROHEVENDOME: MethodName = "OnDOMESET"; break;
-                            case DEVICECATEGORY.LANOUTLET: MethodName = "OnLANOUTLETSET"; break;
-                        }
-
-                        MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod(MethodName);
-                        MInfo.Invoke(ServerCallBackObject, new Object[] { StationName, DeviceName, CommandName, Values, DateTime.Now });
-                        ResultState = true;
-                    }
+                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnUpdateUser");
+                    MInfo.Invoke(ServerCallBackObject, new Object[] { UserID, UserName, UserLoginName, UserLoginPassword, UserPermissionType, UserStationPermission, UserAction });
+                    ResultState = true;
                 }
                 catch (Exception e)
                 {
@@ -544,7 +521,7 @@ namespace DataKeeper.Engine
             });
 
             if (!TaskPost.Wait(10))
-                return CreateKnowTypeMessage("The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.", ReturnStatus.FAILED);
+                return CreateKnowTypeMessage("The Astro Client is timeout to response due to network problem or Astro Client is lost connection.", ReturnStatus.FAILED);
             else
             {
                 if (ResultState)
@@ -554,295 +531,348 @@ namespace DataKeeper.Engine
             }
         }
 
-        private static ReturnKnowType CreateKnowTypeMessage(String Message, ReturnStatus Status)
+    public ReturnKnowType RelayCommandToStation(DEVICECATEGORY DeviceCategory, DEVICENAME DeviceName, dynamic CommandName, Object[] Values)
+    {
+        Boolean ResultState = false;
+        String Message = "";
+
+        Task TaskPost = Task.Run(() =>
         {
-            ReturnKnowType ThisKnowType = new ReturnKnowType();
-            ThisKnowType.ReturnDateTime = DateTime.Now;
-            ThisKnowType.ReturnMessage = Message;
-            ThisKnowType.ReturnType = Status;
-            ThisKnowType.ReturnValue = null;
-
-            return ThisKnowType;
-        }
-
-        #endregion
-
-        #region Get Information
-
-        public List<OUTPUTSTRUCT> GetInformation()
-        {
-            List<OUTPUTSTRUCT> InformationList = new List<OUTPUTSTRUCT>();
-            foreach (DEVICEMAPPER ThisDevice in DeviceStroage.Keys)
-                InformationList.AddRange(DeviceInformationHandler(ThisDevice));
-
-            return InformationList;
-        }
-
-        public List<OUTPUTSTRUCT> GetInformation(DEVICECATEGORY DeviceCategory)
-        {
-            List<OUTPUTSTRUCT> InformationList = new List<OUTPUTSTRUCT>();
-            DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == DeviceCategory).Key;
-
-            if (ThisDevice == null)
-                return null;
-
-            InformationList.AddRange(DeviceInformationHandler(ThisDevice));
-            return InformationList;
-        }
-
-        public OUTPUTSTRUCT GetInformation(DEVICENAME DeviceName, dynamic FieldName)
-        {
-            DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
-            List<OUTPUTSTRUCT> TempList = DeviceInformationHandler(ThisDevice);
-
-            foreach (OUTPUTSTRUCT ThisInformation in TempList)
-                if (ThisInformation.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_BASE64.ToString())
+            try
+            {
+                if (DeviceName == DEVICENAME.ASTROPARK_SERVER)
                 {
-                    String T = ThisInformation.Value.ToString();
+                    if ((ASTROSERVERSET)CommandName == ASTROSERVERSET.ASTROSERVER_DATABASE_SYNC)
+                    {
+                        List<Object[]> AllValue = DatabaseSynchronization.SyncDataFromServer(Values[0].ToString(), Values[1].ToString());
+
+                        MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnDatabaseSync");
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { AllValue });
+                        ResultState = true;
+                    }
                 }
-
-            OUTPUTSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName == FieldName.ToString());
-            return ThisOutput;
-        }
-
-        public OUTPUTSTRUCT GetInformation(DEVICENAME DeviceName, dynamic FieldName, Object[] Parameter)
-        {
-            DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
-            List<OUTPUTSTRUCT> TempList = DeviceInformationHandler(ThisDevice);
-
-            foreach (OUTPUTSTRUCT ThisInformation in TempList)
-                if (ThisInformation.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_BASE64.ToString())
-                {
-                    String T = ThisInformation.Value.ToString();
-                }
-
-            OUTPUTSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName == FieldName.ToString());
-            return ThisOutput;
-        }
-
-        public INFORMATIONSTRUCT GetInformationObject(DEVICENAME DeviceName, dynamic FieldName)
-        {
-            DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
-
-            List<INFORMATIONSTRUCT> TempList = DeviceInformationObjectHandler(ThisDevice);
-            INFORMATIONSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName.ToString() == FieldName.ToString());
-            return ThisOutput;
-        }
-
-        private List<INFORMATIONSTRUCT> DeviceInformationObjectHandler(DEVICEMAPPER ThisDevice)
-        {
-            switch (ThisDevice.DeviceCategory)
-            {
-                case DEVICECATEGORY.TS700MM:
-                    ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT> TS700MMField = (ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return TS700MMField.Values.ToList();
-                case DEVICECATEGORY.ASTROHEVENDOME:
-                    ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT> ASTROHEVENDOMEField = (ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return ASTROHEVENDOMEField.Values.ToList();
-                case DEVICECATEGORY.WEATHERSTATION:
-                    ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT> WEATHERSTATIONField = (ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return WEATHERSTATIONField.Values.ToList();
-                case DEVICECATEGORY.CCTV:
-                    ConcurrentDictionary<CCTV, INFORMATIONSTRUCT> CCTVField = (ConcurrentDictionary<CCTV, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return CCTVField.Values.ToList();
-                case DEVICECATEGORY.IMAGING:
-                    ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT> IMAGINGField = (ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return IMAGINGField.Values.ToList();
-                case DEVICECATEGORY.LANOUTLET:
-                    ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT> LANOUTLETField = (ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return LANOUTLETField.Values.ToList();
-                case DEVICECATEGORY.GPS:
-                    ConcurrentDictionary<GPS, INFORMATIONSTRUCT> GPSField = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return GPSField.Values.ToList();
-                case DEVICECATEGORY.SQM:
-                    ConcurrentDictionary<SQM, INFORMATIONSTRUCT> SQMField = (ConcurrentDictionary<SQM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return SQMField.Values.ToList();
-                case DEVICECATEGORY.SEEING:
-                    ConcurrentDictionary<SEEING, INFORMATIONSTRUCT> SEEINGField = (ConcurrentDictionary<SEEING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return SEEINGField.Values.ToList();
-                case DEVICECATEGORY.ALLSKY:
-                    ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT> ALLSKYField = (ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return ALLSKYField.Values.ToList();
-                case DEVICECATEGORY.ASTROCLIENT:
-                    ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ASTROCLIENTField = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return ASTROCLIENTField.Values.ToList();
-                case DEVICECATEGORY.ASTROSERVER:
-                    ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT> ASTROSERVERField = (ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    return ASTROSERVERField.Values.ToList();
-                default: return null;
-            }
-        }
-
-        private List<OUTPUTSTRUCT> DeviceInformationHandler(DEVICEMAPPER ThisDevice)
-        {
-            List<OUTPUTSTRUCT> InformationList = new List<OUTPUTSTRUCT>();
-
-            if (ThisDevice == null)
-                return null;
-
-            switch (ThisDevice.DeviceCategory)
-            {
-                case DEVICECATEGORY.TS700MM:
-                    ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT> TS700MMField = (ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in TS700MMField.Values)
-                        if (ThisInformation.FieldName != TS700MM.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.ASTROHEVENDOME:
-                    ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT> ASTROHEVENDOMEField = (ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in ASTROHEVENDOMEField.Values)
-                        if (ThisInformation.FieldName != ASTROHEVENDOME.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.WEATHERSTATION:
-                    ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT> WEATHERSTATIONField = (ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in WEATHERSTATIONField.Values)
-                        if (ThisInformation.FieldName != WEATHERSTATION.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.CCTV:
-                    ConcurrentDictionary<CCTV, INFORMATIONSTRUCT> CCTVField = (ConcurrentDictionary<CCTV, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in CCTVField.Values)
-                        if (ThisInformation.FieldName != CCTV.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.IMAGING:
-                    ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT> IMAGINGField = (ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in IMAGINGField.Values)
-                        if (ThisInformation.FieldName != IMAGING.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.LANOUTLET:
-                    ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT> LANOUTLETField = (ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in LANOUTLETField.Values)
-                        if (ThisInformation.FieldName != LANOUTLET.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.GPS:
-                    ConcurrentDictionary<GPS, INFORMATIONSTRUCT> GPSField = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in GPSField.Values)
-                        if (ThisInformation.FieldName != GPS.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.SQM:
-                    ConcurrentDictionary<SQM, INFORMATIONSTRUCT> SQMField = (ConcurrentDictionary<SQM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in SQMField.Values)
-                        if (ThisInformation.FieldName != SQM.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.SEEING:
-                    ConcurrentDictionary<SEEING, INFORMATIONSTRUCT> SEEINGField = (ConcurrentDictionary<SEEING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in SEEINGField.Values)
-                        if (ThisInformation.FieldName != SEEING.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.ALLSKY:
-                    ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT> ALLSKYField = (ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in ALLSKYField.Values)
-                        if (ThisInformation.FieldName != ALLSKY.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.ASTROCLIENT:
-                    ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ASTROCLIENTField = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in ASTROCLIENTField.Values)
-                        if (ThisInformation.FieldName != ASTROCLIENT.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                case DEVICECATEGORY.ASTROSERVER:
-                    ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT> ASTROSERVERField = (ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
-                    foreach (INFORMATIONSTRUCT ThisInformation in ASTROSERVERField.Values)
-                        if (ThisInformation.FieldName != ASTROSERVER.NULL)
-                            InformationList.Add(CreateOutputNode(ThisInformation));
-                    break;
-                default: return null;
-            }
-
-            return InformationList;
-        }
-
-        private OUTPUTSTRUCT CreateOutputNode(INFORMATIONSTRUCT Inforstructure)
-        {
-            String Value = "null";
-
-            if (Inforstructure.Value != null)
-            {
-                if (Inforstructure.Value.GetType() == typeof(Byte[]))
-                    Value = Convert.ToBase64String((byte[])Inforstructure.Value);
                 else
-                    Value = Inforstructure.Value.ToString();
-            }
-
-            OUTPUTSTRUCT ThisOutput = new OUTPUTSTRUCT();
-            ThisOutput.StationName = Inforstructure.StationName;
-            ThisOutput.DeviceCategory = Inforstructure.DeviceCategory;
-            ThisOutput.FieldName = Inforstructure.FieldName.ToString();
-            ThisOutput.Value = Value;
-            ThisOutput.DataType = Inforstructure.Value == null ? "null" : Inforstructure.Value.GetType().ToString().Replace("System.", "");
-            ThisOutput.UpdateTime = Inforstructure.UpdateTime == null ? "null" : Inforstructure.UpdateTime.Value.ToString();
-
-            return ThisOutput;
-        }
-
-        #endregion        
-
-        #region Subscription Information
-
-        public void SubscribeInformation(DEVICENAME DeviceName, dynamic FieldName, String SessionID, Object CallBackObject)
-        {
-            ConcurrentDictionary<dynamic, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<dynamic, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Value;
-
-            if (ExistingInformation != null)
-            {
-                INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
-                if (ThisField != null)
                 {
-                    ThisField.ClientSubscribe.TryAdd(SessionID, CallBackObject);
-                    ReturnSubscribe(DeviceName, CallBackObject, FieldName, ThisField.Value, ThisField.UpdateTime);
+                    String MethodName = null;
+                    switch (DeviceCategory)
+                    {
+                        case DEVICECATEGORY.TS700MM: MethodName = "OnTS700MMSET"; break;
+                        case DEVICECATEGORY.IMAGING: MethodName = "OnIMAGINGSET"; break;
+                        case DEVICECATEGORY.ASTROHEVENDOME: MethodName = "OnDOMESET"; break;
+                        case DEVICECATEGORY.LANOUTLET: MethodName = "OnLANOUTLETSET"; break;
+                    }
+
+                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod(MethodName);
+                    MInfo.Invoke(ServerCallBackObject, new Object[] { StationName, DeviceName, CommandName, Values, DateTime.Now });
+                    ResultState = true;
                 }
             }
-        }
-
-        private void ReturnSubscribe(DEVICENAME DeviceName, Object CallBackObject, dynamic FieldName, Object Value, DateTime? UpdateTime)
-        {
-            Task t = Task.Run(() =>
+            catch (Exception e)
             {
-                try
-                {
-                    MethodInfo MInfo = CallBackObject.GetType().GetMethod("OnPublish");
-                    MInfo.Invoke(CallBackObject, new Object[] { StationName, DeviceName, FieldName, Value, UpdateTime });
-                }
-                catch (Exception e)
-                {
-                    ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Si013) Failed to return subscribe information at ReturnSubscribe see. (" + e.Message + ")");
-                }
-            });
-        }
-
-        public void UnsubscribeBySessionID(String SessionID)
-        {
-            foreach (ConcurrentDictionary<dynamic, INFORMATIONSTRUCT> ThisDevice in DeviceStroage.Values)
-                foreach (INFORMATIONSTRUCT ThisInformation in ThisDevice.Values)
-                {
-                    Object Value = null;
-                    ThisInformation.ClientSubscribe.TryRemove(SessionID, out Value);
-                }
-        }
-
-        public void UnsubscribeByFieldName(String SessionID, DEVICENAME DeviceName, dynamic FieldName)
-        {
-            ConcurrentDictionary<dynamic, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<dynamic, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Value;
-
-            if (ExistingInformation != null)
-            {
-                INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
-                if (ThisField != null)
-                {
-                    Object Value = null;
-                    ThisField.ClientSubscribe.TryRemove(SessionID, out Value);
-                }
+                Message = e.Message;
             }
-        }
+        });
 
-        #endregion        
+        if (!TaskPost.Wait(10))
+            return CreateKnowTypeMessage("The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.", ReturnStatus.FAILED);
+        else
+        {
+            if (ResultState)
+                return CreateKnowTypeMessage(null, ReturnStatus.SUCESSFUL);
+            else
+                return CreateKnowTypeMessage("An erroe occur because (" + Message + ")", ReturnStatus.FAILED);
+        }
     }
+
+    private static ReturnKnowType CreateKnowTypeMessage(String Message, ReturnStatus Status)
+    {
+        ReturnKnowType ThisKnowType = new ReturnKnowType();
+        ThisKnowType.ReturnDateTime = DateTime.Now;
+        ThisKnowType.ReturnMessage = Message;
+        ThisKnowType.ReturnType = Status;
+        ThisKnowType.ReturnValue = null;
+
+        return ThisKnowType;
+    }
+
+    #endregion
+
+    #region Get Information
+
+    public List<OUTPUTSTRUCT> GetInformation()
+    {
+        List<OUTPUTSTRUCT> InformationList = new List<OUTPUTSTRUCT>();
+        foreach (DEVICEMAPPER ThisDevice in DeviceStroage.Keys)
+            InformationList.AddRange(DeviceInformationHandler(ThisDevice));
+
+        return InformationList;
+    }
+
+    public List<OUTPUTSTRUCT> GetInformation(DEVICECATEGORY DeviceCategory)
+    {
+        List<OUTPUTSTRUCT> InformationList = new List<OUTPUTSTRUCT>();
+        DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == DeviceCategory).Key;
+
+        if (ThisDevice == null)
+            return null;
+
+        InformationList.AddRange(DeviceInformationHandler(ThisDevice));
+        return InformationList;
+    }
+
+    public OUTPUTSTRUCT GetInformation(DEVICENAME DeviceName, dynamic FieldName)
+    {
+        DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
+        List<OUTPUTSTRUCT> TempList = DeviceInformationHandler(ThisDevice);
+
+        foreach (OUTPUTSTRUCT ThisInformation in TempList)
+            if (ThisInformation.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_BASE64.ToString())
+            {
+                String T = ThisInformation.Value.ToString();
+            }
+
+        OUTPUTSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName == FieldName.ToString());
+        return ThisOutput;
+    }
+
+    public OUTPUTSTRUCT GetInformation(DEVICENAME DeviceName, dynamic FieldName, Object[] Parameter)
+    {
+        DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
+        List<OUTPUTSTRUCT> TempList = DeviceInformationHandler(ThisDevice);
+
+        foreach (OUTPUTSTRUCT ThisInformation in TempList)
+            if (ThisInformation.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_BASE64.ToString())
+            {
+                String T = ThisInformation.Value.ToString();
+            }
+
+        OUTPUTSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName == FieldName.ToString());
+        return ThisOutput;
+    }
+
+    public INFORMATIONSTRUCT GetInformationObject(DEVICENAME DeviceName, dynamic FieldName)
+    {
+        DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
+
+        List<INFORMATIONSTRUCT> TempList = DeviceInformationObjectHandler(ThisDevice);
+        INFORMATIONSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName.ToString() == FieldName.ToString());
+        return ThisOutput;
+    }
+
+    private List<INFORMATIONSTRUCT> DeviceInformationObjectHandler(DEVICEMAPPER ThisDevice)
+    {
+        switch (ThisDevice.DeviceCategory)
+        {
+            case DEVICECATEGORY.TS700MM:
+                ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT> TS700MMField = (ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return TS700MMField.Values.ToList();
+            case DEVICECATEGORY.ASTROHEVENDOME:
+                ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT> ASTROHEVENDOMEField = (ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return ASTROHEVENDOMEField.Values.ToList();
+            case DEVICECATEGORY.WEATHERSTATION:
+                ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT> WEATHERSTATIONField = (ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return WEATHERSTATIONField.Values.ToList();
+            case DEVICECATEGORY.CCTV:
+                ConcurrentDictionary<CCTV, INFORMATIONSTRUCT> CCTVField = (ConcurrentDictionary<CCTV, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return CCTVField.Values.ToList();
+            case DEVICECATEGORY.IMAGING:
+                ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT> IMAGINGField = (ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return IMAGINGField.Values.ToList();
+            case DEVICECATEGORY.LANOUTLET:
+                ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT> LANOUTLETField = (ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return LANOUTLETField.Values.ToList();
+            case DEVICECATEGORY.GPS:
+                ConcurrentDictionary<GPS, INFORMATIONSTRUCT> GPSField = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return GPSField.Values.ToList();
+            case DEVICECATEGORY.SQM:
+                ConcurrentDictionary<SQM, INFORMATIONSTRUCT> SQMField = (ConcurrentDictionary<SQM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return SQMField.Values.ToList();
+            case DEVICECATEGORY.SEEING:
+                ConcurrentDictionary<SEEING, INFORMATIONSTRUCT> SEEINGField = (ConcurrentDictionary<SEEING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return SEEINGField.Values.ToList();
+            case DEVICECATEGORY.ALLSKY:
+                ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT> ALLSKYField = (ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return ALLSKYField.Values.ToList();
+            case DEVICECATEGORY.ASTROCLIENT:
+                ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ASTROCLIENTField = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return ASTROCLIENTField.Values.ToList();
+            case DEVICECATEGORY.ASTROSERVER:
+                ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT> ASTROSERVERField = (ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                return ASTROSERVERField.Values.ToList();
+            default: return null;
+        }
+    }
+
+    private List<OUTPUTSTRUCT> DeviceInformationHandler(DEVICEMAPPER ThisDevice)
+    {
+        List<OUTPUTSTRUCT> InformationList = new List<OUTPUTSTRUCT>();
+
+        if (ThisDevice == null)
+            return null;
+
+        switch (ThisDevice.DeviceCategory)
+        {
+            case DEVICECATEGORY.TS700MM:
+                ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT> TS700MMField = (ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in TS700MMField.Values)
+                    if (ThisInformation.FieldName != TS700MM.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.ASTROHEVENDOME:
+                ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT> ASTROHEVENDOMEField = (ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in ASTROHEVENDOMEField.Values)
+                    if (ThisInformation.FieldName != ASTROHEVENDOME.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.WEATHERSTATION:
+                ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT> WEATHERSTATIONField = (ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in WEATHERSTATIONField.Values)
+                    if (ThisInformation.FieldName != WEATHERSTATION.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.CCTV:
+                ConcurrentDictionary<CCTV, INFORMATIONSTRUCT> CCTVField = (ConcurrentDictionary<CCTV, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in CCTVField.Values)
+                    if (ThisInformation.FieldName != CCTV.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.IMAGING:
+                ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT> IMAGINGField = (ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in IMAGINGField.Values)
+                    if (ThisInformation.FieldName != IMAGING.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.LANOUTLET:
+                ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT> LANOUTLETField = (ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in LANOUTLETField.Values)
+                    if (ThisInformation.FieldName != LANOUTLET.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.GPS:
+                ConcurrentDictionary<GPS, INFORMATIONSTRUCT> GPSField = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in GPSField.Values)
+                    if (ThisInformation.FieldName != GPS.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.SQM:
+                ConcurrentDictionary<SQM, INFORMATIONSTRUCT> SQMField = (ConcurrentDictionary<SQM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in SQMField.Values)
+                    if (ThisInformation.FieldName != SQM.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.SEEING:
+                ConcurrentDictionary<SEEING, INFORMATIONSTRUCT> SEEINGField = (ConcurrentDictionary<SEEING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in SEEINGField.Values)
+                    if (ThisInformation.FieldName != SEEING.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.ALLSKY:
+                ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT> ALLSKYField = (ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in ALLSKYField.Values)
+                    if (ThisInformation.FieldName != ALLSKY.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.ASTROCLIENT:
+                ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ASTROCLIENTField = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in ASTROCLIENTField.Values)
+                    if (ThisInformation.FieldName != ASTROCLIENT.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            case DEVICECATEGORY.ASTROSERVER:
+                ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT> ASTROSERVERField = (ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == ThisDevice.DeviceCategory).Value;
+                foreach (INFORMATIONSTRUCT ThisInformation in ASTROSERVERField.Values)
+                    if (ThisInformation.FieldName != ASTROSERVER.NULL)
+                        InformationList.Add(CreateOutputNode(ThisInformation));
+                break;
+            default: return null;
+        }
+
+        return InformationList;
+    }
+
+    private OUTPUTSTRUCT CreateOutputNode(INFORMATIONSTRUCT Inforstructure)
+    {
+        String Value = "null";
+
+        if (Inforstructure.Value != null)
+        {
+            if (Inforstructure.Value.GetType() == typeof(Byte[]))
+                Value = Convert.ToBase64String((byte[])Inforstructure.Value);
+            else
+                Value = Inforstructure.Value.ToString();
+        }
+
+        OUTPUTSTRUCT ThisOutput = new OUTPUTSTRUCT();
+        ThisOutput.StationName = Inforstructure.StationName;
+        ThisOutput.DeviceCategory = Inforstructure.DeviceCategory;
+        ThisOutput.FieldName = Inforstructure.FieldName.ToString();
+        ThisOutput.Value = Value;
+        ThisOutput.DataType = Inforstructure.Value == null ? "null" : Inforstructure.Value.GetType().ToString().Replace("System.", "");
+        ThisOutput.UpdateTime = Inforstructure.UpdateTime == null ? "null" : Inforstructure.UpdateTime.Value.ToString();
+
+        return ThisOutput;
+    }
+
+    #endregion
+
+    #region Subscription Information
+
+    public void SubscribeInformation(DEVICENAME DeviceName, dynamic FieldName, String SessionID, Object CallBackObject)
+    {
+        ConcurrentDictionary<dynamic, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<dynamic, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Value;
+
+        if (ExistingInformation != null)
+        {
+            INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
+            if (ThisField != null)
+            {
+                ThisField.ClientSubscribe.TryAdd(SessionID, CallBackObject);
+                ReturnSubscribe(DeviceName, CallBackObject, FieldName, ThisField.Value, ThisField.UpdateTime);
+            }
+        }
+    }
+
+    private void ReturnSubscribe(DEVICENAME DeviceName, Object CallBackObject, dynamic FieldName, Object Value, DateTime? UpdateTime)
+    {
+        Task t = Task.Run(() =>
+        {
+            try
+            {
+                MethodInfo MInfo = CallBackObject.GetType().GetMethod("OnPublish");
+                MInfo.Invoke(CallBackObject, new Object[] { StationName, DeviceName, FieldName, Value, UpdateTime });
+            }
+            catch (Exception e)
+            {
+                ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Si013) Failed to return subscribe information at ReturnSubscribe see. (" + e.Message + ")");
+            }
+        });
+    }
+
+    public void UnsubscribeBySessionID(String SessionID)
+    {
+        foreach (ConcurrentDictionary<dynamic, INFORMATIONSTRUCT> ThisDevice in DeviceStroage.Values)
+            foreach (INFORMATIONSTRUCT ThisInformation in ThisDevice.Values)
+            {
+                Object Value = null;
+                ThisInformation.ClientSubscribe.TryRemove(SessionID, out Value);
+            }
+    }
+
+    public void UnsubscribeByFieldName(String SessionID, DEVICENAME DeviceName, dynamic FieldName)
+    {
+        ConcurrentDictionary<dynamic, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<dynamic, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Value;
+
+        if (ExistingInformation != null)
+        {
+            INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
+            if (ThisField != null)
+            {
+                Object Value = null;
+                ThisField.ClientSubscribe.TryRemove(SessionID, out Value);
+            }
+        }
+    }
+
+    #endregion
+}
 }
