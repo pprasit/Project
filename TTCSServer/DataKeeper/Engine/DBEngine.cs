@@ -93,11 +93,11 @@ namespace DataKeeper.Engine
             {
                 var dome_side = "";
 
-                if(Value.ToString().Equals("ASTROHEVEN_SHUTTERA_STATUS"))
+                if(FieldName.ToString().Equals("ASTROHEVEN_SHUTTERA_STATUS"))
                 {
                     dome_side = "A";
                 }
-                else if (Value.ToString().Equals("ASTROHEVEN_SHUTTERB_STATUS"))
+                else if (FieldName.ToString().Equals("ASTROHEVEN_SHUTTERB_STATUS"))
                 {
                     dome_side = "B";
                 }
@@ -164,11 +164,11 @@ namespace DataKeeper.Engine
             {
                 var dome_side = "";
 
-                if (Value.ToString().Equals("ASTROHEVEN_SHUTTERA_STATUS"))
+                if (FieldName.ToString().Equals("ASTROHEVEN_SHUTTERA_STATUS"))
                 {
                     dome_side = "A";
                 }
-                else if (Value.ToString().Equals("ASTROHEVEN_SHUTTERB_STATUS"))
+                else if (FieldName.ToString().Equals("ASTROHEVEN_SHUTTERB_STATUS"))
                 {
                     dome_side = "B";
                 }
