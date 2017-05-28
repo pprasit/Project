@@ -235,11 +235,11 @@ namespace DataKeeper.Engine
 
                     String State_Temp = Value.ToString();
 
-                    if (State_Temp.Equals("Open"))
+                    if (State_Temp.Equals("Open") || State_Temp.Equals("Opening"))
                     {
                         db.insert_dome_open(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
                     }
-                    else if (State_Temp.Equals("Fully Close") || State_Temp.Equals("Closed"))
+                    else if (State_Temp.Equals("Closed"))
                     {
                         db.insert_dome_close(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
                     }
