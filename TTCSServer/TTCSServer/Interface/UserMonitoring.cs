@@ -44,6 +44,8 @@ namespace TTCSServer.Interface
         private void GetData()
         {
             List<UserTB> UserList = UserManagement.GetAllUser();
+            if (UserList == null)
+                return;
 
             if (UserType.Text != "All Type")
                 UserList = UserList.Where(Item => Item.UserPermissionType != null ? Item.UserPermissionType.Contains(UserType.Text) : false).ToList();
