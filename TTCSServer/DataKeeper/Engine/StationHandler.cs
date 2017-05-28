@@ -233,6 +233,17 @@ namespace DataKeeper.Engine
                 {
                     db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
 
+                    String State_Temp = Value.ToString();
+
+                    if (State_Temp.Equals("Open"))
+                    {
+                        db.insert_dome_open(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
+                    }
+                    else if (State_Temp.Equals("Fully Close") || State_Temp.Equals("Closed"))
+                    {
+                        db.insert_dome_close(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
+                    }
+
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
