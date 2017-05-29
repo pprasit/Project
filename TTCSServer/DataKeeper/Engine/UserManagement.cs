@@ -123,8 +123,8 @@ namespace DataKeeper.Engine
                                 StationArr.Add("AIRFORCE");
                                 StationArr.Add("CHACHOENGSAO");
                                 StationArr.Add("NAKHONRATCHASIMA");
-                                //StationArr.Add("CHINA");
-                                //StationArr.Add("USA");
+                                StationArr.Add("CHINA");
+                                StationArr.Add("USA");
                                 //StationArr.Add("ASTROPARK");
                                 break;
                             }
