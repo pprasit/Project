@@ -201,7 +201,7 @@ namespace DataKeeper.Engine
                         await collection2.UpdateManyAsync(filter2, update2);
 
                         //DELETE TEMP TABLE
-                        await _database.DropCollectionAsync(StationName + "_" + DeviceName + "_TEMP");
+                        //await _database.DropCollectionAsync(StationName + "_" + DeviceName + "_TEMP");
                     }
                 }
             });

@@ -79,12 +79,16 @@ namespace DataKeeper.Engine
         }
 
         private static void SendScriptToHTTP()
-        {  
-            WebRequest request = WebRequest.Create("http://www.contoso.com/default.html");
-            request.Credentials = CredentialCache.DefaultCredentials;
-            WebResponse response = request.GetResponse();
+        {
+            try
+            {
+                WebRequest request = WebRequest.Create("http://www.contoso.com/default.html");
+                request.Credentials = CredentialCache.DefaultCredentials;
+                WebResponse response = request.GetResponse();
 
-            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+                Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+            }
+            catch { }
         }
 
         private static void UpdateExecutionState(STATIONNAME StationName, Object Value)
@@ -108,9 +112,10 @@ namespace DataKeeper.Engine
 
             foreach (KeyValuePair<String, ScriptTB> ScriptNode in ScriptList)
             {
-                ScriptNode.Value.ScriptState = SCRIPTSTATE.WAITINGSTATION.ToString();
-                db.SaveChanges();
+                ScriptNode.Value.ScriptState = SCRIPTSTATE.WAITINGSTATION.ToString();                
             }
+
+            db.SaveChanges();
         }
 
         public static void NewScriptFromSocket(ScriptStructure NewScriptStructure, WSConnection ScriptConnection)
