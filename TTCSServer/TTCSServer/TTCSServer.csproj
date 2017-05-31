@@ -171,6 +171,7 @@
     <None Include="domain.name.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Jquery\package.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -198,6 +199,24 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Jquery\AUTHORS.txt" />
+    <Content Include="Jquery\external\jquery\jquery.js" />
+    <Content Include="Jquery\images\ui-icons_444444_256x240.png" />
+    <Content Include="Jquery\images\ui-icons_555555_256x240.png" />
+    <Content Include="Jquery\images\ui-icons_777620_256x240.png" />
+    <Content Include="Jquery\images\ui-icons_777777_256x240.png" />
+    <Content Include="Jquery\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Jquery\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Jquery\index.html" />
+    <Content Include="Jquery\jquery-ui.css" />
+    <Content Include="Jquery\jquery-ui.js" />
+    <Content Include="Jquery\jquery-ui.min.css" />
+    <Content Include="Jquery\jquery-ui.min.js" />
+    <Content Include="Jquery\jquery-ui.structure.css" />
+    <Content Include="Jquery\jquery-ui.structure.min.css" />
+    <Content Include="Jquery\jquery-ui.theme.css" />
+    <Content Include="Jquery\jquery-ui.theme.min.css" />
+    <Content Include="Jquery\LICENSE.txt" />
     <Content Include="MainIcon.ico" />
     <Content Include="TestPage.html" />
     <None Include="Resources\delete-19.png" />
