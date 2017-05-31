@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+	<div id="DivImage">
+		<img id="ThisImage" src="" />
+	</div>
+	<div>
+		<textarea id="ImageStr" rows="4" cols="50" style="width:800px; height:100px;">
+		</textarea>
+	</div>
+	<div>
+		Active image file Name :<input id="ImageFileName" type="text" style="width:200px; height:40px;" />
+		<input id="BtnSetImageFilaName" type="button" value="Set" style="width:50px; height:40px;" />
+	</div>
+	<div>
+		Preview image download progress :<input id="PreviewDownload" type="text" style="width:200px; height:40px;" />
+	</div>
+	<div>
+		Preview image status :<input id="PreviewStatus" type="text" style="width:200px; height:40px;" />
+	</div>
+	<div>
+		Camera status :<input id="CameraStatus" type="text" style="width:200px; height:40px;" />
+	</div>
+	<div>
+		Perview image path :<input id="PerviewPath" type="text" style="width:200px; height:40px;" />
+	</div>
+	<div>
+		<table>
+			<tr>
+				<td>Width : </td>
+				<td>
+					<input id="WidthValue" value="1024" style="width:100px; height:40px;" />
+				</td>
+				<td>Height : </td>
+				<td>
+					<input id="HeightValue" value="1024" style="width:100px; height:40px;" />
+				</td>
+				<td>
+					<input id="BtnSetSize" type="button" value="Set" style="width:50px; height:40px;" />
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div>
+		<input id="BtnSub" type="button" style="width:100px; height:40px;" value="Sub Image" />
+		<input id="BtnExpose" type="button" style="width:100px; height:40px;" value="Expose" />
+		<input id="BtnSendScript" type="button" style="width:100px; height:40px;" value="Script" />
+	</div>
+	<script src="Jquery/external/jquery/jquery.js"></script>
+	<script type="text/javascript">
+
+		var StationName = "Airforce";
+
+		connect();
+		function connect() {
+			ws = new WebSocket("ws://192.168.161.1:8096");
+
+		    ws.onopen = function () {
+				SubscribeInformation();
+			};
+
+			ws.onmessage = function (evt) {
+				var JSONData = jQuery.parseJSON(evt.data);
+				InformationIdentification(JSONData);
+			};
+			ws.onclose = function () {
+				//alert("Connection is closed...");
+			};
+		};
+
+		function SubscribeInformation() {
+		    ws.send("Authentication&Username=Pakawat&Password=P@ssw0rd");
+		    //alert("Auten");
+			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_CCD_CAMERASTATUS");
+			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_DOWNLOAD_PROGRESS");
+			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_DOWNLOAD_STATUS");
+			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_BASE64");
+		}
+
+		function InformationIdentification(Data) {
+		    if (Data.FieldName == "ASTROSERVER_ALLSCRIPTBLOCK") {
+		        $("#ImageStr").text(Data.Value)
+				//$("#ImageFileName").val(Data.Value);
+				//var Bse64_string = Data.Value;
+				//$("#ImageStr").html(Bse64_string);
+				//alert(Data.Value)
+				//$('#ThisImage').attr('src', 'data:image/jpg;base64,' + Data.Value);
+		    }
+		    //else if (Data.FieldName == "IMAGING_PREVIEW_DOWNLOAD_PROGRESS")
+			//	$("#PreviewDownload").val(Data.Value);
+			//else if (Data.FieldName == "IMAGING_CCD_CAMERASTATUS")
+			//	$("#CameraStatus").val(Data.Value);
+			//else if (Data.FieldName == "IMAGING_PREVIEW_DOWNLOAD_STATUS")
+			//	$("#PreviewStatus").val(Data.Value);
+			//else if (Data.FieldName == "IMAGING_PREVIEW_BASE64") {
+			//	//$('#ThisImage').attr('src', "http://192.168.70.210/uploadimage/" + Data.Value);
+			//	$('#ThisImage').attr('src', 'data:image/jpg;base64,' + Data.Value);
+			//}
+		}
+
+		function formatDate(date) {
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var second = date.getSeconds();
+			minutes = minutes < 10 ? '0' + minutes : minutes;
+			var strTime = hours + ':' + minutes + ':' + second;
+			return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + strTime;
+		}
+
+		$("#BtnSendScript").click(function () {
+		    //ws.send("Subscribe&Station=ASTROSERVER&DeviceName=ASTROPARK_SERVER&FieldName=ASTROSERVER_ALLSCRIPTBLOCK");			
+
+			var now = new Date;
+			var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());						
+
+			var HourNow = now.getUTCHours();
+			var dateStart1 = epochToDate(now.setUTCHours(HourNow - 1))
+			var dateEnd1 = epochToDate(now.setUTCHours(HourNow + 1))
+
+			var dateStart2 = epochToDate(now.setUTCHours(HourNow + 1))
+			var dateEnd2 = epochToDate(now.setUTCHours(HourNow + 2))
+			
+			//alert(now.getUTCHours() - 1);
+
+			//dateStart1.setHours(dateStart1.getHours() - 1);
+			//dateEnd1.setHours(dateEnd1.getHours() + 1);				
+
+			//dateStart1 = Date.UTC(dateStart1.getUTCFullYear(), dateStart1.getUTCMonth(), dateStart1.getUTCDate(), dateStart1.getUTCHours(), dateStart1.getUTCMinutes(), dateStart1.getUTCSeconds(), dateStart1.getUTCMilliseconds());
+			//dateEnd1 = Date.UTC(dateEnd1.getUTCFullYear(), dateEnd1.getUTCMonth(), dateEnd1.getUTCDate(), dateEnd1.getUTCHours(), dateEnd1.getUTCMinutes(), dateEnd1.getUTCSeconds(), dateEnd1.getUTCMilliseconds());
+
+			//var dateStart2 = new Date().getTime();
+			//var dateEnd2 = new Date().getTime();
+			//dateStart2.setHours(dateStart2.getHours() +1);
+			//dateEnd2.setHours(dateEnd2.getHours() + 2);
+
+			//dateStart2 = Date.UTC(dateStart2.getUTCFullYear(), dateStart2.getUTCMonth(), dateStart2.getUTCDate(), dateStart2.getUTCHours(), dateStart2.getUTCMinutes(), dateStart2.getUTCSeconds(), dateStart2.getUTCMilliseconds());
+			//dateEnd2 = Date.UTC(dateEnd2.getUTCFullYear(), dateEnd2.getUTCMonth(), dateEnd2.getUTCDate(), dateEnd2.getUTCHours(), dateEnd2.getUTCMinutes(), dateEnd2.getUTCSeconds(), dateEnd2.getUTCMilliseconds());
+						
+			
+
+			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=1&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=5&StationName=AIRFORCE&DeviceName=AIRFORCE_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
+			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=2&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=10&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=14750");
+			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=3&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=15&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_MOUNT_SLEWAZMALT&ParameterName=50.00&ParameterName=45.00");
+
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=1&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=5&StationName=AIRFORCE&DeviceName=AIRFORCE_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=2&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=10&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=200");
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=3&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=15&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_MOUNT_SLEWAZMALT&ParameterName=70.00&ParameterName=100.00");
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=4&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=5&StationName=AIRFORCE&DeviceName=AIRFORCE_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=true");
+		});
+
+		function epochToDate(t) {
+			function pad2(n) {
+				return n > 9 ? n : '0' + n;
+			}
+			var d = new Date(t);
+			var year = d.getUTCFullYear();
+			var month = d.getUTCMonth() + 1;  // months start at zero
+			var day = d.getUTCDate();
+			var Hour = d.getUTCHours();
+			var Min = d.getUTCMinutes();
+			var Sec = d.getUTCSeconds();
+			var MiliSec = d.getUTCMilliseconds();
+
+			return pad2(month) + '/' + pad2(day) + '/'  + year + " " + Hour + ":" + Min + ":" + Sec + "." + MiliSec;
+		}
+
+		$("#BtnExpose").click(function () {
+			ws.send("Set&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&CommandName=IMAGING_CCD_EXPOSE&ParameterName=" + $("#ImageFileName").val() + "&ParameterName=1.0&ParameterName=true");
+		});
+
+		$("#BtnSetSize").click(function () {
+			var Width = $("#WidthValue").val();
+			var Height = $("#HeightValue").val();
+
+			ws.send("Set&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&CommandName=IMAGING_IMAGE_DIAPLAY_SIZE&ParameterName=" + Width + "&ParameterName=" + Height);
+		});
+
+		$("#BtnSetImageFilaName").click(function () {
+			var ImageName = $("#ImageFileName").val();
+
+			ws.send("Set&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&CommandName=IMAGING_IMAGE_FILENAME&ParameterName=" + ImageName);
+		});
+	</script>
+</body>
+</html>

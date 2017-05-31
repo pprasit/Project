@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -66,9 +67,24 @@ namespace DataKeeper.Engine
             switch (FieldName)
             {
                 case ASTROCLIENT.ASTROCLIENT_LASTESTEXECTIONCOMMAND: break;
-                case ASTROCLIENT.ASTROCLIENT_LASTESTEXECUTIONSCRIPT_STATUS: UpdateExecutionState(StationName, Value); break;
-                case ASTROCLIENT.ASTROCLIENT_LASTESTSCRIPT_RECIVED: SetStationStateToWaitingStation(Value); break;
+                case ASTROCLIENT.ASTROCLIENT_LASTESTEXECUTIONSCRIPT_STATUS:
+                    {
+                        SendScriptToHTTP();
+                        UpdateExecutionState(StationName, Value); break;
+                    }
+                case ASTROCLIENT.ASTROCLIENT_LASTESTSCRIPT_RECIVED:
+                    SetStationStateToWaitingStation(Value);
+                    break;
             }
+        }
+
+        private static void SendScriptToHTTP()
+        {  
+            WebRequest request = WebRequest.Create("http://www.contoso.com/default.html");
+            request.Credentials = CredentialCache.DefaultCredentials;
+            WebResponse response = request.GetResponse();
+
+            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
         }
 
         private static void UpdateExecutionState(STATIONNAME StationName, Object Value)
