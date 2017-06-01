@@ -337,7 +337,37 @@ namespace DataKeeper.Engine
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
                 {
-                    db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
+                    Value = Value.ToString().Trim();
+
+                    var Unit = "";
+                    if (FieldName.ToString() == "SQM_SKYBRIGNESS_DATA")
+                    {
+                        Unit = "m";
+                        Value = Value.ToString().Substring(0, Value.ToString().Length - 1);
+                    }
+                    else if(FieldName.ToString() == "SQM_FREQUENCYOFSENSOR_DATA")
+                    {
+                        Unit = "Hz";
+                        Value = Value.ToString().Substring(0, Value.ToString().Length - 2);
+                    }
+                    else if (FieldName.ToString() == "SQM_PREIODKHZ_DATA")
+                    {
+                        Unit = "c";
+                        Value = Value.ToString().Substring(0, Value.ToString().Length - 1);
+                    }
+                    else if (FieldName.ToString() == "SQM_PERIODMS_DATA")
+                    {
+                        Unit = "s";
+                        Value = Value.ToString().Substring(0, Value.ToString().Length - 1);
+                    }
+                    else if (FieldName.ToString() == "SQM_TEMPERATURE_DATA")
+                    {
+                        Unit = "C";
+                        Value = Value.ToString().Substring(0, Value.ToString().Length - 1);
+                    }
+
+
+                    db.insert_unit(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), Unit.ToString(), DataTimestamp);
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
