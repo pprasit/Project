@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.Text;
 using DataKeeper.Engine;
 using DataKeeper.Engine.Command;
+using DataKeeper;
 
 namespace TTCSConnection
 {
@@ -62,6 +63,9 @@ namespace TTCSConnection
 
         [OperationContract]
         Boolean AddASTROCLIENT(STATIONNAME StationName, DEVICENAME DeviceName, ASTROCLIENT[] FieldName, Object[] Value, DateTime[] DateTime);
+
+        [OperationContract]
+        Boolean UpdateScriptFromStation(String BlockID, String BlockName, String StationName, DateTime ExecutionTimeStart, DateTime ExecutionTimeEnd, int CommandCounter, int ExecutionNumber, String DeviceName, String DeviceCategory, String CommandName, String Owner, int DelayTime, String Parameter, String ScriptState);
 
         [OperationContract]
         void AddASTROSERVER(STATIONNAME StationName, DEVICENAME DeviceName, ASTROSERVER[] FieldName, Object[] Value, DateTime[] DateTime);

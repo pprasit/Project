@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataKeeper.Engine
@@ -9,6 +10,7 @@ namespace DataKeeper.Engine
     public static class DatabaseSynchronization
     {
         private static Entities db;
+        private static Boolean IsSaving = false;
 
         public static List<Object[]> SyncDataFromServer(String StationName, String TableName)
         {
@@ -62,6 +64,12 @@ namespace DataKeeper.Engine
 
                 return ValueList;
             }
+        }
+
+        public static List<UserTB> GetAllUser()
+        {
+            db = new Entities();
+            return db.UserTBs.ToList();
         }
 
         #region User
@@ -280,6 +288,54 @@ namespace DataKeeper.Engine
             {
                 String Message = e.Message;
                 return null;
+            }
+        }
+
+        #endregion
+
+        #region ScriptHandler
+
+        public static List<ScriptTB> GetScript()
+        {
+            db = new Entities();
+            return db.ScriptTBs.ToList();
+        }
+
+        public static void InsertScript(ScriptTB ThisScript)
+        {
+            db.ScriptTBs.Add(ThisScript);
+        }
+
+        public static void DeleteScript(ScriptTB ThisScript)
+        {
+            db.ScriptTBs.Remove(ThisScript);
+        }
+
+        public static void DeleteAllScript()
+        {
+            db.ScriptTBs.RemoveRange(db.ScriptTBs);
+        }
+
+        public static void ScriptSaveChange(Boolean IsSync)
+        {
+            try
+            {
+                if (!IsSaving)
+                {
+                    IsSaving = true;
+
+                    if (IsSync)
+                        db.SaveChanges();
+                    else
+                        db.SaveChangesAsync();
+
+                    IsSaving = false;
+                }
+            }
+            catch {
+                Thread.Sleep(10);
+                ScriptSaveChange(IsSync);
+                IsSaving = false;
             }
         }
 

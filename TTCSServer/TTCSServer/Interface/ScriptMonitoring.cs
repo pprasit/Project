@@ -20,15 +20,49 @@ namespace TTCSServer.Interface
         {
             InitializeComponent();
             AddScriptToGrid();
+            SetDataGridViewOrder();
 
             ScriptLifeTime.Text = Properties.Settings.Default.ScriptLifeTimeValue.ToString();
             ScriptManager.ScriptLifeTimeValue = Properties.Settings.Default.ScriptLifeTimeValue;
         }
 
+        private void SetDataGridViewOrder()
+        {
+            this.ScriptGrid.Sort(this.ScriptGrid.Columns[6], ListSortDirection.Ascending);
+        }
+
+        public void RemoveScriptFromGrid(ScriptTB ThisScript)
+        {
+            ThreadRemoveDataGridRow(ThisScript.BlockID, ThisScript.ExecutionNumber);
+        }
+
+        public void AddSingleScriptToGrid(ScriptTB ThisScript)
+        {
+            Object[] ObjectValue = new Object[] {
+                DeletePNG,
+                ThisScript.BlockID,
+                ThisScript.BlockName,
+                ThisScript.ExecutionNumber,
+                ThisScript.CommandCounter,
+                ThisScript.StationName,
+                ThisScript.ExecutionTimeStart.Value.ToLocalTime(),
+                ThisScript.ExecutionTimeEnd.Value.ToLocalTime(),
+                ThisScript.DeviceName,
+                ThisScript.DeviceCategory,
+                ThisScript.CommandName,
+                ThisScript.Owner,
+                ThisScript.Parameter,
+                ThisScript.ScriptState,
+                false
+            };
+
+            ThreadAddDataGridRow(ObjectValue);
+        }
+
         public void AddScriptToGrid()
         {
             List<ScriptTB> AllScript = ScriptManager.GetScriptList();
-            AllScript = AllScript.OrderBy(Item => Item.BlockID).ThenBy(Item => Item.ExecutionNumber).ToList();
+            AllScript = AllScript.OrderBy(Item => Item.ExecutionTimeStart).ThenBy(Item => Item.BlockID).ThenBy(Item => Item.ExecutionNumber).ToList();
 
             ThreadClearDataGridRow();
             foreach (ScriptTB ThisScript in AllScript)
@@ -55,27 +89,57 @@ namespace TTCSServer.Interface
             }
         }
 
-        public void UpdateScriptGrid(String BlockID, int ExecutionNumber, String ScriptState)
+        public void UpdateScriptGrid(ScriptTB ThisScript)
         {
-            ThreadModifyDataGridRow(BlockID, ExecutionNumber, ScriptState, 13);
+            ThreadModifyDataGridRow(ThisScript);
+        }
+
+        //------------------------------------------------------------Thread Remove Row DataGridView Handler----------------------------------------------------------------
+
+        private void ThreadRemoveDataGridRow(String BlockID, int ExecutionNumber)
+        {
+            if (ScriptGrid.InvokeRequired)
+                ScriptGrid.Invoke(new MethodInvoker(delegate { ActionRemoveDataGridRow(BlockID, ExecutionNumber); }));
+            else
+                ActionRemoveDataGridRow(BlockID, ExecutionNumber);
+        }
+
+        private void ActionRemoveDataGridRow(String BlockID, int ExecutionNumber)
+        {
+            for (int i = 0; i < ScriptGrid.RowCount; i++)
+                if (ScriptGrid[1, i].Value.ToString() == BlockID && ScriptGrid[3, i].Value.ToString() == ExecutionNumber.ToString())
+                {
+                    ScriptGrid.Rows.RemoveAt(i);
+                    break;
+                }
         }
 
         //------------------------------------------------------------Thread Modify Row DataGridView Handler----------------------------------------------------------------
 
-        private void ThreadModifyDataGridRow(String BlockID, int ExecutionNumbere, String Value, int ColumnNumber)
+        private void ThreadModifyDataGridRow(ScriptTB ThisScript)
         {
             if (ScriptGrid.InvokeRequired)
-                ScriptGrid.Invoke(new MethodInvoker(delegate { ActionModifyDataGridRow(BlockID, ExecutionNumbere, Value, ColumnNumber); }));
+                ScriptGrid.Invoke(new MethodInvoker(delegate { ActionModifyDataGridRow(ThisScript); }));
             else
-                ActionModifyDataGridRow(BlockID, ExecutionNumbere, Value, ColumnNumber);
+                ActionModifyDataGridRow(ThisScript);
         }
 
-        private void ActionModifyDataGridRow(String BlockID, int ExecutionNumbere, String Value, int ColumnNumber)
+        private void ActionModifyDataGridRow(ScriptTB ThisScript)
         {
             for (int i = 0; i < ScriptGrid.RowCount; i++)
-                if (ScriptGrid[1, i].Value.ToString() == BlockID && Convert.ToInt32(ScriptGrid[3, i].Value) == ExecutionNumbere)
+                if (ScriptGrid[1, i].Value.ToString() == ThisScript.BlockID && Convert.ToInt32(ScriptGrid[3, i].Value) == ThisScript.ExecutionNumber)
                 {
-                    ScriptGrid[ColumnNumber, i].Value = Value;
+                    ScriptGrid[2, i].Value = ThisScript.BlockName;
+                    ScriptGrid[4, i].Value = ThisScript.CommandCounter;
+                    ScriptGrid[5, i].Value = ThisScript.StationName;
+                    ScriptGrid[6, i].Value = ThisScript.ExecutionTimeStart.Value.ToLocalTime();
+                    ScriptGrid[7, i].Value = ThisScript.ExecutionTimeEnd.Value.ToLocalTime();
+                    ScriptGrid[8, i].Value = ThisScript.DeviceName;
+                    ScriptGrid[9, i].Value = ThisScript.DeviceCategory;
+                    ScriptGrid[10, i].Value = ThisScript.CommandName;
+                    ScriptGrid[11, i].Value = ThisScript.Owner;
+                    ScriptGrid[12, i].Value = ThisScript.Parameter;
+                    ScriptGrid[13, i].Value = ThisScript.ScriptState;
                     break;
                 }
         }

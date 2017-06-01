@@ -53,11 +53,13 @@
 	<script src="Jquery/external/jquery/jquery.js"></script>
 	<script type="text/javascript">
 
-		var StationName = "Airforce";
+		//var StationName = "AIRFORCE";
+		var StationName = "ASTROPARK";
 
 		connect();
 		function connect() {
-			ws = new WebSocket("ws://192.168.2.110:8096");
+			//ws = new WebSocket("ws://192.168.2.110:8096");
+			ws = new WebSocket("ws://192.168.161.1:8096");
 
 			ws.onopen = function () {
 			    $("#ImageFileName").val("Connected");
@@ -74,7 +76,7 @@
 		};
 
 		function SubscribeInformation() {
-		    ws.send("Authentication&Username=Pakawat&Password=P@ssw0rd");
+			ws.send("Authentication&Username=Dan&Password=Dan");
 		    //alert("Auten");
 			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_CCD_CAMERASTATUS");
 			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_DOWNLOAD_PROGRESS");
@@ -143,14 +145,14 @@
 						
 			
 
-			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=1&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=5&StationName=AIRFORCE&DeviceName=AIRFORCE_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
-			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=2&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=10&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=14750");
-			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=3&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=15&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_MOUNT_SLEWAZMALT&ParameterName=50.00&ParameterName=45.00");
+			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=1&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=5&StationName=" + StationName + "&DeviceName=" + StationName + "_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
+			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=2&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=10&StationName=" + StationName + "&DeviceName=" + StationName + "_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=14750");
+			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=3&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=15&StationName=" + StationName + "&DeviceName=" + StationName + "_TS700MM&CommandName=TS700MM_MOUNT_SLEWAZMALT&ParameterName=50.00&ParameterName=45.00");
 
-			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=1&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=5&StationName=AIRFORCE&DeviceName=AIRFORCE_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
-			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=2&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=10&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=200");
-			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=3&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=15&StationName=AIRFORCE&DeviceName=AIRFORCE_TS700MM&CommandName=TS700MM_MOUNT_SLEWAZMALT&ParameterName=70.00&ParameterName=100.00");
-			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=4&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=5&StationName=AIRFORCE&DeviceName=AIRFORCE_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=true");
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=1&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=5&StationName=" + StationName + "&DeviceName=" + StationName + "_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=2&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=10&StationName=" + StationName + "&DeviceName=" + StationName + "_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=200");
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=3&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=15&StationName=" + StationName + "&DeviceName=" + StationName + "_TS700MM&CommandName=TS700MM_MOUNT_SLEWAZMALT&ParameterName=70.00&ParameterName=100.00");
+			ws.send("Script&BlockName=EAKBLOCK2&Owner=EAK_USER&CommandCounter=4&ExecutionNumber=4&ExecutionTimeStart=" + dateStart2 + "&ExecutionTimeEnd=" + dateEnd2 + "&DelayTime=5&StationName=" + StationName + "&DeviceName=" + StationName + "_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=true");
 		});
 
 		function epochToDate(t) {

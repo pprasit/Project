@@ -167,6 +167,12 @@ namespace TTCSConnection
             return true;
         }
 
+        public Boolean UpdateScriptFromStation(String BlockID, String BlockName, String StationName, DateTime ExecutionTimeStart, DateTime ExecutionTimeEnd,int CommandCounter, int ExecutionNumber, String DeviceName, String DeviceCategory, String CommandName, String Owner, int DelayTime, String Parameter, String ScriptState)
+        {
+            ScriptManager.UpdateScriptFromStation(BlockID, BlockName, StationName, ExecutionTimeStart, ExecutionTimeEnd, CommandCounter, ExecutionNumber, DeviceName, DeviceCategory, CommandName, Owner, DelayTime, Parameter, ScriptState);
+            return true;
+        }
+
         public void AddASTROSERVER(STATIONNAME StationName, DEVICENAME DeviceName, ASTROSERVER[] FieldName, Object[] Value, DateTime[] DateTime)
         {
             for (int i = 0; i < FieldName.Count(); i++)

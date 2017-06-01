@@ -13,7 +13,7 @@ using System.Web.Script.Serialization;
 
 namespace DataKeeper.Engine
 {
-    public enum SCRIPTSTATE { WAITINGSERVER, WAITINGSTATION, SENDINGTOSTATION, EXECUTING, CANCELED, EXECUTED, ENDTIMEPASSED }
+    public enum SCRIPTSTATE { WAITINGSERVER, WAITINGSTATION, SENDINGTOSTATION, EXECUTING, CANCELED, EXECUTED, ENDTIMEPASSED, UPDATED }
 
     public class ScriptBuffer
     {
@@ -43,15 +43,14 @@ namespace DataKeeper.Engine
     {
         public static Double ScriptLifeTimeValue = 2.0;
 
-        private static Entities db;
-        private static ConcurrentQueue<ScriptBuffer> ScriptBuffer = null;
+        private static ConcurrentQueue<ScriptBuffer> NewScriptBuffer = null;
         private static ConcurrentDictionary<String, ScriptTB> ScriptDBBuffer = null;
 
         private static Object ScriptMonitoring = null;
 
         public static void CreateScriptPool()
         {
-            ScriptBuffer = new ConcurrentQueue<ScriptBuffer>();
+            NewScriptBuffer = new ConcurrentQueue<ScriptBuffer>();
             ScriptDBBuffer = new ConcurrentDictionary<String, ScriptTB>();
             LoadScriptFromDB();
             ReadScriptFromBuffer();
@@ -99,10 +98,14 @@ namespace DataKeeper.Engine
             String ScriptState = ValueArr[2];
 
             ScriptTB ScriptDB = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockID == BlockID && Item.Value.ExecutionNumber == ExecutionNumber).Value;
+
+            if (ScriptDB == null)
+                return;
+
             ScriptDB.ScriptState = ScriptState;
 
-            db.SaveChanges();
-            UpdateScriptToMonitoring();
+            DatabaseSynchronization.ScriptSaveChange(true);
+            UpdateScriptToMonitoring(ScriptDB);
         }
 
         private static void SetStationStateToWaitingStation(Object ScriptBlockID)
@@ -112,10 +115,11 @@ namespace DataKeeper.Engine
 
             foreach (KeyValuePair<String, ScriptTB> ScriptNode in ScriptList)
             {
-                ScriptNode.Value.ScriptState = SCRIPTSTATE.WAITINGSTATION.ToString();                
+                ScriptNode.Value.ScriptState = SCRIPTSTATE.WAITINGSTATION.ToString();
+                UpdateScriptToMonitoring(ScriptNode.Value);
             }
 
-            db.SaveChanges();
+            DatabaseSynchronization.ScriptSaveChange(true);
         }
 
         public static void NewScriptFromSocket(ScriptStructure NewScriptStructure, WSConnection ScriptConnection)
@@ -138,13 +142,12 @@ namespace DataKeeper.Engine
             NewBuffer.Script.StationName = NewScriptStructure.StationName.ToString();
             NewBuffer.WSConnection = ScriptConnection;
 
-            ScriptBuffer.Enqueue(NewBuffer);
+            NewScriptBuffer.Enqueue(NewBuffer);
         }
 
         public static void LoadScriptFromDB()
         {
-            db = new Entities();
-            List<ScriptTB> ScriptList = db.ScriptTBs.ToList();
+            List<ScriptTB> ScriptList = DatabaseSynchronization.GetScript();
 
             foreach (ScriptTB ThisScript in ScriptList)
                 ScriptDBBuffer.TryAdd(ThisScript.BlockID + ThisScript.ExecutionNumber, ThisScript);
@@ -153,8 +156,8 @@ namespace DataKeeper.Engine
         public static void RemoveAllScriptDB()
         {
             ScriptDBBuffer.Clear();
-            db.ScriptTBs.RemoveRange(db.ScriptTBs);
-            db.SaveChanges();
+            DatabaseSynchronization.DeleteAllScript();
+            DatabaseSynchronization.ScriptSaveChange(true);
         }
 
         public static Boolean RemoveScript(String BlockID, int ExecutionNumber)
@@ -163,8 +166,8 @@ namespace DataKeeper.Engine
             {
                 ScriptTB ThisBuffer = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockID == BlockID && Item.Value.ExecutionNumber == ExecutionNumber).Value;
                 ScriptDBBuffer.TryRemove(ThisBuffer.BlockID + ThisBuffer.ExecutionNumber, out ThisBuffer);
-                db.ScriptTBs.Remove(db.ScriptTBs.FirstOrDefault(Item => Item.BlockID == BlockID && Item.ExecutionNumber == ExecutionNumber));
-                db.SaveChanges();
+                DatabaseSynchronization.DeleteScript(ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockID == BlockID && Item.Value.ExecutionNumber == ExecutionNumber).Value);
+                DatabaseSynchronization.ScriptSaveChange(true);
 
                 return true;
             }
@@ -186,38 +189,53 @@ namespace DataKeeper.Engine
                 while (true)
                 {
                     ScriptBuffer ThisBuffer = null;
-                    if (ScriptBuffer.TryDequeue(out ThisBuffer))
+                    if (NewScriptBuffer.TryDequeue(out ThisBuffer))
                     {
-                        ScriptTB ExistingScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockName == ThisBuffer.Script.BlockName).Value;
+                        ScriptTB ExistingScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockName == ThisBuffer.Script.BlockName && Item.Value.ScriptState != "EXECUTED").Value;
                         if (ExistingScript == null)  //New block name
                         {
                             ThisBuffer.Script.BlockID = TTCSHelper.GenNewID();
-                            ExistingScript = ThisBuffer.Script;
-                            ExistingScript.ScriptState = "CREATED";
+                            ThisBuffer.Script.ScriptState = "CREATED";
                             ScriptDBBuffer.TryAdd(ThisBuffer.Script.BlockID + ThisBuffer.Script.ExecutionNumber, ThisBuffer.Script);
-                            db.ScriptTBs.Add(ThisBuffer.Script);
-                        }
-                        else  //Existing Block name
-                        {
-                            ScriptTB ExistingBlockScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockName == ThisBuffer.Script.BlockName && Item.Value.ExecutionNumber == ThisBuffer.Script.ExecutionNumber).Value;
 
-                            if (ExistingBlockScript == null)  //New execution number
+                            DatabaseSynchronization.InsertScript(ThisBuffer.Script);
+                            AddScriptToMonitoring(ThisBuffer.Script);
+                        }
+                        else if (ExistingScript.ScriptState != "EXECUTING") //Existing block name
+                        {
+                            ScriptTB ExistingBlockScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockName == ThisBuffer.Script.BlockName && Item.Value.ExecutionNumber == ThisBuffer.Script.ExecutionNumber && Item.Value.ScriptState != "EXECUTED").Value;
+
+                            if (ExistingBlockScript == null)  //Add new script to the same BlockName
                             {
                                 ExistingBlockScript = ThisBuffer.Script;
                                 ExistingBlockScript.BlockID = ExistingScript.BlockID;
-                                ExistingBlockScript.ScriptState = "CREATED";
                                 ScriptDBBuffer.TryAdd(ExistingBlockScript.BlockID + ExistingBlockScript.ExecutionNumber, ExistingBlockScript);
-                                db.ScriptTBs.Add(ExistingBlockScript);
+
+                                DatabaseSynchronization.InsertScript(ExistingBlockScript);
+                                AddScriptToMonitoring(ExistingBlockScript);
                             }
                             else
                             {
-                                ExistingScript = ThisBuffer.Script;
-                                ExistingScript.ScriptState = "CREATED";
+                                if (!IsEqualScript(ExistingBlockScript, ThisBuffer.Script))  //Update existing BlockName
+                                {
+                                    ExistingBlockScript.CommandCounter = ThisBuffer.Script.CommandCounter;
+                                    ExistingBlockScript.CommandName = ThisBuffer.Script.CommandName;
+                                    ExistingBlockScript.DelayTime = ThisBuffer.Script.DelayTime;
+                                    ExistingBlockScript.DeviceCategory = ThisBuffer.Script.DeviceCategory;
+                                    ExistingBlockScript.DeviceName = ThisBuffer.Script.DeviceName;
+                                    ExistingBlockScript.ExecutionTimeEnd = ThisBuffer.Script.ExecutionTimeEnd;
+                                    ExistingBlockScript.ExecutionTimeStart = ThisBuffer.Script.ExecutionTimeStart;
+                                    ExistingBlockScript.Owner = ThisBuffer.Script.Owner;
+                                    ExistingBlockScript.Parameter = ThisBuffer.Script.Parameter;
+                                    ExistingBlockScript.ScriptState = "CREATED";
+                                    ExistingBlockScript.StationName = ThisBuffer.Script.StationName;
+
+                                    UpdateScriptToMonitoring(ExistingBlockScript);
+                                }
                             }
                         }
 
-                        db.SaveChanges();
-                        UpdateScriptToMonitoring();
+                        DatabaseSynchronization.ScriptSaveChange(true);
                     }
 
                     ResponseToClient(ThisBuffer);
@@ -227,6 +245,41 @@ namespace DataKeeper.Engine
                     Thread.Sleep(10);
                 }
             });
+        }
+
+        private static Boolean IsEqualScript(ScriptTB OlbScript, ScriptTB NewScript)
+        {
+            if (OlbScript.CommandCounter != NewScript.CommandCounter)
+                return false;
+
+            if (OlbScript.CommandName != NewScript.CommandName)
+                return false;
+
+            if (OlbScript.DelayTime != NewScript.DelayTime)
+                return false;
+
+            if (OlbScript.DeviceCategory != NewScript.DeviceCategory)
+                return false;
+
+            if (OlbScript.DeviceName != NewScript.DeviceName)
+                return false;
+
+            if (OlbScript.ExecutionTimeEnd != NewScript.ExecutionTimeEnd)
+                return false;
+
+            if (OlbScript.ExecutionTimeStart != NewScript.ExecutionTimeStart)
+                return false;
+
+            if (OlbScript.Owner != NewScript.Owner)
+                return false;
+
+            if (OlbScript.Parameter != NewScript.Parameter)
+                return false;
+
+            if (OlbScript.StationName != NewScript.StationName)
+                return false;
+
+            return true;
         }
 
         private static void RemoveExpireScript()
@@ -241,12 +294,23 @@ namespace DataKeeper.Engine
                     ScriptDBBuffer.TryRemove(ThisScript.BlockID + ThisScript.ExecutionNumber, out TempScript);
 
                     IsRemove = true;
-                    UpdateScriptToMonitoring();
+                    RemoveScriptToMonitoring(TempScript);
                 }
             }
 
             if (IsRemove)
-                db.SaveChanges();
+                DatabaseSynchronization.ScriptSaveChange(true);
+        }
+
+        public static void UpdateScriptFromStation(String BlockID, String BlockName, String StationName, DateTime ExecutionTimeStart, DateTime ExecutionTimeEnd, int CommandCounter, int ExecutionNumber, String DeviceName, String DeviceCategory, String CommandName, String Owner, int DelayTime, String Parameter, String ScriptState)
+        {
+            ScriptTB ExistingScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockID == BlockID && Item.Value.ExecutionNumber == ExecutionNumber).Value;
+            if (ExistingScript != null)
+            {
+                ExistingScript.ScriptState = ScriptState;
+                UpdateScriptToMonitoring(ExistingScript);
+                DatabaseSynchronization.ScriptSaveChange(true);
+            }
         }
 
         private static void ResponseToClient(ScriptBuffer ThisBuffer)
@@ -271,19 +335,23 @@ namespace DataKeeper.Engine
                 if (WaitingScriptList.Count > 0)
                 {
                     Boolean IsSend = false;
-                    foreach (ScriptTB WaitingScript in WaitingScriptList)
+                    while (WaitingScriptList.Count > 0)
                     {
                         String Message = "";
-                        Boolean IsAllScriptRecived = IsBlockComplete(WaitingScript, out Message);
+
+                        Boolean IsAllScriptRecived = IsBlockComplete(WaitingScriptList[0], out Message);
                         if (IsAllScriptRecived)
                         {
+                            SendScriptToStation(WaitingScriptList[0]);
+                            WaitingScriptList.RemoveAll(Item => Item.BlockID == WaitingScriptList[0].BlockID);
                             IsSend = true;
-                            SendScriptToStation(WaitingScript);
                         }
+                        else
+                            WaitingScriptList.RemoveAt(0);
                     }
 
                     if (IsSend)
-                        db.SaveChanges();
+                        DatabaseSynchronization.ScriptSaveChange(true);
                 }
             }
         }
@@ -299,7 +367,7 @@ namespace DataKeeper.Engine
                 DestinationStation = TTCSHelper.StationStrConveter(ThisScript.StationName);
                 ThisScript.ScriptState = SCRIPTSTATE.WAITINGSERVER.ToString();
 
-                UpdateScriptToMonitoring(ThisScript.BlockID, ThisScript.ExecutionNumber, ThisScript.ScriptState.ToString());
+                UpdateScriptToMonitoring(ThisScript);
             }
 
             StationHandler ThisStation = AstroData.GetStationObject(DestinationStation);
@@ -309,8 +377,20 @@ namespace DataKeeper.Engine
                 AstroData.ScriptHandler(DestinationStation, StructureArr);
 
                 foreach (ScriptTB ThisScript in ScriptArr)
+                {
                     ThisScript.ScriptState = SCRIPTSTATE.SENDINGTOSTATION.ToString();
+                    UpdateScriptToMonitoring(ThisScript);
+                }
             }
+        }
+
+        private static Boolean BlockExecuteCompleted(String BlockID)
+        {
+            ScriptTB ThisScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockID == BlockID && Item.Value.ScriptState != "EXECUTED").Value;
+            if (ThisScript != null)
+                return false;
+
+            return true;
         }
 
         private static Boolean IsBlockComplete(ScriptTB ScriptToCheck, out String Message)
@@ -348,21 +428,30 @@ namespace DataKeeper.Engine
             return Missing.ToArray();
         }
 
-        private static void UpdateScriptToMonitoring(String BlockID, int ExecutionNumber, String ScriptState)
+        private static void UpdateScriptToMonitoring(ScriptTB ThisScript)
         {
             if (ScriptMonitoring != null)
             {
                 MethodInfo MInfo = ScriptMonitoring.GetType().GetMethod("UpdateScriptGrid");
-                MInfo.Invoke(ScriptMonitoring, new Object[] { BlockID, ExecutionNumber, ScriptState });
+                MInfo.Invoke(ScriptMonitoring, new Object[] { ThisScript });
             }
         }
 
-        private static void UpdateScriptToMonitoring()
+        private static void AddScriptToMonitoring(ScriptTB NewScript)
         {
             if (ScriptMonitoring != null)
             {
-                MethodInfo MInfo = ScriptMonitoring.GetType().GetMethod("AddScriptToGrid");
-                MInfo.Invoke(ScriptMonitoring, new Object[] { });
+                MethodInfo MInfo = ScriptMonitoring.GetType().GetMethod("AddSingleScriptToGrid");
+                MInfo.Invoke(ScriptMonitoring, new Object[] { NewScript });
+            }
+        }
+
+        private static void RemoveScriptToMonitoring(ScriptTB NewScript)
+        {
+            if (ScriptMonitoring != null)
+            {
+                MethodInfo MInfo = ScriptMonitoring.GetType().GetMethod("RemoveScriptFromGrid");
+                MInfo.Invoke(ScriptMonitoring, new Object[] { NewScript });
             }
         }
 

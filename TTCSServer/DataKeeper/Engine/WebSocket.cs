@@ -89,23 +89,8 @@ namespace DataKeeper.Interface
         private static DataGridView TTCSLogGrid = null;
         private static int VerifyConnectionTimout = 10000;
         private static Object ObjMainPage = null;
-        private static List<UserInfomation> UserList = null;
+        private static List<UserTB> UserList = null;
         private static Int64 HeaderID = 0;
-
-        private static void GetUserInformation()
-        {
-            UserList = new List<UserInfomation>();
-            UserInfomation Fuser = new UserInfomation();
-            Fuser.UserName = "Pakawat";
-            Fuser.Password = "P@ssw0rd";
-
-            UserInfomation Suser = new UserInfomation();
-            Suser.UserName = "Rungrit";
-            Suser.Password = "12345";
-
-            UserList.Add(Fuser);
-            UserList.Add(Suser);
-        }
 
         public static void CreateConnection(DataGridView ClientGrid, Object ObjMainPage, DataGridView TTCSLogGrid)
         {
@@ -114,12 +99,13 @@ namespace DataKeeper.Interface
             WebSockets.TTCSLogGrid = TTCSLogGrid;
             WebSockets.ObjMainPage = ObjMainPage;
 
-            GetUserInformation();
+            UserList = DatabaseSynchronization.GetAllUser();
 
             FleckLog.Level = LogLevel.Debug;
             AllConnection = new ConcurrentDictionary<String, WSConnection>();
             //var server = new WebSocketServer("wss://192.168.2.110:8096");
-            var server = new WebSocketServer("ws://192.168.2.110:8096");
+            //var server = new WebSocketServer("ws://192.168.2.110:8096");
+            var server = new WebSocketServer("ws://192.168.161.1:8096");
             String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\astronet.narit.or.th-all.pfx";
 
             server.Certificate = new X509Certificate2(CerPath);
@@ -243,6 +229,8 @@ namespace DataKeeper.Interface
                         ScriptHandler(ThisConnection, SplitedParameter);
                 }
             }
+            else
+                ThisConnection.WSClient.Close();
         }
 
         public static void RemoveClient(WSConnection ThisConnection)
@@ -553,7 +541,7 @@ namespace DataKeeper.Interface
                 }
                 else
                 {
-                    UserInfomation ThisUser = UserList.FirstOrDefault(Item => Item.UserName == UserName && Item.Password == Password);
+                    UserTB ThisUser = UserList.FirstOrDefault(Item => Item.UserLoginName == UserName && Item.UserLoginPassword == Password);
                     if (ThisUser != null)
                     {
                         ThisConnection.IsLogin = true;
