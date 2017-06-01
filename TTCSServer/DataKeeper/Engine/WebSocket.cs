@@ -103,9 +103,9 @@ namespace DataKeeper.Interface
 
             FleckLog.Level = LogLevel.Debug;
             AllConnection = new ConcurrentDictionary<String, WSConnection>();
-            //var server = new WebSocketServer("wss://192.168.2.110:8096");
+            var server = new WebSocketServer("wss://192.168.2.110:8096");
             //var server = new WebSocketServer("ws://192.168.2.110:8096");
-            var server = new WebSocketServer("ws://192.168.161.1:8096");
+            //var server = new WebSocketServer("ws://192.168.161.1:8096");
             String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\astronet.narit.or.th-all.pfx";
 
             server.Certificate = new X509Certificate2(CerPath);
