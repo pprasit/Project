@@ -264,7 +264,7 @@ namespace DataKeeper.Interface
                 int TimeCounter = 0;
                 while (true)
                 {
-                    if (TimeCounter <= 10)
+                    if (TimeCounter <= 60)
                     {
                         Console.WriteLine("Count down -> " + TimeCounter);
                         ThisConnection.IsBlockingStart = true;
