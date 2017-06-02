@@ -398,7 +398,7 @@ namespace DataKeeper.Engine
             List<KeyValuePair<String, ScriptTB>> BlockScript = ScriptDBBuffer.Where(Item => Item.Value.BlockID == ScriptToCheck.BlockID).ToList();
             String[] MissingScript = GetMissingScript(ScriptToCheck, BlockScript);
 
-            if (MissingScript.Count() > 0)
+            if (MissingScript != null && MissingScript.Count() > 0)
             {
                 Message = "Block Name : " + ScriptToCheck.BlockName + ", Script : " + ScriptToCheck.ExecutionNumber + " successful add to the system but waiting for script number (" + String.Join(", ", MissingScript) + ")";
                 return false;
@@ -412,20 +412,28 @@ namespace DataKeeper.Engine
 
         private static String[] GetMissingScript(ScriptTB ScriptToCheck, List<KeyValuePair<String, ScriptTB>> BlockScript)
         {
-            Boolean[] ScriptReciveState = new Boolean[ScriptToCheck.CommandCounter.Value];
-            ScriptReciveState[ScriptToCheck.ExecutionNumber - 1] = true;
-
-            foreach (KeyValuePair<String, ScriptTB> ThisScript in BlockScript)
-                ScriptReciveState[ThisScript.Value.ExecutionNumber - 1] = true;
-
-            List<String> Missing = new List<String>();
-            for (int i = 0; i < ScriptReciveState.Count(); i++)
+            try
             {
-                if (!ScriptReciveState[i])
-                    Missing.Add((i + 1).ToString());
+                Boolean[] ScriptReciveState = new Boolean[ScriptToCheck.CommandCounter.Value];
+                ScriptReciveState[ScriptToCheck.ExecutionNumber - 1] = true;
+
+                foreach (KeyValuePair<String, ScriptTB> ThisScript in BlockScript)
+                    ScriptReciveState[ThisScript.Value.ExecutionNumber - 1] = true;
+
+                List<String> Missing = new List<String>();
+                for (int i = 0; i < ScriptReciveState.Count(); i++)
+                {
+                    if (!ScriptReciveState[i])
+                        Missing.Add((i + 1).ToString());
+                }
+
+                return Missing.ToArray();
+            }
+            catch
+            {
             }
 
-            return Missing.ToArray();
+            return null;
         }
 
         private static void UpdateScriptToMonitoring(ScriptTB ThisScript)
