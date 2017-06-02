@@ -45,12 +45,6 @@ namespace DataKeeper.Interface
         public String DataTimeStamp { get; set; }
     }
 
-    public class UserInfomation
-    {
-        public String UserName { get; set; }
-        public String Password { get; set; }
-    }
-
     public class WSConnection
     {
         public IWebSocketConnection WSClient { get; set; }
@@ -82,6 +76,14 @@ namespace DataKeeper.Interface
         }
     }
 
+    public class ConnectionHistory
+    {
+        public String IPAddress { get; set; }
+        public int Port { get; set; }
+        public int Counter { get; set; }
+        public Boolean IsBlockingStart { get; set; }
+    }
+
     public class WebSockets
     {
         private static ConcurrentDictionary<String, WSConnection> AllConnection = new ConcurrentDictionary<String, WSConnection>();
@@ -91,6 +93,8 @@ namespace DataKeeper.Interface
         private static Object ObjMainPage = null;
         private static List<UserTB> UserList = null;
         private static Int64 HeaderID = 0;
+        private static ConcurrentDictionary<String, ConnectionHistory> ConnectionCounter = new ConcurrentDictionary<String, ConnectionHistory>();
+        private static List<String> BlockList = new List<string>();
 
         public static void CreateConnection(DataGridView ClientGrid, Object ObjMainPage, DataGridView TTCSLogGrid)
         {
@@ -114,7 +118,6 @@ namespace DataKeeper.Interface
                 socket.OnOpen = () =>
                 {
                     String Key = socket.ConnectionInfo.ClientIpAddress + socket.ConnectionInfo.ClientPort;
-                    //Console.WriteLine("Open -> IP : " + socket.ConnectionInfo.ClientIpAddress + " Port : " + socket.ConnectionInfo.ClientPort);
 
                     WSConnection ThisConnection = new WSConnection();
                     ThisConnection.WSClient = socket;
@@ -130,35 +133,50 @@ namespace DataKeeper.Interface
                     ThisConnection.CreateConnectionTimeout();
                     ThisConnection.SubscribeList = new ConcurrentDictionary<string, SubscribeStructure>();
 
-                    OnConnectHandler(ThisConnection);
-                    AllConnection.TryAdd(Key, ThisConnection);
+                    if (!ConnectionLimit(ThisConnection.IPAddress))
+                    {
+                        AddConnectionHistory(ThisConnection.IPAddress, ThisConnection.Port);
+                        OnConnectHandler(ThisConnection);
+                        AllConnection.TryAdd(Key, ThisConnection);
+                    }
+                    else
+                    {
+                        BlockLoop(ThisConnection.IPAddress);
+                        socket.Close();
+                    }
                 };
                 socket.OnClose = () =>
                 {
-                    //Console.WriteLine("Close -> IP : " + socket.ConnectionInfo.ClientIpAddress + " Port : " + socket.ConnectionInfo.ClientPort);
                     WSConnection ThisConnection = AllConnection.FirstOrDefault(Item => Item.Key == socket.ConnectionInfo.ClientIpAddress + socket.ConnectionInfo.ClientPort).Value;
                     RemoveClient(ThisConnection);
                 };
                 socket.OnMessage = message =>
                 {
-                    Task MessageTask = Task.Run(() =>
+                    WSConnection ThisConnection = AllConnection.FirstOrDefault(Item => Item.Key == socket.ConnectionInfo.ClientIpAddress + socket.ConnectionInfo.ClientPort).Value;
+
+                    //Task MessageTask = Task.Run(() =>
+                    //{
+                    //try
+                    //{
+                    if (ThisConnection != null)
                     {
-                        try
-                        {
-                            //Console.WriteLine("Message -> IP : " + socket.ConnectionInfo.ClientIpAddress + " Port : " + socket.ConnectionInfo.ClientPort + " Mesage : " + message);
-                            WSConnection ThisConnection = AllConnection.FirstOrDefault(Item => Item.Key == socket.ConnectionInfo.ClientIpAddress + socket.ConnectionInfo.ClientPort).Value;
+                        //ThisConnection.Messages.Add(message);
+                        Console.WriteLine("Auten is here");
+                        OnMessageHandler(ThisConnection, message);
 
-                            if (ThisConnection != null)
-                            {
-                                ThisConnection.Messages.Add(message);
-                                OnMessageHandler(ThisConnection, message);
+                        MethodInfo method = ObjMainPage.GetType().GetMethod("RelayMessageToMonitoring");
+                        method.Invoke(ObjMainPage, new object[] { message });
+                    }
+                    else
+                        Console.WriteLine("Connection is null");
+                    //}
+                    //catch { }
+                    //});
 
-                                MethodInfo method = ObjMainPage.GetType().GetMethod("RelayMessageToMonitoring");
-                                method.Invoke(ObjMainPage, new object[] { message });
-                            }
-                        }
-                        catch { }
-                    });
+                    //TimeSpan ts = TimeSpan.FromMilliseconds(5000);
+                    //if (!MessageTask.Wait(ts))
+                    //    if (ThisConnection != null)
+                    //        ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Connected", "Can not complete process in the period of time.", "Error");
                 };
             });
         }
@@ -198,6 +216,8 @@ namespace DataKeeper.Interface
                 String[] SplitedInformation = Message.Split(new char[] { ',' });
                 SetDataGridEditRow(ThisConnection.IPAddress, ThisConnection.Port, ThisConnection.ConnectedTime, Message, DateTime.Now);
 
+                RemoveConnectionHistory(ThisConnection.IPAddress);
+
                 foreach (String CommandStr in SplitedInformation)
                 {
                     String[] SplitedParameter = CommandStr.Split(new char[] { '&' });
@@ -231,6 +251,83 @@ namespace DataKeeper.Interface
             }
             else
                 ThisConnection.WSClient.Close();
+        }
+
+        private static void BlockLoop(String IPAddress)
+        {
+            ConnectionHistory ThisConnection = ConnectionCounter.FirstOrDefault(Item => Item.Value.IPAddress == IPAddress && Item.Value.Counter == 10 && !Item.Value.IsBlockingStart).Value;
+            if (ThisConnection == null)
+                return;
+
+            Task BlockLoops = Task.Run(() =>
+            {
+                int TimeCounter = 0;
+                while (true)
+                {
+                    if (TimeCounter <= 10)
+                    {
+                        Console.WriteLine("Count down -> " + TimeCounter);
+                        ThisConnection.IsBlockingStart = true;
+                        TimeCounter++;
+                    }
+                    else
+                    {
+                        RemoveBlockConnection();
+                        break;
+                    }
+
+                    Thread.Sleep(1000);
+                }
+            });
+        }
+
+        private static Boolean ConnectionLimit(String IPAddress)
+        {
+            int Count = ConnectionCounter.Count(Item => Item.Value.IPAddress == IPAddress);
+            if (Count >= 10)
+            {
+                Console.WriteLine("The count has rich a limit -> " + Count);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void AddConnectionHistory(String IPAddress, int Port)
+        {
+            ConnectionHistory CreateHistory = new ConnectionHistory();
+            CreateHistory.IPAddress = IPAddress;
+            CreateHistory.Port = Port;
+            CreateHistory.IsBlockingStart = false;
+            CreateHistory.Counter = ConnectionCounter.Count(Item => Item.Value.IPAddress == IPAddress) + 1;
+
+            Console.WriteLine("Add connection history " + CreateHistory.IPAddress + " " + CreateHistory.Counter);
+            ConnectionCounter.TryAdd(IPAddress + ":" + CreateHistory.Counter, CreateHistory);
+        }
+
+        private static void RemoveBlockConnection()
+        {
+            List<ConnectionHistory> ConnectionList = ConnectionCounter.Values.Where(Item => Item.Counter == 10).ToList();
+
+            Console.WriteLine("Unblock connection -> (count unblock) " + ConnectionList.Count);
+            foreach (ConnectionHistory ThisConnection in ConnectionList)
+            {
+                ConnectionHistory TempHistory;
+                for (int i = 1; i <= 10; i++)
+                    ConnectionCounter.TryRemove(ThisConnection.IPAddress + ":" + i, out TempHistory);
+            }
+        }
+
+        private static void RemoveConnectionHistory(String IPAddress)
+        {
+            List<ConnectionHistory> IPAddressHistoryList = ConnectionCounter.Values.Where(Item => Item.IPAddress == IPAddress).ToList();
+
+            Console.WriteLine("Remove all block connection by IPAddress -> " + IPAddress);
+            foreach (ConnectionHistory ThisConnection in IPAddressHistoryList)
+            {
+                ConnectionHistory TempHistory;
+                ConnectionCounter.TryRemove(ThisConnection.IPAddress + ":" + ThisConnection.Counter, out TempHistory);
+            }
         }
 
         public static void RemoveClient(WSConnection ThisConnection)

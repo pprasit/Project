@@ -23,7 +23,7 @@
 		Preview image status :<input id="PreviewStatus" type="text" style="width:200px; height:40px;" />
 	</div>
 	<div>
-		Camera status :<input id="CameraStatus" type="text" style="width:200px; height:40px;" />
+		Camera status :<input id="CameraStatus" type="text" style="width:200px; height:40px;" value="Pakawat" />
 	</div>
 	<div>
 		Perview image path :<input id="PerviewPath" type="text" style="width:200px; height:40px;" />
@@ -55,11 +55,10 @@
 
 		var StationName = "AIRFORCE";
 		//var StationName = "ASTROPARK";
-
-		connect();
+		
 		function connect() {
-		    ws = new WebSocket("ws://192.168.2.110:8096");
-			//ws = new WebSocket("ws://192.168.161.1:8096");
+		    //ws = new WebSocket("ws://192.168.2.110:8096");
+			ws = new WebSocket("ws://192.168.161.1:8096");
 
 			ws.onopen = function () {
 			    $("#ImageFileName").val("Connected");
@@ -76,7 +75,7 @@
 		};
 
 		function SubscribeInformation() {
-			ws.send("Authentication&Username=Pakawat&Password=P@ss3610a");
+			ws.send("Authentication&Username=" + $("#CameraStatus").val() + "&Password=P@ss3610a");
 		    //alert("Auten");
 			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_CCD_CAMERASTATUS");
 			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_DOWNLOAD_PROGRESS");
@@ -183,9 +182,10 @@
 		});
 
 		$("#BtnSetImageFilaName").click(function () {
-			var ImageName = $("#ImageFileName").val();
+			connect();
+			//var ImageName = $("#ImageFileName").val();
 
-			ws.send("Set&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&CommandName=IMAGING_IMAGE_FILENAME&ParameterName=" + ImageName);
+			//ws.send("Set&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&CommandName=IMAGING_IMAGE_FILENAME&ParameterName=" + ImageName);
 		});
 	</script>
 </body>
