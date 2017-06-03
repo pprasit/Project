@@ -269,7 +269,7 @@ namespace DataKeeper.Interface
         private static Boolean ConnectionLimit(String IPAddress)
         {
             ConnectionHistory ThisConnection = ConnectionCounter.FirstOrDefault(Item => Item.Value.IPAddress == IPAddress).Value;
-            if (ThisConnection.Counter >= 10)
+            if (ThisConnection != null && ThisConnection.Counter >= 10)
             {
                 Console.WriteLine("The count has rich a limit -> " + ThisConnection.Counter);
                 return true;
