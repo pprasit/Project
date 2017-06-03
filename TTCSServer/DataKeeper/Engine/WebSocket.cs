@@ -79,7 +79,6 @@ namespace DataKeeper.Interface
     public class ConnectionHistory
     {
         public String IPAddress { get; set; }
-        public int Port { get; set; }
         public int Counter { get; set; }
         public Boolean IsBlockingStart { get; set; }
     }
@@ -94,7 +93,7 @@ namespace DataKeeper.Interface
         private static List<UserTB> UserList = null;
         private static Int64 HeaderID = 0;
         private static ConcurrentDictionary<String, ConnectionHistory> ConnectionCounter = new ConcurrentDictionary<String, ConnectionHistory>();
-        private static List<String> BlockList = new List<string>();
+        private static List<String> ConnectionBlockList = new List<string>();
         private static String SocketServerAddress = null;
 
         public static void CreateConnection(DataGridView ClientGrid, Object ObjMainPage, DataGridView TTCSLogGrid, String SocketServerAddress)
@@ -134,7 +133,7 @@ namespace DataKeeper.Interface
 
                     if (!ConnectionLimit(ThisConnection.IPAddress))
                     {
-                        AddConnectionHistory(ThisConnection.IPAddress, ThisConnection.Port);
+                        AddConnectionHistory(ThisConnection.IPAddress);
                         OnConnectHandler(ThisConnection);
                         AllConnection.TryAdd(Key, ThisConnection);
                     }
@@ -269,7 +268,7 @@ namespace DataKeeper.Interface
 
         private static Boolean ConnectionLimit(String IPAddress)
         {
-            int Count = ConnectionCounter.Count(Item => Item.Value.IPAddress == IPAddress);
+            int Count = ConnectionCounter.FirstOrDefault(Item => Item.Value.IPAddress == IPAddress).Value.Counter;
             if (Count >= 10)
             {
                 Console.WriteLine("The count has rich a limit -> " + Count);
@@ -279,16 +278,18 @@ namespace DataKeeper.Interface
             return false;
         }
 
-        private static void AddConnectionHistory(String IPAddress, int Port)
+        private static void AddConnectionHistory(String IPAddress)
         {
-            ConnectionHistory CreateHistory = new ConnectionHistory();
-            CreateHistory.IPAddress = IPAddress;
-            CreateHistory.Port = Port;
-            CreateHistory.IsBlockingStart = false;
-            CreateHistory.Counter = ConnectionCounter.Count(Item => Item.Value.IPAddress == IPAddress) + 1;
+            if (ConnectionCounter.FirstOrDefault(Item => Item.Value.IPAddress == IPAddress).Value == null)
+            {
+                ConnectionHistory CreateHistory = new ConnectionHistory();
+                CreateHistory.IPAddress = IPAddress;
+                CreateHistory.IsBlockingStart = false;
+                CreateHistory.Counter = 1;
 
-            Console.WriteLine("Add connection history " + CreateHistory.IPAddress + " " + CreateHistory.Counter);
-            ConnectionCounter.TryAdd(IPAddress + ":" + CreateHistory.Counter, CreateHistory);
+                Console.WriteLine("Add connection history " + CreateHistory.IPAddress + " " + CreateHistory.Counter);
+                ConnectionCounter.TryAdd(IPAddress, CreateHistory);
+            }
         }
 
         private static void RemoveBlockConnection()
@@ -299,8 +300,7 @@ namespace DataKeeper.Interface
             foreach (ConnectionHistory ThisConnection in ConnectionList)
             {
                 ConnectionHistory TempHistory;
-                for (int i = 1; i <= 10; i++)
-                    ConnectionCounter.TryRemove(ThisConnection.IPAddress + ":" + i, out TempHistory);
+                ConnectionCounter.TryRemove(ThisConnection.IPAddress, out TempHistory);
             }
         }
 
@@ -312,7 +312,7 @@ namespace DataKeeper.Interface
             foreach (ConnectionHistory ThisConnection in IPAddressHistoryList)
             {
                 ConnectionHistory TempHistory;
-                ConnectionCounter.TryRemove(ThisConnection.IPAddress + ":" + ThisConnection.Counter, out TempHistory);
+                ConnectionCounter.TryRemove(ThisConnection.IPAddress, out TempHistory);
             }
         }
 
