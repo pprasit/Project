@@ -268,10 +268,10 @@ namespace DataKeeper.Interface
 
         private static Boolean ConnectionLimit(String IPAddress)
         {
-            int Count = ConnectionCounter.FirstOrDefault(Item => Item.Value.IPAddress == IPAddress).Value.Counter;
-            if (Count >= 10)
+            ConnectionHistory ThisConnection = ConnectionCounter.FirstOrDefault(Item => Item.Value.IPAddress == IPAddress).Value;
+            if (ThisConnection.Counter >= 10)
             {
-                Console.WriteLine("The count has rich a limit -> " + Count);
+                Console.WriteLine("The count has rich a limit -> " + ThisConnection.Counter);
                 return true;
             }
 
