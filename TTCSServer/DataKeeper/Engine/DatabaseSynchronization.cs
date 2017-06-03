@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Core.EntityClient;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,6 +14,31 @@ namespace DataKeeper.Engine
     {
         private static Entities db;
         private static Boolean IsSaving = false;
+        private static String DatabaseName = "";
+        private static String DatabaseUserName = "";
+        private static String DatabasePassword = "";
+        private static String DatabaseServerName = "";
+
+        public static void SetDBConnection(String DatabaseName, String DatabaseUserName, String DatabasePassword, String DatabaseServerName)
+        {
+            DatabaseSynchronization.DatabaseName = DatabaseName;
+            DatabaseSynchronization.DatabaseUserName = DatabaseUserName;
+            DatabaseSynchronization.DatabasePassword = DatabasePassword;
+            DatabaseSynchronization.DatabaseServerName = DatabaseServerName;
+        }
+
+        public static Entities RefreshDB()
+        {
+            if (DatabaseName != "" && DatabaseUserName != "" && DatabasePassword != "" && DatabaseServerName != "")
+            {
+                var db = new Entities();
+                db.ChangeDatabase(initialCatalog: DatabaseName, userId: DatabaseUserName, password: DatabasePassword, dataSource: DatabaseServerName);
+
+                return db;
+            }
+            else
+                return null;
+        }
 
         public static List<Object[]> SyncDataFromServer(String StationName, String TableName)
         {
@@ -22,7 +50,7 @@ namespace DataKeeper.Engine
 
         private static List<Object[]> GetAllInformation(String StationName, String TableName)
         {
-            db = new Entities();
+            RefreshDB();
             if (TableName == "UserTB")
             {
                 List<UserTB> UserList = db.UserTBs.ToList();
@@ -68,8 +96,11 @@ namespace DataKeeper.Engine
 
         public static List<UserTB> GetAllUser()
         {
-            db = new Entities();
-            return db.UserTBs.ToList();
+            RefreshDB();
+
+            if (db != null)
+                return db.UserTBs.ToList();
+            return null;
         }
 
         #region User
@@ -88,14 +119,14 @@ namespace DataKeeper.Engine
 
         private static void DeleteUser(List<Object[]> TableField)
         {
-            db = new Entities();
+            RefreshDB();
             db.UserTBs.Remove(db.UserTBs.FirstOrDefault(Item => Item.UserID == TableField.ElementAt(0)[0].ToString()));
             db.SaveChangesAsync();
         }
 
         private static void UpdateUser(List<Object[]> TableField, STATIONNAME StationName)
         {
-            db = new Entities();
+            RefreshDB();
             UserTB CheckUser = new UserTB();
             CheckUser.UserID = TableField.ElementAt(0)[0].ToString();
             CheckUser.UserName = TableField.ElementAt(0)[1].ToString();
@@ -143,7 +174,7 @@ namespace DataKeeper.Engine
 
         private static Object SyncExistingUser(List<Object[]> TableField)
         {
-            db = new Entities();
+            RefreshDB();
             List<UserTB> UserList = db.UserTBs.ToList();
             List<UserTB> NewUser = new List<UserTB>();
             List<UserTB> StationUsers = new List<UserTB>();
@@ -201,7 +232,7 @@ namespace DataKeeper.Engine
 
         private static void UpdateLog(String StationName, List<Object[]> TableField)
         {
-            db = new Entities();
+            RefreshDB();
             LogTB CheckLog = new LogTB();
             CheckLog.LogID = TableField.ElementAt(0)[0].ToString();
             CheckLog.StationName = TableField.ElementAt(0)[0].ToString();
@@ -221,7 +252,7 @@ namespace DataKeeper.Engine
 
         private static void DeleteLog(String LogID)
         {
-            db = new Entities();
+            RefreshDB();
             db.LogTBs.Remove(db.LogTBs.FirstOrDefault(Item => Item.LogID == LogID));
             db.SaveChangesAsync();
         }
@@ -230,7 +261,7 @@ namespace DataKeeper.Engine
         {
             try
             {
-                db = new Entities();
+                RefreshDB();
                 List<LogTB> LogList = db.LogTBs.Where(Item => Item.StationName == StationName).ToList();
                 List<LogTB> NewServerLog = new List<LogTB>();
                 List<LogTB> NewStationLog = new List<LogTB>();
@@ -297,8 +328,11 @@ namespace DataKeeper.Engine
 
         public static List<ScriptTB> GetScript()
         {
-            db = new Entities();
-            return db.ScriptTBs.ToList();
+            RefreshDB();
+            if (db != null)
+                return db.ScriptTBs.ToList();
+            else
+                return null;
         }
 
         public static void InsertScript(ScriptTB ThisScript)
@@ -316,7 +350,7 @@ namespace DataKeeper.Engine
             db.ScriptTBs.RemoveRange(db.ScriptTBs);
         }
 
-        public static void ScriptSaveChange(Boolean IsSync)
+        public static Boolean ScriptSaveChange(Boolean IsSync)
         {
             try
             {
@@ -331,14 +365,72 @@ namespace DataKeeper.Engine
 
                     IsSaving = false;
                 }
+
+                return true;
             }
-            catch {
-                Thread.Sleep(10);
-                ScriptSaveChange(IsSync);
+            catch
+            {
                 IsSaving = false;
+                return false;
             }
         }
 
         #endregion
+    }
+
+    public static class ConnectionTools
+    {
+        // all params are optional
+        public static void ChangeDatabase(
+            this DbContext source,
+            string initialCatalog = "",
+            string dataSource = "",
+            string userId = "",
+            string password = "",
+            bool integratedSecuity = true,
+            string configConnectionStringName = "")
+        /* this would be used if the
+        *  connectionString name varied from 
+        *  the base EF class name */
+        {
+            try
+            {
+                // use the const name if it's not null, otherwise
+                // using the convention of connection string = EF contextname
+                // grab the type name and we're done
+                var configNameEf = string.IsNullOrEmpty(configConnectionStringName)
+                    ? source.GetType().Name
+                    : configConnectionStringName;
+
+                // add a reference to System.Configuration
+                var entityCnxStringBuilder = new EntityConnectionStringBuilder
+                    (System.Configuration.ConfigurationManager.ConnectionStrings[configNameEf].ConnectionString);
+
+                // init the sqlbuilder with the full EF connectionstring cargo
+                var sqlCnxStringBuilder = new SqlConnectionStringBuilder
+                    (entityCnxStringBuilder.ProviderConnectionString);
+
+                // only populate parameters with values if added
+                if (!string.IsNullOrEmpty(initialCatalog))
+                    sqlCnxStringBuilder.InitialCatalog = initialCatalog;
+                if (!string.IsNullOrEmpty(dataSource))
+                    sqlCnxStringBuilder.DataSource = dataSource;
+                if (!string.IsNullOrEmpty(userId))
+                    sqlCnxStringBuilder.UserID = userId;
+                if (!string.IsNullOrEmpty(password))
+                    sqlCnxStringBuilder.Password = password;
+
+                // set the integrated security status
+                sqlCnxStringBuilder.IntegratedSecurity = integratedSecuity;
+
+                // now flip the properties that were changed
+                source.Database.Connection.ConnectionString
+                    = sqlCnxStringBuilder.ConnectionString;
+            }
+            catch (Exception ex)
+            {
+                // set log item if required
+            }
+        }
     }
 }

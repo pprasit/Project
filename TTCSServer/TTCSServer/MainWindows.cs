@@ -52,7 +52,7 @@ namespace TTCSServer
         private void InitializeWS()
         {
             ObjPackageMonitoring = new PackageMonitoring();
-            WebSockets.CreateConnection(ClientGrid, this, TTCSLogGrid);
+            WebSockets.CreateConnection(ClientGrid, this, TTCSLogGrid, Properties.Settings.Default.SocketServerAddress);
         }
 
         private void InitializeServer()
@@ -66,6 +66,7 @@ namespace TTCSServer
             AstroServerHandler AstroHandler = new AstroServerHandler();
             AstroHandler.StartAstroServer();
 
+            DatabaseSynchronization.SetDBConnection(Properties.Settings.Default.DatabaseName, Properties.Settings.Default.DatabaseUserName, Properties.Settings.Default.DatabasePassword, Properties.Settings.Default.DatabaseServerName);
             FITSHandler.CreateMaximObject();
             ScriptManager.CreateScriptPool();            
         }
@@ -351,6 +352,8 @@ namespace TTCSServer
         {
             SettingWindows _SettingWindows = new SettingWindows();
             _SettingWindows.ShowDialog(this);
+
+            MessageBox.Show("Please restart an appication to take an effect.", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void AllStationStartDate_ValueChanged(object sender, EventArgs e)

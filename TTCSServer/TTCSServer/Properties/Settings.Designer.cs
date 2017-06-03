@@ -46,5 +46,65 @@ namespace TTCSServer.Properties {
                 this["ScriptLifeTimeValue"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("wss://192.168.2.110:8096")]
+        public string SocketServerAddress {
+            get {
+                return ((string)(this["SocketServerAddress"]));
+            }
+            set {
+                this["SocketServerAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AstroDatabase")]
+        public string DatabaseName {
+            get {
+                return ((string)(this["DatabaseName"]));
+            }
+            set {
+                this["DatabaseName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("sa")]
+        public string DatabaseUserName {
+            get {
+                return ((string)(this["DatabaseUserName"]));
+            }
+            set {
+                this["DatabaseUserName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("P@ss3610a")]
+        public string DatabasePassword {
+            get {
+                return ((string)(this["DatabasePassword"]));
+            }
+            set {
+                this["DatabasePassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("192.168.2.110\\SQLExpress")]
+        public string DatabaseServerName {
+            get {
+                return ((string)(this["DatabaseServerName"]));
+            }
+            set {
+                this["DatabaseServerName"] = value;
+            }
+        }
     }
 }

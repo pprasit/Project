@@ -62,12 +62,12 @@ namespace Fleck
 
         public void Listen(int backlog)
         {
-            _socket.Listen(backlog);
+            try { _socket.Listen(backlog); } catch { }
         }
 
         public void Bind(EndPoint endPoint)
         {
-            _socket.Bind(endPoint);
+            try { _socket.Bind(endPoint); } catch { }
         }
 
         public bool Connected

@@ -149,6 +149,9 @@ namespace DataKeeper.Engine
         {
             List<ScriptTB> ScriptList = DatabaseSynchronization.GetScript();
 
+            if (ScriptList == null)
+                return;
+
             foreach (ScriptTB ThisScript in ScriptList)
                 ScriptDBBuffer.TryAdd(ThisScript.BlockID + ThisScript.ExecutionNumber, ThisScript);
         }
@@ -157,7 +160,7 @@ namespace DataKeeper.Engine
         {
             ScriptDBBuffer.Clear();
             DatabaseSynchronization.DeleteAllScript();
-            DatabaseSynchronization.ScriptSaveChange(true);
+            DatabaseSynchronization.ScriptSaveChange(false);
         }
 
         public static Boolean RemoveScript(String BlockID, int ExecutionNumber)
@@ -251,7 +254,7 @@ namespace DataKeeper.Engine
                         RemoveExpireScript();
 
                     if (IsDatabaseUpdate)
-                        DatabaseSynchronization.ScriptSaveChange(true);
+                        IsDatabaseUpdate = !DatabaseSynchronization.ScriptSaveChange(true);
 
                     Thread.Sleep(10);
                 }
@@ -376,7 +379,7 @@ namespace DataKeeper.Engine
             {
                 ExistingScript.ScriptState = ScriptState;
                 UpdateScriptToMonitoring(ExistingScript);
-                DatabaseSynchronization.ScriptSaveChange(true);
+                DatabaseSynchronization.ScriptSaveChange(false);
             }
         }
 

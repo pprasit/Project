@@ -75,27 +75,31 @@ namespace Fleck
 
         public void Start(Action<IWebSocketConnection> config)
         {
-            var ipLocal = new IPEndPoint(_locationIP, Port);
-            ListenerSocket.Bind(ipLocal);
-            ListenerSocket.Listen(100);
-            Port = ((IPEndPoint)ListenerSocket.LocalEndPoint).Port;
-            FleckLog.Info(string.Format("Server started at {0} (actual port {1})", Location, Port));
-            if (_scheme == "wss")
+            try
             {
-                if (Certificate == null)
+                var ipLocal = new IPEndPoint(_locationIP, Port);
+                ListenerSocket.Bind(ipLocal);
+                ListenerSocket.Listen(100);
+                Port = ((IPEndPoint)ListenerSocket.LocalEndPoint).Port;
+                FleckLog.Info(string.Format("Server started at {0} (actual port {1})", Location, Port));
+                if (_scheme == "wss")
                 {
-                    FleckLog.Error("Scheme cannot be 'wss' without a Certificate");
-                    return;
-                }
+                    if (Certificate == null)
+                    {
+                        FleckLog.Error("Scheme cannot be 'wss' without a Certificate");
+                        return;
+                    }
 
-                if (EnabledSslProtocols == SslProtocols.None)
-                {
-                    EnabledSslProtocols = SslProtocols.Tls;
-                    FleckLog.Debug("Using default TLS 1.0 security protocol.");
+                    if (EnabledSslProtocols == SslProtocols.None)
+                    {
+                        EnabledSslProtocols = SslProtocols.Tls;
+                        FleckLog.Debug("Using default TLS 1.0 security protocol.");
+                    }
                 }
+                ListenForClients();
+                _config = config;
             }
-            ListenForClients();
-            _config = config;
+            catch { }
         }
 
         private void ListenForClients()

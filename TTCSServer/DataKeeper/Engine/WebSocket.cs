@@ -95,8 +95,9 @@ namespace DataKeeper.Interface
         private static Int64 HeaderID = 0;
         private static ConcurrentDictionary<String, ConnectionHistory> ConnectionCounter = new ConcurrentDictionary<String, ConnectionHistory>();
         private static List<String> BlockList = new List<string>();
+        private static String SocketServerAddress = null;
 
-        public static void CreateConnection(DataGridView ClientGrid, Object ObjMainPage, DataGridView TTCSLogGrid)
+        public static void CreateConnection(DataGridView ClientGrid, Object ObjMainPage, DataGridView TTCSLogGrid, String SocketServerAddress)
         {
             String IPAddressStr = TTCSHelper.GetLocalIPAddress();
             WebSockets.ClientGrid = ClientGrid;
@@ -107,9 +108,7 @@ namespace DataKeeper.Interface
 
             FleckLog.Level = LogLevel.Debug;
             AllConnection = new ConcurrentDictionary<String, WSConnection>();
-            var server = new WebSocketServer("wss://192.168.2.110:8096");
-            //var server = new WebSocketServer("ws://192.168.2.110:8096");
-            //var server = new WebSocketServer("ws://192.168.161.1:8096");
+            var server = new WebSocketServer(SocketServerAddress);
             String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\astronet.narit.or.th-all.pfx";
 
             server.Certificate = new X509Certificate2(CerPath);

@@ -8,5 +8,20 @@
     <Setting Name="ScriptLifeTimeValue" Type="System.Double" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
+    <Setting Name="SocketServerAddress" Type="System.String" Scope="User">
+      <Value Profile="(Default)">wss://192.168.2.110:8096</Value>
+    </Setting>
+    <Setting Name="DatabaseName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">AstroDatabase</Value>
+    </Setting>
+    <Setting Name="DatabaseUserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">sa</Value>
+    </Setting>
+    <Setting Name="DatabasePassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">P@ss3610a</Value>
+    </Setting>
+    <Setting Name="DatabaseServerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">192.168.2.110\SQLExpress</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
