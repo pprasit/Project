@@ -153,13 +153,8 @@ namespace DataKeeper.Interface
                 {
                     WSConnection ThisConnection = AllConnection.FirstOrDefault(Item => Item.Key == socket.ConnectionInfo.ClientIpAddress + socket.ConnectionInfo.ClientPort).Value;
 
-                    //Task MessageTask = Task.Run(() =>
-                    //{
-                    //try
-                    //{
                     if (ThisConnection != null)
                     {
-                        //ThisConnection.Messages.Add(message);
                         Console.WriteLine("Auten is here");
                         OnMessageHandler(ThisConnection, message);
 
@@ -168,14 +163,6 @@ namespace DataKeeper.Interface
                     }
                     else
                         Console.WriteLine("Connection is null");
-                    //}
-                    //catch { }
-                    //});
-
-                    //TimeSpan ts = TimeSpan.FromMilliseconds(5000);
-                    //if (!MessageTask.Wait(ts))
-                    //    if (ThisConnection != null)
-                    //        ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Connected", "Can not complete process in the period of time.", "Error");
                 };
             });
         }
