@@ -337,16 +337,23 @@ namespace DataKeeper.Engine
 
         public static void InsertScript(ScriptTB ThisScript)
         {
+            Entities db = RefreshDB();
             db.ScriptTBs.Add(ThisScript);
         }
 
         public static void DeleteScript(ScriptTB ThisScript)
         {
-            db.ScriptTBs.Remove(ThisScript);
+            try
+            {
+                Entities db = RefreshDB();
+                db.ScriptTBs.Remove(ThisScript);
+            }
+            catch { }
         }
 
         public static void DeleteAllScript()
         {
+            Entities db = RefreshDB();
             db.ScriptTBs.RemoveRange(db.ScriptTBs);
         }
 

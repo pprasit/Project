@@ -344,7 +344,7 @@ namespace DataKeeper.Engine
                         Boolean IsAllScriptRecived = IsBlockComplete(WaitingScriptList[0], out Message);
                         if (IsAllScriptRecived)
                         {
-                            if (VerifyTotalExecutionTime(WaitingScriptList[0]))
+                            if (!VerifyTotalExecutionTime(WaitingScriptList[0]))
                             {
                                 WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), "All script is sending to client.", "Script_Success");
 
@@ -396,10 +396,8 @@ namespace DataKeeper.Engine
                 foreach (ScriptTB ThisScript in ScriptList)
                     TotalTime = TotalTime + ThisScript.DelayTime.Value;
 
-                if (TotalTimeStartToEnd < TotalTime)
-                    return false;
-
-                return true;
+                if (TotalTime <= TotalTimeStartToEnd)
+                    return true;
             }
 
             return false;
