@@ -52,17 +52,17 @@ namespace DataKeeper.Engine
 
         public void insert_user_login(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
         {
-            Task TTask = Task.Run(async () =>
+            Task TTask = Task.Run(() =>
             {
                 var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
                 var builder = Builders<BsonDocument>.Filter;
                 var filter = builder.Eq("Values", Value) & builder.Eq("State", "LOGIN") & builder.Eq("LogoutDate", "");
                 var update = Builders<BsonDocument>.Update.Set("State", "LOGOUT").Set("LogoutDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss"));
 
-                await collection.UpdateManyAsync(filter, update);
-            });
+                collection.UpdateMany(filter, update);
 
-            var document = new BsonDocument
+
+                var document = new BsonDocument
                     {
                         { "Values", Value },
                         { "State", State },
@@ -71,23 +71,22 @@ namespace DataKeeper.Engine
                         { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") }
                     };
 
-            Task TTask2 = Task.Run(async () =>
-            {
-                var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
-                await collection.InsertOneAsync(document);
+                var collection2 = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
+                collection2.InsertOne(document);
+
             });
         }
 
         public void insert_user_logout(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
         {
-            Task TTask = Task.Run(async () =>
+            Task TTask = Task.Run(() =>
             {
                 var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
                 var builder = Builders<BsonDocument>.Filter;
                 var filter = builder.Eq("Values", Value) & builder.Eq("State", "LOGIN") & builder.Eq("LogoutDate", "");
                 var update = Builders<BsonDocument>.Update.Set("State", State).Set("LogoutDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss"));
                 
-                await collection.UpdateManyAsync(filter, update);
+                collection.UpdateMany(filter, update);
             });
         }
 
@@ -105,7 +104,7 @@ namespace DataKeeper.Engine
 
         public void insert_dome_open(String StationName, String DeviceName, String FieldName, String Value, DateTime AccessDate, DateTime DataTimestamp)
         {
-            Task TTask = Task.Run(async () =>
+            Task TTask = Task.Run(() =>
             {
                 var dome_side = "";
 
@@ -127,18 +126,18 @@ namespace DataKeeper.Engine
                     var filter3 = builder3.Eq("State", "OPEN");
                     var cursor3 = collection3.Find(filter3);
 
-                    var count3 = cursor3.CountAsync();
+                    long count3 = cursor3.Count();
 
-                    if (count3.Result <= 0)
+                    if (count3 <= 0)
                     {
                         var collection2 = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_STATE");
                         var builder2 = Builders<BsonDocument>.Filter;
                         var filter2 = builder2.Eq("State", "OPEN") & builder2.Eq("CloseDate", "");
                         var cursor2 = collection2.Find(filter2);
 
-                        var count2 = cursor2.CountAsync();
+                        long count2 = cursor2.Count();
 
-                        if (count2.Result <= 0) //NO OPENED State, Do insert to DB.
+                        if (count2 <= 0) //NO OPENED State, Do insert to DB.
                         {
                             var document = new BsonDocument
                                 {
@@ -148,7 +147,7 @@ namespace DataKeeper.Engine
                                     { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") }
                                 };
 
-                            await collection2.InsertOneAsync(document);
+                            collection2.InsertOne(document);
                         }
                     }
 
@@ -157,9 +156,9 @@ namespace DataKeeper.Engine
                     var filter = builder.Eq("SHUTTER", dome_side) & builder.Eq("State", "OPEN") & builder.Eq("CloseDate", "");
                     var cursor = collection.Find(filter);
 
-                    var count = cursor.CountAsync();
+                    long count = cursor.Count();
 
-                    if (count.Result <= 0) //NO OPENED State, Do insert to DB.
+                    if (count <= 0) //NO OPENED State, Do insert to DB.
                     {
                         var document = new BsonDocument
                         {
@@ -170,7 +169,7 @@ namespace DataKeeper.Engine
                             { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") }
                         };
 
-                        await collection.InsertOneAsync(document);
+                        collection.InsertOne(document);
                     }
                 }
             });
@@ -178,7 +177,7 @@ namespace DataKeeper.Engine
 
         public void insert_dome_close(String StationName, String DeviceName, String FieldName, String Value, DateTime AccessDate, DateTime DataTimestamp)
         {
-            Task TTask = Task.Run(async () =>
+            Task TTask = Task.Run(() =>
             {
                 var dome_side = "";
 
@@ -198,7 +197,7 @@ namespace DataKeeper.Engine
                     var filter = builder.Eq("SHUTTER", dome_side) & builder.Eq("State", "OPEN") & builder.Eq("CloseDate", "");
                     var update = Builders<BsonDocument>.Update.Set("State", "CLOSE").Set("CloseDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss"));
 
-                    await collection.UpdateManyAsync(filter, update);
+                    collection.UpdateMany(filter, update);
 
                     var collection3 = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_TEMP");
                     var builder3 = Builders<BsonDocument>.Filter;
@@ -214,7 +213,7 @@ namespace DataKeeper.Engine
                         var filter2 = builder2.Eq("State", "OPEN") & builder2.Eq("CloseDate", "");
                         var update2 = Builders<BsonDocument>.Update.Set("State", "CLOSE").Set("CloseDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss"));
 
-                        await collection2.UpdateManyAsync(filter2, update2);
+                        collection2.UpdateMany(filter2, update2);
 
                         //DELETE TEMP TABLE
                         //await _database.DropCollectionAsync(StationName + "_" + DeviceName + "_TEMP");

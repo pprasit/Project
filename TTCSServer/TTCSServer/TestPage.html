@@ -53,12 +53,13 @@
 	<script src="Jquery/external/jquery/jquery.js"></script>
 	<script type="text/javascript">
 
-		var StationName = "AIRFORCE";
-		//var StationName = "ASTROPARK";
+		//var StationName = "AIRFORCE";
+        //var StationName = "ASTROPARK";
+        var StationName = "USA";
 		
 		function connect() {
-		    //ws = new WebSocket("ws://192.168.2.110:8096");
-			ws = new WebSocket("ws://192.168.161.1:8096");
+		    ws = new WebSocket("ws://192.168.2.110:8096");
+			//ws = new WebSocket("ws://192.168.161.1:8096");
 
 			ws.onopen = function () {
 			    $("#ImageFileName").val("Connected");
