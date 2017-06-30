@@ -154,14 +154,11 @@ namespace DataKeeper.Interface
 
                     if (ThisConnection != null)
                     {
-                        Console.WriteLine("Auten is here");
                         OnMessageHandler(ThisConnection, message);
 
                         MethodInfo method = ObjMainPage.GetType().GetMethod("RelayMessageToMonitoring");
                         method.Invoke(ObjMainPage, new object[] { message });
                     }
-                    else
-                        Console.WriteLine("Connection is null");
                 };
             });
         }
@@ -251,7 +248,6 @@ namespace DataKeeper.Interface
                 {
                     if (TimeCounter <= 60)
                     {
-                        Console.WriteLine("Count down -> " + TimeCounter);
                         ThisConnection.IsBlockingStart = true;
                         TimeCounter++;
                     }
@@ -270,10 +266,7 @@ namespace DataKeeper.Interface
         {
             ConnectionHistory ThisConnection = ConnectionCounter.FirstOrDefault(Item => Item.Value.IPAddress == IPAddress).Value;
             if (ThisConnection != null && ThisConnection.Counter >= 10)
-            {
-                Console.WriteLine("The count has rich a limit -> " + ThisConnection.Counter);
                 return true;
-            }
 
             return false;
         }
@@ -287,7 +280,6 @@ namespace DataKeeper.Interface
                 CreateHistory.IsBlockingStart = false;
                 CreateHistory.Counter = 1;
 
-                Console.WriteLine("Add connection history " + CreateHistory.IPAddress + " " + CreateHistory.Counter);
                 ConnectionCounter.TryAdd(IPAddress, CreateHistory);
             }
         }
@@ -296,7 +288,6 @@ namespace DataKeeper.Interface
         {
             List<ConnectionHistory> ConnectionList = ConnectionCounter.Values.Where(Item => Item.Counter == 10).ToList();
 
-            Console.WriteLine("Unblock connection -> (count unblock) " + ConnectionList.Count);
             foreach (ConnectionHistory ThisConnection in ConnectionList)
             {
                 ConnectionHistory TempHistory;
@@ -308,7 +299,6 @@ namespace DataKeeper.Interface
         {
             List<ConnectionHistory> IPAddressHistoryList = ConnectionCounter.Values.Where(Item => Item.IPAddress == IPAddress).ToList();
 
-            Console.WriteLine("Remove all block connection by IPAddress -> " + IPAddress);
             foreach (ConnectionHistory ThisConnection in IPAddressHistoryList)
             {
                 ConnectionHistory TempHistory;

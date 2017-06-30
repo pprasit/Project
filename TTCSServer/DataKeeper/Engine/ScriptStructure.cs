@@ -104,6 +104,9 @@ namespace DataKeeper.Engine
             ScriptDB.ScriptState = ScriptState;
             DatabaseSynchronization.ScriptSaveChange(true);
 
+            if (ScriptState == "ENDTIMEPASSED")
+                Console.WriteLine("ENDTIMEPASSED");
+
             UpdateScriptToMonitoring(ScriptDB);
         }
 
@@ -345,7 +348,8 @@ namespace DataKeeper.Engine
                         {
                             if (!VerifyTotalExecutionTime(WaitingScriptList[0]))
                             {
-                                WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), "All script is sending to client.", "Script_Success");
+                                if (ThisBuffer != null)
+                                    WebSockets.ReturnScriptResult(ThisBuffer.WSConnection, ThisBuffer.Script.BlockName, ThisBuffer.Script.BlockID, ThisBuffer.Script.ExecutionNumber.ToString(), ThisBuffer.Script.CommandName.ToString(), "All script is sending to client.", "Script_Success");
 
                                 List<ScriptTB> InValidScript = ScriptDBBuffer.Values.Where(Item => Item.BlockID == WaitingScriptList[0].BlockID).ToList();
 
@@ -354,6 +358,8 @@ namespace DataKeeper.Engine
                                     ScriptTB TempScript = null;
                                     ScriptDBBuffer.TryRemove(ThisScript.BlockID + ThisScript.ExecutionNumber, out TempScript);
                                     DatabaseSynchronization.DeleteScript(TempScript);
+
+                                    RemoveScriptToMonitoring(TempScript);
                                 }
                                 return false;
                             }

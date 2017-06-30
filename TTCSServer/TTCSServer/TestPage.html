@@ -54,8 +54,8 @@
 	<script type="text/javascript">
 
 		//var StationName = "AIRFORCE";
-        //var StationName = "ASTROPARK";
-        var StationName = "USA";
+        var StationName = "ASTROPARK";
+        //var StationName = "USA";
 		
 		function connect() {
 		    ws = new WebSocket("ws://192.168.70.211:8096");
@@ -117,15 +117,14 @@
 		$("#BtnSendScript").click(function () {
 		    //ws.send("Subscribe&Station=ASTROSERVER&DeviceName=ASTROPARK_SERVER&FieldName=ASTROSERVER_ALLSCRIPTBLOCK");			
 
-			var now = new Date;
-			var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());						
+			var now = new Date;					
 
 			var HourNow = now.getUTCHours();
 			var dateStart1 = epochToDate(now.setUTCHours(HourNow - 1))
 			var dateEnd1 = epochToDate(now.setUTCHours(HourNow + 1))
 
-			var dateStart2 = epochToDate(now.setUTCHours(HourNow - 1))
-			var dateEnd2 = epochToDate(now.setUTCHours(HourNow - 1))		
+			var dateStart2 = epochToDate(now.setUTCHours(HourNow - 3))
+			var dateEnd2 = epochToDate(now.setUTCHours(HourNow - 2))		
 
 			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=1&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=5&StationName=" + StationName + "&DeviceName=" + StationName + "_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
 			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=2&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=10&StationName=" + StationName + "&DeviceName=" + StationName + "_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=14750");
