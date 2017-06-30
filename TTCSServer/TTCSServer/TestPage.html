@@ -124,26 +124,8 @@
 			var dateStart1 = epochToDate(now.setUTCHours(HourNow - 1))
 			var dateEnd1 = epochToDate(now.setUTCHours(HourNow + 1))
 
-			var dateStart2 = epochToDate(now.setUTCHours(HourNow + 1))
-			var dateEnd2 = epochToDate(now.setUTCHours(HourNow + 2))
-			
-			//alert(now.getUTCHours() - 1);
-
-			//dateStart1.setHours(dateStart1.getHours() - 1);
-			//dateEnd1.setHours(dateEnd1.getHours() + 1);				
-
-			//dateStart1 = Date.UTC(dateStart1.getUTCFullYear(), dateStart1.getUTCMonth(), dateStart1.getUTCDate(), dateStart1.getUTCHours(), dateStart1.getUTCMinutes(), dateStart1.getUTCSeconds(), dateStart1.getUTCMilliseconds());
-			//dateEnd1 = Date.UTC(dateEnd1.getUTCFullYear(), dateEnd1.getUTCMonth(), dateEnd1.getUTCDate(), dateEnd1.getUTCHours(), dateEnd1.getUTCMinutes(), dateEnd1.getUTCSeconds(), dateEnd1.getUTCMilliseconds());
-
-			//var dateStart2 = new Date().getTime();
-			//var dateEnd2 = new Date().getTime();
-			//dateStart2.setHours(dateStart2.getHours() +1);
-			//dateEnd2.setHours(dateEnd2.getHours() + 2);
-
-			//dateStart2 = Date.UTC(dateStart2.getUTCFullYear(), dateStart2.getUTCMonth(), dateStart2.getUTCDate(), dateStart2.getUTCHours(), dateStart2.getUTCMinutes(), dateStart2.getUTCSeconds(), dateStart2.getUTCMilliseconds());
-			//dateEnd2 = Date.UTC(dateEnd2.getUTCFullYear(), dateEnd2.getUTCMonth(), dateEnd2.getUTCDate(), dateEnd2.getUTCHours(), dateEnd2.getUTCMinutes(), dateEnd2.getUTCSeconds(), dateEnd2.getUTCMilliseconds());
-						
-			
+			var dateStart2 = epochToDate(now.setUTCHours(HourNow - 1))
+			var dateEnd2 = epochToDate(now.setUTCHours(HourNow - 1))		
 
 			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=1&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=5&StationName=" + StationName + "&DeviceName=" + StationName + "_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
 			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=2&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=10&StationName=" + StationName + "&DeviceName=" + StationName + "_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=14750");

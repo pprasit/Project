@@ -41,11 +41,10 @@ namespace DataKeeper.Engine
 
     public static class ScriptManager
     {
+        public static Boolean IsScriptActive = true;
         public static Double ScriptLifeTimeValue = 2.0;
-
         private static ConcurrentQueue<ScriptBuffer> NewScriptBuffer = null;
         private static ConcurrentDictionary<String, ScriptTB> ScriptDBBuffer = null;
-
         private static Object ScriptMonitoring = null;
 
         public static void CreateScriptPool()
@@ -68,7 +67,7 @@ namespace DataKeeper.Engine
                 case ASTROCLIENT.ASTROCLIENT_LASTESTEXECTIONCOMMAND: break;
                 case ASTROCLIENT.ASTROCLIENT_LASTESTEXECUTIONSCRIPT_STATUS:
                     {
-                        SendScriptToHTTP();
+                        //SendScriptToHTTP();
                         UpdateExecutionState(StationName, Value); break;
                     }
                 case ASTROCLIENT.ASTROCLIENT_LASTESTSCRIPT_RECIVED:
@@ -103,8 +102,8 @@ namespace DataKeeper.Engine
                 return;
 
             ScriptDB.ScriptState = ScriptState;
-
             DatabaseSynchronization.ScriptSaveChange(true);
+
             UpdateScriptToMonitoring(ScriptDB);
         }
 
@@ -190,7 +189,7 @@ namespace DataKeeper.Engine
             Task TTCSTask = Task.Run(() =>
             {
                 Boolean IsDatabaseUpdate = false;
-                while (true)
+                while (IsScriptActive)
                 {
                     ScriptBuffer ThisBuffer = null;
                     if (NewScriptBuffer.TryDequeue(out ThisBuffer))

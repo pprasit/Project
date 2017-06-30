@@ -463,5 +463,12 @@ namespace TTCSServer
             ObjUserMonitoring.Owner = this;
             ObjUserMonitoring.Show();
         }
+
+        private void MainWindows_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ScriptManager.IsScriptActive = false;
+            ObjScriptMonitoring.Close();
+            ObjScriptMonitoring.Dispose();
+        }
     }
 }

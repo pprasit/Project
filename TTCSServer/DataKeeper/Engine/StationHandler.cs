@@ -395,7 +395,7 @@ namespace DataKeeper.Engine
             if (ExistingInformation != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
-                if (ThisField != null)
+                if (ThisField != null && db != null)
                 {
                     db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Convert.ToBase64String((byte[])Value), DataTimestamp);
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);

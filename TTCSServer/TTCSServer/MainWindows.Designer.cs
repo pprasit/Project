@@ -33,6 +33,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindows));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.BtnUserManagenment = new System.Windows.Forms.Button();
             this.BtnScriptManager = new System.Windows.Forms.Button();
             this.BtnSetup = new System.Windows.Forms.Button();
             this.StationStatus = new System.Windows.Forms.Label();
@@ -83,7 +84,6 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label7 = new System.Windows.Forms.Label();
-            this.BtnUserManagenment = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TTCSLogGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -117,6 +117,16 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Station Information";
+            // 
+            // BtnUserManagenment
+            // 
+            this.BtnUserManagenment.Location = new System.Drawing.Point(516, 28);
+            this.BtnUserManagenment.Name = "BtnUserManagenment";
+            this.BtnUserManagenment.Size = new System.Drawing.Size(75, 23);
+            this.BtnUserManagenment.TabIndex = 5;
+            this.BtnUserManagenment.Text = "User";
+            this.BtnUserManagenment.UseVisualStyleBackColor = true;
+            this.BtnUserManagenment.Click += new System.EventHandler(this.BtnUserManagenment_Click);
             // 
             // BtnScriptManager
             // 
@@ -681,16 +691,6 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Avaliable Device";
             // 
-            // BtnUserManagenment
-            // 
-            this.BtnUserManagenment.Location = new System.Drawing.Point(516, 28);
-            this.BtnUserManagenment.Name = "BtnUserManagenment";
-            this.BtnUserManagenment.Size = new System.Drawing.Size(75, 23);
-            this.BtnUserManagenment.TabIndex = 5;
-            this.BtnUserManagenment.Text = "User";
-            this.BtnUserManagenment.UseVisualStyleBackColor = true;
-            this.BtnUserManagenment.Click += new System.EventHandler(this.BtnUserManagenment_Click);
-            // 
             // MainWindows
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -705,6 +705,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TTCS Server V 1.0";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindows_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TTCSLogGrid)).EndInit();

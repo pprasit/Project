@@ -50,7 +50,7 @@ namespace DataKeeper.Engine
 
         private static List<Object[]> GetAllInformation(String StationName, String TableName)
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             if (TableName == "UserTB")
             {
                 List<UserTB> UserList = db.UserTBs.ToList();
@@ -96,7 +96,7 @@ namespace DataKeeper.Engine
 
         public static List<UserTB> GetAllUser()
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
 
             if (db != null)
                 return db.UserTBs.ToList();
@@ -119,14 +119,14 @@ namespace DataKeeper.Engine
 
         private static void DeleteUser(List<Object[]> TableField)
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             db.UserTBs.Remove(db.UserTBs.FirstOrDefault(Item => Item.UserID == TableField.ElementAt(0)[0].ToString()));
             db.SaveChangesAsync();
         }
 
         private static void UpdateUser(List<Object[]> TableField, STATIONNAME StationName)
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             UserTB CheckUser = new UserTB();
             CheckUser.UserID = TableField.ElementAt(0)[0].ToString();
             CheckUser.UserName = TableField.ElementAt(0)[1].ToString();
@@ -174,7 +174,7 @@ namespace DataKeeper.Engine
 
         private static Object SyncExistingUser(List<Object[]> TableField)
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             List<UserTB> UserList = db.UserTBs.ToList();
             List<UserTB> NewUser = new List<UserTB>();
             List<UserTB> StationUsers = new List<UserTB>();
@@ -232,7 +232,7 @@ namespace DataKeeper.Engine
 
         private static void UpdateLog(String StationName, List<Object[]> TableField)
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             LogTB CheckLog = new LogTB();
             CheckLog.LogID = TableField.ElementAt(0)[0].ToString();
             CheckLog.StationName = TableField.ElementAt(0)[0].ToString();
@@ -252,7 +252,7 @@ namespace DataKeeper.Engine
 
         private static void DeleteLog(String LogID)
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             db.LogTBs.Remove(db.LogTBs.FirstOrDefault(Item => Item.LogID == LogID));
             db.SaveChangesAsync();
         }
@@ -261,7 +261,7 @@ namespace DataKeeper.Engine
         {
             try
             {
-                Entities db = RefreshDB();
+                db = RefreshDB();
                 List<LogTB> LogList = db.LogTBs.Where(Item => Item.StationName == StationName).ToList();
                 List<LogTB> NewServerLog = new List<LogTB>();
                 List<LogTB> NewStationLog = new List<LogTB>();
@@ -328,7 +328,7 @@ namespace DataKeeper.Engine
 
         public static List<ScriptTB> GetScript()
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             if (db != null)
                 return db.ScriptTBs.ToList();
             else
@@ -337,7 +337,9 @@ namespace DataKeeper.Engine
 
         public static void InsertScript(ScriptTB ThisScript)
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
+
+            int Temp = db.UserTBs.Count();
             db.ScriptTBs.Add(ThisScript);
         }
 
@@ -345,7 +347,7 @@ namespace DataKeeper.Engine
         {
             try
             {
-                Entities db = RefreshDB();
+                db = RefreshDB();
                 db.ScriptTBs.Remove(ThisScript);
             }
             catch { }
@@ -353,7 +355,7 @@ namespace DataKeeper.Engine
 
         public static void DeleteAllScript()
         {
-            Entities db = RefreshDB();
+            db = RefreshDB();
             db.ScriptTBs.RemoveRange(db.ScriptTBs);
         }
 
