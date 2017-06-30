@@ -68,7 +68,7 @@ namespace TTCSServer
 
             DatabaseSynchronization.SetDBConnection(Properties.Settings.Default.DatabaseName, Properties.Settings.Default.DatabaseUserName, Properties.Settings.Default.DatabasePassword, Properties.Settings.Default.DatabaseServerName);
             FITSHandler.CreateMaximObject();
-            ScriptManager.CreateScriptPool();            
+            ScriptManager.CreateScriptPool();
         }
 
         private void InitializeStation()
@@ -467,8 +467,7 @@ namespace TTCSServer
         private void MainWindows_FormClosing(object sender, FormClosingEventArgs e)
         {
             ScriptManager.IsScriptActive = false;
-            ObjScriptMonitoring.Close();
-            ObjScriptMonitoring.Dispose();
+            Environment.Exit(0);
         }
     }
 }

@@ -99,7 +99,11 @@ namespace DataKeeper.Engine
             db = RefreshDB();
 
             if (db != null)
-                return db.UserTBs.ToList();
+                try
+                {
+                    return db.UserTBs.ToList();
+                }
+                catch { }
             return null;
         }
 
@@ -330,7 +334,11 @@ namespace DataKeeper.Engine
         {
             db = RefreshDB();
             if (db != null)
-                return db.ScriptTBs.ToList();
+                try
+                {
+                    return db.ScriptTBs.ToList();
+                }
+                catch { return null; }
             else
                 return null;
         }

@@ -316,17 +316,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="MaxIm">
-      <Guid>{B4955EC7-F7F2-11D2-AA9C-444553540000}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <EntityDeploy Include="AstroDataModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
@@ -352,6 +341,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\Configuration\" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="MaxIm">
+      <Guid>{B4955EC7-F7F2-11D2-AA9C-444553540000}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
