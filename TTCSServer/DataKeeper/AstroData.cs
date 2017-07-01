@@ -255,7 +255,7 @@ namespace DataKeeper
             {
                 Task ImagingTask = Task.Run(() =>
                 {
-                    int Ratio = Convert.ToInt32(ExistingStation.GetInformation(DeviceName, IMAGING.IMAGING_PREVIEW_RATIO).Value);
+                    //int Ratio = Convert.ToInt32(ExistingStation.GetInformation(DeviceName, IMAGING.IMAGING_PREVIEW_RATIO).Value);
 
                     ImageData = FITSHandler.ReadFITSFile(PathName);
 
