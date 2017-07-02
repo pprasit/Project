@@ -255,20 +255,10 @@ namespace DataKeeper
             {
                 Task ImagingTask = Task.Run(() =>
                 {
-                    //int Ratio = Convert.ToInt32(ExistingStation.GetInformation(DeviceName, IMAGING.IMAGING_PREVIEW_RATIO).Value);
-
                     ImageData = FITSHandler.ReadFITSFile(PathName);
 
                     if (ImageData != null)
                         ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_IMAGEARRAY16, ImageData.Data, DateTime.Now);
-
-                    //ImageData = FITSHandler.ResizeImage(ImageData, Width, Height);
-                    //Double MinIntensity = 0;
-                    //Double MaxIntensity = 0;
-                    //FITSHandler.GetPercentileProfile(out MinIntensity, out MaxIntensity);
-                    //FITSHandler.StretchImage(ImageData, );
-
-                    //FITSHandler.SaveImage(ImageData, StationName.ToString());
                 });
             }
         }

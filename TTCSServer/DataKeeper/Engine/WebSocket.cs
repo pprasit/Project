@@ -56,6 +56,7 @@ namespace DataKeeper.Interface
         public Boolean BreakTimout { get; set; }
         public String UserName { get; set; }
         public String Password { get; set; }
+        public String UserPermission { get; set; }
         public List<String> Messages { get; set; }
         public ConcurrentDictionary<String, SubscribeStructure> SubscribeList { get; set; }
 
@@ -126,6 +127,7 @@ namespace DataKeeper.Interface
                     ThisConnection.IsConnected = true;
                     ThisConnection.UserName = null;
                     ThisConnection.Password = null;
+                    ThisConnection.UserPermission = null;
                     ThisConnection.Messages = new List<String>();
                     ThisConnection.BreakTimout = false;
                     ThisConnection.CreateConnectionTimeout();
@@ -223,7 +225,10 @@ namespace DataKeeper.Interface
                     else if (SplitedParameter[0] == "Set")
                     {
                         if (SplitedParameter.Count() >= 4)
-                            SetHandler(ThisConnection, SplitedParameter);
+                            if (ThisConnection.UserPermission != "Guest")
+                                SetHandler(ThisConnection, SplitedParameter);
+                            else
+                                ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Set", "You don't have a permission to send a set command to server.", "Set_Error");
                         else
                             ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Set", "Invalid format for set method. The format for 'Set' method is 'Set&Station=???&DeviceName=???&CommandName=???&ParameterName....'", "Set_Error");
                     }
@@ -620,6 +625,7 @@ namespace DataKeeper.Interface
                         ThisConnection.IsLogin = true;
                         ThisConnection.UserName = UserName;
                         ThisConnection.Password = Password;
+                        ThisConnection.UserPermission = ThisUser.UserPermissionType;
 
                         ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Authentication", "Login successful.", "Authentication_Successful");
                         return true;
