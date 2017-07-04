@@ -830,8 +830,6 @@ namespace DataKeeper.Interface
 
             var json = new JavaScriptSerializer().Serialize(ThisResult);
             SendMessage(ThisConnection.WSClient, json);
-            //SetReturningToMonitoring(TotalByte, ThisStation == STATIONNAME.NULL ? "Error" : ThisStation.ToString() + " - " + (ThisDeviceCategory == DEVICECATEGORY.NULL ? "Error" : ThisDeviceNameStr.ToString()) + " - " +
-            //    ThisFieldName == null ? "Error" : ThisFieldName.ToString(), ThisResult.Value.ToString(), ConditionCase);
         }
 
         private static DEVICENAME GetDeviceNameFromStr(String DeviceNameStr)
@@ -1075,6 +1073,7 @@ namespace DataKeeper.Interface
             foreach (KeyValuePair<String, WSConnection> ThisConnection in AllConnection)
             {
                 SubscribeStructure ThisSub = ThisConnection.Value.SubscribeList.FirstOrDefault(Item => Item.Value.StationName == StationName && Item.Value.DeviceName == DeviceName && Item.Value.FieldName.ToString() == FieldName).Value;
+
                 if (ThisSub != null)
                 {
                     ResultStructure ThisResult = new ResultStructure();
@@ -1082,20 +1081,10 @@ namespace DataKeeper.Interface
                     ThisResult.DeviceName = DeviceName.ToString();
                     ThisResult.FieldName = FieldName;
 
-                    if (FieldName == "IMAGING_PREVIEW_BASE64")
-                    {
-                        if (Value.GetType() == typeof(Byte[]))
-                            ThisResult.Value = Convert.ToBase64String((byte[])Value);
-                        else
-                            ThisResult.Value = Value.ToString();
-                    }
+                    if (Value.GetType() == typeof(Byte[]))
+                        ThisResult.Value = Convert.ToBase64String((byte[])Value);
                     else
-                    {
-                        if (Value.GetType() == typeof(Byte[]))
-                            ThisResult.Value = Convert.ToBase64String((byte[])Value);
-                        else
-                            ThisResult.Value = Value.ToString();
-                    }
+                        ThisResult.Value = Value.ToString();
 
                     ThisResult.DataType = Value.GetType().ToString().Replace("System.", "");
                     ThisResult.DataTimeStamp = DataTimeStamp.ToString();
@@ -1105,7 +1094,6 @@ namespace DataKeeper.Interface
                     var json = Serializer.Serialize(ThisResult);
 
                     SendMessage(ThisConnection.Value.WSClient, json);
-                    //SetReturningToMonitoring(TotalByte, StationName + " - " + DeviceName + " - " + FieldName, Value.ToString(), ConditionCase);
                 }
             }
         }
