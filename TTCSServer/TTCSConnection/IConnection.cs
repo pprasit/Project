@@ -131,6 +131,9 @@ namespace TTCSConnection
         void OnDatabaseSync(List<Object[]> AllInformation);
 
         [OperationContract(IsOneWay = true)]
+        void OnInformationSync(STATIONNAME StationName, DEVICENAME DeviceName, dynamic FieldName);
+
+        [OperationContract(IsOneWay = true)]
         void OnUpdateUser(String UserID, String UserName, String UserLoginName, String UserLoginPassword, String UserPermissionType, String UserStationPermission, DATAACTION UserAction);
     }
 }
