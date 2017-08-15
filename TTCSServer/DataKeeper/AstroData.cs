@@ -207,30 +207,41 @@ namespace DataKeeper
 
         private static void LoadPerviewImage(STATIONNAME StationName, DEVICENAME DeviceName, StationHandler ExistingStation)
         {
-            String GetPath = "";
-            switch (StationName)
+            Task DomeTask = Task.Run(async () =>
             {
-                case STATIONNAME.AIRFORCE: GetPath = @"c:\FTP\AF\PreviewImg.jpg"; break;
-                case STATIONNAME.ASTROPARK: GetPath = @"c:\FTP\ASP\PreviewImg.jpg"; break;
-                case STATIONNAME.CHACHOENGSAO: GetPath = @"c:\FTP\CCO\PreviewImg.jpg"; break;
-                case STATIONNAME.NAKHONRATCHASIMA: GetPath = @"c:\FTP\NKA\PreviewImg.jpg"; break;
-                case STATIONNAME.CHINA: GetPath = @"c:\FTP\CHA\PreviewImg.jpg"; break;
-                case STATIONNAME.AUSTRIA: GetPath = @"c:\FTP\AUS\PreviewImg.jpg"; break;
-                case STATIONNAME.USA: GetPath = @"c:\FTP\USA\PreviewImg.jpg"; break;
-            }
-
-            Task DomeTask = Task.Run(() =>
-            {
-                using (Image image = Image.FromFile(GetPath))
+                String GetPath = "";
+                switch (StationName)
                 {
+                    case STATIONNAME.AIRFORCE: GetPath = @"c:\FTP\AF\PreviewImg.jpg"; break;
+                    case STATIONNAME.ASTROPARK: GetPath = @"c:\FTP\ASP\PreviewImg.jpg"; break;
+                    case STATIONNAME.CHACHOENGSAO: GetPath = @"c:\FTP\CCO\PreviewImg.jpg"; break;
+                    case STATIONNAME.NAKHONRATCHASIMA: GetPath = @"c:\FTP\NKA\PreviewImg.jpg"; break;
+                    case STATIONNAME.CHINA: GetPath = @"c:\FTP\CHA\PreviewImg.jpg"; break;
+                    case STATIONNAME.AUSTRALIA: GetPath = @"c:\FTP\AUS\PreviewImg.jpg"; break;
+                    case STATIONNAME.USA: GetPath = @"c:\FTP\USA\PreviewImg.jpg"; break;
+                }
+
+                if (File.Exists(GetPath))
+                {
+                    StreamReader streamReader = new StreamReader(GetPath);
+                    Bitmap tmpBitmap = (Bitmap)Bitmap.FromStream(streamReader.BaseStream);
+                    Image Image = (Image)tmpBitmap;
+
                     using (MemoryStream m = new MemoryStream())
                     {
-                        image.Save(m, image.RawFormat);
+                        Image.Save(m, Image.RawFormat);
                         byte[] imageBytes = m.ToArray();
 
                         ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_BASE64, imageBytes, DateTime.Now);
                         ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_READY, true, DateTime.Now);
                     }
+
+                    streamReader.Close();
+                }
+                else
+                {
+                    await Task.Delay(1000);
+                    LoadPerviewImage(StationName, DeviceName, ExistingStation);
                 }
             });
         }
@@ -247,7 +258,7 @@ namespace DataKeeper
                 case STATIONNAME.CHACHOENGSAO: PathName = @"c:\FTP\CCO\Lastest.FITS"; break;
                 case STATIONNAME.NAKHONRATCHASIMA: PathName = @"c:\FTP\NKA\Lastest.FITS"; break;
                 case STATIONNAME.CHINA: PathName = @"c:\FTP\CHA\Lastest.FITS"; break;
-                case STATIONNAME.AUSTRIA: PathName = @"c:\FTP\AUS\Lastest.FITS"; break;
+                case STATIONNAME.AUSTRALIA: PathName = @"c:\FTP\AUS\Lastest.FITS"; break;
                 case STATIONNAME.USA: PathName = @"c:\FTP\USA\Lastest.FITS"; break;
             }
 
@@ -365,7 +376,7 @@ namespace DataKeeper
             return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#TT003) Failed to relay set command to station.", false);
         }
 
-        public static ReturnKnowType UpdateStationUser(String UserID, String UserName, String UserLoginName, String UserLoginPassword, String UserPermissionType, String USerStationPermission,String StationName, DATAACTION UserAction)
+        public static ReturnKnowType UpdateStationUser(String UserID, String UserName, String UserLoginName, String UserLoginPassword, String UserPermissionType, String USerStationPermission, String StationName, DATAACTION UserAction)
         {
             STATIONNAME ThisStationName = TTCSHelper.StationStrConveter(StationName);
             StationHandler ThisSite = KeeperData.FirstOrDefault(Item => Item.StationName == ThisStationName);
@@ -495,8 +506,8 @@ namespace DataKeeper
         {
             if (Name == STATIONNAME.ASTROSERVER.ToString())
                 return STATIONNAME.ASTROSERVER;
-            else if (Name == STATIONNAME.AUSTRIA.ToString())
-                return STATIONNAME.AUSTRIA;
+            else if (Name == STATIONNAME.AUSTRALIA.ToString())
+                return STATIONNAME.AUSTRALIA;
             else if (Name == STATIONNAME.CHINA.ToString())
                 return STATIONNAME.CHINA;
             else if (Name == STATIONNAME.AIRFORCE.ToString())

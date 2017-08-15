@@ -81,7 +81,7 @@ namespace TTCSServer
             AstroData.CreateStation(STATIONNAME.NAKHONRATCHASIMA, NAKHONRATCHASIMADeviceMap());
             AstroData.CreateStation(STATIONNAME.SONGKLA, SONGKLADeviceMap());
             AstroData.CreateStation(STATIONNAME.USA, USADeviceMap());
-            AstroData.CreateStation(STATIONNAME.AUSTRIA, AUSTRIADeviceMap());
+            AstroData.CreateStation(STATIONNAME.AUSTRALIA, AUSTRALIADeviceMap());
 
             AstroData.NewASTROCLIENTInformation(STATIONNAME.AIRFORCE, DEVICENAME.AIRFORCE_ASTROCLIENT, ASTROCLIENT.ASTROCLIENT_LISTOFAVLIABLEDEVICES_DATA,
                 DEVICENAME.AIRFORCE_TS700MM.ToString() + ", " + DEVICENAME.AIRFORCE_IMAGING.ToString() + ", " + DEVICENAME.AIRFORCE_ASTROHEVENDOME.ToString() + ", " + DEVICENAME.AIRFORCE_SQM.ToString() + ", " + DEVICENAME.AIRFORCE_SEEING.ToString() + "," +
@@ -118,10 +118,10 @@ namespace TTCSServer
                 DEVICENAME.USA_ALLSKY.ToString() + ", " + DEVICENAME.USA_WEATHER.ToString() + ", " + DEVICENAME.USA_LANOUTLET.ToString() + ", " + DEVICENAME.USA_CCTV.ToString() + ", " + DEVICENAME.USA_GPS.ToString() + ", " +
                 DEVICENAME.USA_ASTROCLIENT.ToString(), DateTime.Now);
 
-            AstroData.NewASTROCLIENTInformation(STATIONNAME.AUSTRIA, DEVICENAME.AUSTRIA_ASTROCLIENT, ASTROCLIENT.ASTROCLIENT_LISTOFAVLIABLEDEVICES_DATA,
-                DEVICENAME.AUSTRIA_TS700MM.ToString() + ", " + DEVICENAME.AUSTRIA_IMAGING.ToString() + ", " + DEVICENAME.AUSTRIA_ASTROHEVENDOME.ToString() + ", " + DEVICENAME.AUSTRIA_SQM.ToString() + ", " + DEVICENAME.AUSTRIA_SEEING.ToString() + "," +
-                DEVICENAME.AUSTRIA_ALLSKY.ToString() + ", " + DEVICENAME.AUSTRIA_WEATHER.ToString() + ", " + DEVICENAME.AUSTRIA_LANOUTLET.ToString() + ", " + DEVICENAME.AUSTRIA_CCTV.ToString() + ", " + DEVICENAME.AUSTRIA_GPS.ToString() + ", " +
-                DEVICENAME.AUSTRIA_ASTROCLIENT.ToString(), DateTime.Now);
+            AstroData.NewASTROCLIENTInformation(STATIONNAME.AUSTRALIA, DEVICENAME.AUSTRALIA_ASTROCLIENT, ASTROCLIENT.ASTROCLIENT_LISTOFAVLIABLEDEVICES_DATA,
+                DEVICENAME.AUSTRALIA_TS700MM.ToString() + ", " + DEVICENAME.AUSTRALIA_IMAGING.ToString() + ", " + DEVICENAME.AUSTRALIA_ASTROHEVENDOME.ToString() + ", " + DEVICENAME.AUSTRALIA_SQM.ToString() + ", " + DEVICENAME.AUSTRALIA_SEEING.ToString() + "," +
+                DEVICENAME.AUSTRALIA_ALLSKY.ToString() + ", " + DEVICENAME.AUSTRALIA_WEATHER.ToString() + ", " + DEVICENAME.AUSTRALIA_LANOUTLET.ToString() + ", " + DEVICENAME.AUSTRALIA_CCTV.ToString() + ", " + DEVICENAME.AUSTRALIA_GPS.ToString() + ", " +
+                DEVICENAME.AUSTRALIA_ASTROCLIENT.ToString(), DateTime.Now);
 
             UIHandler.SetDeviceList();
         }
@@ -261,20 +261,20 @@ namespace TTCSServer
             return DeviceObject;
         }
 
-        private List<DEVICEMAPPER> AUSTRIADeviceMap()
+        private List<DEVICEMAPPER> AUSTRALIADeviceMap()
         {
             List<DEVICEMAPPER> DeviceObject = new List<DEVICEMAPPER>();
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.TS700MM, DeviceName = DEVICENAME.AUSTRIA_TS700MM });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.IMAGING, DeviceName = DEVICENAME.AUSTRIA_IMAGING });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.ASTROHEVENDOME, DeviceName = DEVICENAME.AUSTRIA_ASTROHEVENDOME });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.SQM, DeviceName = DEVICENAME.AUSTRIA_SQM });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.SEEING, DeviceName = DEVICENAME.AUSTRIA_SEEING });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.ALLSKY, DeviceName = DEVICENAME.AUSTRIA_ALLSKY });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.WEATHERSTATION, DeviceName = DEVICENAME.AUSTRIA_WEATHER });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.LANOUTLET, DeviceName = DEVICENAME.AUSTRIA_LANOUTLET });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.CCTV, DeviceName = DEVICENAME.AUSTRIA_CCTV });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.GPS, DeviceName = DEVICENAME.AUSTRIA_GPS });
-            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.ASTROCLIENT, DeviceName = DEVICENAME.AUSTRIA_ASTROCLIENT });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.TS700MM, DeviceName = DEVICENAME.AUSTRALIA_TS700MM });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.IMAGING, DeviceName = DEVICENAME.AUSTRALIA_IMAGING });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.ASTROHEVENDOME, DeviceName = DEVICENAME.AUSTRALIA_ASTROHEVENDOME });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.SQM, DeviceName = DEVICENAME.AUSTRALIA_SQM });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.SEEING, DeviceName = DEVICENAME.AUSTRALIA_SEEING });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.ALLSKY, DeviceName = DEVICENAME.AUSTRALIA_ALLSKY });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.WEATHERSTATION, DeviceName = DEVICENAME.AUSTRALIA_WEATHER });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.LANOUTLET, DeviceName = DEVICENAME.AUSTRALIA_LANOUTLET });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.CCTV, DeviceName = DEVICENAME.AUSTRALIA_CCTV });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.GPS, DeviceName = DEVICENAME.AUSTRALIA_GPS });
+            DeviceObject.Add(new DEVICEMAPPER() { DeviceCategory = DEVICECATEGORY.ASTROCLIENT, DeviceName = DEVICENAME.AUSTRALIA_ASTROCLIENT });
 
             return DeviceObject;
         }
@@ -310,8 +310,8 @@ namespace TTCSServer
                 return STATIONNAME.CHINA;
             else if (SearchStationName == "0.7 Meter Telescope USA")
                 return STATIONNAME.USA;
-            else if (SearchStationName == "0.7 Meter Telescope Austria")
-                return STATIONNAME.AUSTRIA;
+            else if (SearchStationName == "0.7 Meter Telescope AUSTRALIA")
+                return STATIONNAME.AUSTRALIA;
             else
                 return STATIONNAME.NULL;
         }
@@ -344,7 +344,7 @@ namespace TTCSServer
                 case 6: UIHandler.SetActiveStation(STATIONNAME.ASTROPARK, DeviceGrid, SelectedDevice, DeviceStatus, StationStatus, StationLastestTimeUpdate); break;
                 case 7: UIHandler.SetActiveStation(STATIONNAME.CHINA, DeviceGrid, SelectedDevice, DeviceStatus, StationStatus, StationLastestTimeUpdate); break;
                 case 8: UIHandler.SetActiveStation(STATIONNAME.USA, DeviceGrid, SelectedDevice, DeviceStatus, StationStatus, StationLastestTimeUpdate); break;
-                case 9: UIHandler.SetActiveStation(STATIONNAME.AUSTRIA, DeviceGrid, SelectedDevice, DeviceStatus, StationStatus, StationLastestTimeUpdate); break;
+                case 9: UIHandler.SetActiveStation(STATIONNAME.AUSTRALIA, DeviceGrid, SelectedDevice, DeviceStatus, StationStatus, StationLastestTimeUpdate); break;
             }
         }
 

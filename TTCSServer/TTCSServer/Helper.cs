@@ -87,7 +87,7 @@ namespace TTCSServer
             if (Name == "TTCS")
                 return STATIONNAME.ASTROSERVER;
             else if (Name == "AUS")
-                return STATIONNAME.AUSTRIA;
+                return STATIONNAME.AUSTRALIA;
             else if (Name == "CHA")
                 return STATIONNAME.CHINA;
             else if (Name == "AF")

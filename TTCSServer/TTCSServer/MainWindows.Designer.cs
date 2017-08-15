@@ -181,7 +181,7 @@
             "0.7 Meter Telescope Astro Park",
             "0.7 Meter Telescope China",
             "0.7 Meter Telescope USA",
-            "0.7 Meter Telescope Austria"});
+            "0.7 Meter Telescope AUSTRALIA"});
             this.StationSelection.Location = new System.Drawing.Point(137, 29);
             this.StationSelection.Name = "StationSelection";
             this.StationSelection.Size = new System.Drawing.Size(211, 21);
@@ -374,7 +374,7 @@
             "0.7 Meter Telescope Songkhla",
             "0.7 Meter Telescope China",
             "0.7 Meter Telescope USA",
-            "0.7 Meter Telescope Austria"});
+            "0.7 Meter Telescope AUSTRALIA"});
             this.SearchStationName.Location = new System.Drawing.Point(89, 8);
             this.SearchStationName.Name = "SearchStationName";
             this.SearchStationName.Size = new System.Drawing.Size(209, 21);
@@ -644,7 +644,7 @@
             "0.7 Meter Telescope Astro Park",
             "0.7 Meter Telescope China",
             "0.7 Meter Telescope USA",
-            "0.7 Meter Telescope Austria"});
+            "0.7 Meter Telescope AUSTRALIA"});
             this.SelectedDevice.Location = new System.Drawing.Point(137, 24);
             this.SelectedDevice.Name = "SelectedDevice";
             this.SelectedDevice.Size = new System.Drawing.Size(276, 21);

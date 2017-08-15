@@ -54,11 +54,12 @@
 	<script type="text/javascript">
 
 		//var StationName = "AIRFORCE";
-        var StationName = "ASTROPARK";
-        //var StationName = "USA";
+        //var StationName = "ASTROPARK";
+        // var StationName = "USA";
+        var StationName = "CHINA";
 		
 		function connect() {
-		    ws = new WebSocket("ws://192.168.70.211:8096");
+		    ws = new WebSocket("ws://192.168.2.110:8443");
 			//ws = new WebSocket("ws://192.168.161.1:8096");
 
 			ws.onopen = function () {
@@ -80,8 +81,9 @@
 		    //alert("Auten");
 			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_CCD_CAMERASTATUS");
 			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_DOWNLOAD_PROGRESS");
-			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_DOWNLOAD_STATUS");
-			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_BASE64");
+			//ws.send("Subscribe&StationName=" + StationName + "&DeviceName=" + StationName + "_CCTV&FieldName=CCTV_DEVICE1_IMAGE");
+			ws.send("Subscribe&Station=CHINA&DeviceName=CHINA_CCTV&FieldName=CCTV_DEVICE2_IMAGE")
+			//ws.send("Subscribe&Station=" + StationName + "&DeviceName=" + StationName + "_IMAGING&FieldName=IMAGING_PREVIEW_BASE64");
 		}
 
 		function InformationIdentification(Data) {
@@ -90,8 +92,7 @@
 				//$("#ImageFileName").val(Data.Value);
 				//var Bse64_string = Data.Value;
 				//$("#ImageStr").html(Bse64_string);
-				//alert(Data.Value)
-				//$('#ThisImage').attr('src', 'data:image/jpg;base64,' + Data.Value);
+				//alert(Data.Value)				
 		    }
 		    //else if (Data.FieldName == "IMAGING_PREVIEW_DOWNLOAD_PROGRESS")
 			//	$("#PreviewDownload").val(Data.Value);
@@ -99,10 +100,10 @@
 			//	$("#CameraStatus").val(Data.Value);
 			//else if (Data.FieldName == "IMAGING_PREVIEW_DOWNLOAD_STATUS")
 			//	$("#PreviewStatus").val(Data.Value);
-			//else if (Data.FieldName == "IMAGING_PREVIEW_BASE64") {
-			//	//$('#ThisImage').attr('src', "http://192.168.70.210/uploadimage/" + Data.Value);
-			//	$('#ThisImage').attr('src', 'data:image/jpg;base64,' + Data.Value);
-			//}
+		    else if (Data.FieldName == "CCTV_DEVICE1_IMAGE") {
+                alert("EAK");
+				$('#ThisImage').attr('src', 'data:image/jpg;base64,' + Data.Value);
+			}
 		}
 
 		function formatDate(date) {
@@ -123,8 +124,8 @@
 			var dateStart1 = epochToDate(now.setUTCHours(HourNow - 1))
 			var dateEnd1 = epochToDate(now.setUTCHours(HourNow + 1))
 
-			var dateStart2 = epochToDate(now.setUTCHours(HourNow - 3))
-			var dateEnd2 = epochToDate(now.setUTCHours(HourNow - 2))		
+			var dateStart2 = epochToDate(now.setUTCHours(HourNow + 1))
+			var dateEnd2 = epochToDate(now.setUTCHours(HourNow + 2))		
 
 			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=1&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=5&StationName=" + StationName + "&DeviceName=" + StationName + "_LANOUTLET&CommandName=LANOUTLET_SWITCHONOFF&ParameterName=1&ParameterName=false");
 			ws.send("Script&BlockName=EAKBLOCK&Owner=EAK_USER&CommandCounter=3&ExecutionNumber=2&ExecutionTimeStart=" + dateStart1 + "&ExecutionTimeEnd=" + dateEnd1 + "&DelayTime=10&StationName=" + StationName + "&DeviceName=" + StationName + "_TS700MM&CommandName=TS700MM_FOCUSER_SETINCREMENT&ParameterName=14750");
@@ -151,6 +152,10 @@
 
 			return pad2(month) + '/' + pad2(day) + '/'  + year + " " + Hour + ":" + Min + ":" + Sec + "." + MiliSec;
 		}
+
+		$("#BtnSub").click(function () {
+		    ws.send("Subscribe&StationName=USA&DeviceName=USA_IMAGING&FieldName=IMAGING_PREVIEW_BASE64");
+		});
 
 		$("#BtnExpose").click(function () {
 			ws.send("Set&StationName=" + StationName + "&DeviceName=" + StationName + "_IMAGING&CommandName=IMAGING_CCD_EXPOSE&ParameterName=" + $("#ImageFileName").val() + "&ParameterName=1.0&ParameterName=true");

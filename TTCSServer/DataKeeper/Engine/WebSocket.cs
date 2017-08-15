@@ -788,7 +788,12 @@ namespace DataKeeper.Interface
                     else
                     {
                         if (ThisInformation.Value != null)
-                            ThisResult.Value = ThisInformation.Value.ToString();
+                        {
+                            if (ThisInformation.Value.GetType() == typeof(Byte[]))
+                                ThisResult.Value = Convert.ToBase64String((byte[])ThisInformation.Value);
+                            else
+                                ThisResult.Value = ThisInformation.Value.ToString();
+                        }
                         else
                             ThisResult.Value = "";
                     }

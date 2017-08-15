@@ -432,7 +432,7 @@ namespace TTCSServer.Interface
 
     public class RelayController : ApiController
     {
-        //http://192.168.70.210:8093/TTCS/Relay?StationName=T07Austria&DeviceName=T07TS&CommandName=Telescope07_Mount_SlewIncrementRaDec&Value=45.0,10.0&SessionID=P@ss3610a
+        //http://192.168.70.210:8093/TTCS/Relay?StationName=T07AUSTRALIA&DeviceName=T07TS&CommandName=Telescope07_Mount_SlewIncrementRaDec&Value=45.0,10.0&SessionID=P@ss3610a
         public HttpResponseMessage Get(String StationName, String DeviceName, String CommandName, String Value, String SessionID)
         {
             return Operation(StationName, DeviceName, CommandName, Value, SessionID);
