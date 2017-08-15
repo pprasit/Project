@@ -327,6 +327,8 @@ namespace DataKeeper.Engine
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
             }
+
+            ServerInformationAck.ReturnNTPAckToStation(StationName, DeviceName, FieldName.ToString(), DataTimestamp, ServerCallBackObject);
         }
 
         public void NewSQMInformation(DEVICENAME DeviceName, SQM FieldName, Object Value, DateTime DataTimestamp)

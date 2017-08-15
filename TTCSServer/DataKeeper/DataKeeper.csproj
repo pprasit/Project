@@ -114,6 +114,7 @@
     <Compile Include="Engine\DatabaseSynchronization.cs" />
     <Compile Include="Engine\DBEngine.cs" />
     <Compile Include="Engine\ScriptStructure.cs" />
+    <Compile Include="Engine\ServerInformationAck.cs" />
     <Compile Include="Engine\StationHandler.cs" />
     <Compile Include="Engine\TTCSCommandHelp.cs" />
     <Compile Include="Engine\AstroServerHandler.cs" />
