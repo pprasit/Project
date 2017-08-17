@@ -10,14 +10,14 @@ namespace DataKeeper.Engine
 {
     public static class ServerInformationAck
     {
-        public static void ReturnNTPAckToStation(STATIONNAME StationName, DEVICENAME DeviceName, String FieldName, DateTime TimeStamp, Object ServerCallBackObject)
+        public static void ReturnNTPAckToStation(DEVICENAME DeviceName, String DataGroupID, Object ServerCallBackObject)
         {
             Task CallBackTask = Task.Run(() =>
             {
                 try
                 {
                     MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnInformationSync");
-                    MInfo.Invoke(ServerCallBackObject, new Object[] { StationName, DeviceName, FieldName, TimeStamp });
+                    MInfo.Invoke(ServerCallBackObject, new Object[] { DeviceName, DataGroupID });
                 }
                 catch (Exception e)
                 {

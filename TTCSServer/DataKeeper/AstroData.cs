@@ -316,11 +316,17 @@ namespace DataKeeper
                 ExistingStation.NewCCTVInformation(DeviceName, FieldName, Value, DataTimestamp);
         }
 
-        public static void NewGPSInformation(STATIONNAME StationName, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp)
+        public static void NewGPSInformation(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp)
         {
             StationHandler ExistingStation = KeeperData.FirstOrDefault(Item => Item.StationName == StationName);
             if (ExistingStation != null)
-                ExistingStation.NewGPSInformation(DeviceName, FieldName, Value, DataTimestamp);
+                ExistingStation.NewGPSInformation(DataGroupID, DeviceName, FieldName, Value, DataTimestamp);            
+        }
+
+        public static void ReturnAckState(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName)
+        {
+            StationHandler ExistingStation = KeeperData.FirstOrDefault(Item => Item.StationName == StationName);
+            ExistingStation.ReturnAckState(DataGroupID, DeviceName);
         }
 
         public static void NewASTROCLIENTInformation(STATIONNAME StationName, DEVICENAME DeviceName, ASTROCLIENT FieldName, Object Value, DateTime DataTimestamp)

@@ -315,8 +315,8 @@ namespace DataKeeper.Engine
             }
         }
 
-        public void NewGPSInformation(DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp)
-        {
+        public void NewGPSInformation(String DataGroupID, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp)
+        {           
             ConcurrentDictionary<GPS, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.GPS).Value;
             if (ExistingInformation != null)
             {
@@ -326,9 +326,12 @@ namespace DataKeeper.Engine
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
-            }
+            }            
+        }
 
-            ServerInformationAck.ReturnNTPAckToStation(StationName, DeviceName, FieldName.ToString(), DataTimestamp, ServerCallBackObject);
+        public void ReturnAckState(String DataGroupID, DEVICENAME DeviceName)
+        {
+            ServerInformationAck.ReturnNTPAckToStation(DeviceName, DataGroupID, ServerCallBackObject);
         }
 
         public void NewSQMInformation(DEVICENAME DeviceName, SQM FieldName, Object Value, DateTime DataTimestamp)

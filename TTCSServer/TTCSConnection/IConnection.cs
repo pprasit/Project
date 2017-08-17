@@ -59,7 +59,7 @@ namespace TTCSConnection
         void AddCCTV(STATIONNAME StationName, DEVICENAME DeviceName, CCTV[] FieldName, Object[] Value, DateTime[] DateTime);
 
         [OperationContract]
-        void AddGPS(STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime);
+        void AddGPS(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime);
 
         [OperationContract]
         Boolean AddASTROCLIENT(STATIONNAME StationName, DEVICENAME DeviceName, ASTROCLIENT[] FieldName, Object[] Value, DateTime[] DateTime);
@@ -131,7 +131,7 @@ namespace TTCSConnection
         void OnDatabaseSync(List<Object[]> AllInformation);
 
         [OperationContract(IsOneWay = true)]
-        void OnInformationSync(STATIONNAME StationName, DEVICENAME DeviceName, String FieldName, DateTime DataTimStamp);
+        void OnInformationSync(DEVICENAME DeviceName, String DataGroupID);
 
         [OperationContract(IsOneWay = true)]
         void OnUpdateUser(String UserID, String UserName, String UserLoginName, String UserLoginPassword, String UserPermissionType, String UserStationPermission, DATAACTION UserAction);

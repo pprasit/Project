@@ -153,10 +153,12 @@ namespace TTCSConnection
                 AstroData.NewCCTVInformation(StationName, DeviceName, FieldName[i], Value[i], DateTime[i]);
         }
 
-        public void AddGPS(STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime)
+        public void AddGPS(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime)
         {
             for (int i = 0; i < FieldName.Count(); i++)
-                AstroData.NewGPSInformation(StationName, DeviceName, FieldName[i], Value[i], DateTime[i]);
+                AstroData.NewGPSInformation(DataGroupID, StationName, DeviceName, FieldName[i], Value[i], DateTime[i]);
+
+            AstroData.ReturnAckState(DataGroupID, StationName, DeviceName);
         }
 
         public Boolean AddASTROCLIENT(STATIONNAME StationName, DEVICENAME DeviceName, ASTROCLIENT[] FieldName, Object[] Value, DateTime[] DateTime)
@@ -167,7 +169,7 @@ namespace TTCSConnection
             return true;
         }
 
-        public Boolean UpdateScriptFromStation(String BlockID, String BlockName, String StationName, DateTime ExecutionTimeStart, DateTime ExecutionTimeEnd,int CommandCounter, int ExecutionNumber, String DeviceName, String DeviceCategory, String CommandName, String Owner, int DelayTime, String Parameter, String ScriptState)
+        public Boolean UpdateScriptFromStation(String BlockID, String BlockName, String StationName, DateTime ExecutionTimeStart, DateTime ExecutionTimeEnd, int CommandCounter, int ExecutionNumber, String DeviceName, String DeviceCategory, String CommandName, String Owner, int DelayTime, String Parameter, String ScriptState)
         {
             ScriptManager.UpdateScriptFromStation(BlockID, BlockName, StationName, ExecutionTimeStart, ExecutionTimeEnd, CommandCounter, ExecutionNumber, DeviceName, DeviceCategory, CommandName, Owner, DelayTime, Parameter, ScriptState);
             return true;
