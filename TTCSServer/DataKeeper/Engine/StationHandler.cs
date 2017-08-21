@@ -315,18 +315,25 @@ namespace DataKeeper.Engine
             }
         }
 
-        public void NewGPSInformation(String DataGroupID, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp)
-        {           
+        public void NewGPSInformation(String DataGroupID, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp, Boolean IsHistory)
+        {
             ConcurrentDictionary<GPS, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.GPS).Value;
             if (ExistingInformation != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
                 {
-                    UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
-                    WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
+                    if (!IsHistory)
+                    {
+                        UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
+                        WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
+                    }
+                    else
+                    {
+                        //Update Database
+                    }
                 }
-            }            
+            }
         }
 
         public void ReturnAckState(String DataGroupID, DEVICENAME DeviceName)
@@ -350,7 +357,7 @@ namespace DataKeeper.Engine
                         Unit = "m";
                         Value = Value.ToString().Substring(0, Value.ToString().Length - 1);
                     }
-                    else if(FieldName.ToString() == "SQM_FREQUENCYOFSENSOR_DATA")
+                    else if (FieldName.ToString() == "SQM_FREQUENCYOFSENSOR_DATA")
                     {
                         Unit = "Hz";
                         Value = Value.ToString().Substring(0, Value.ToString().Length - 2);

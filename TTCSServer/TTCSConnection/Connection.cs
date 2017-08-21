@@ -153,10 +153,10 @@ namespace TTCSConnection
                 AstroData.NewCCTVInformation(StationName, DeviceName, FieldName[i], Value[i], DateTime[i]);
         }
 
-        public void AddGPS(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime)
+        public void AddGPS(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime, Boolean IsHistory)
         {
             for (int i = 0; i < FieldName.Count(); i++)
-                AstroData.NewGPSInformation(DataGroupID, StationName, DeviceName, FieldName[i], Value[i], DateTime[i]);
+                AstroData.NewGPSInformation(DataGroupID, StationName, DeviceName, FieldName[i], Value[i], DateTime[i], IsHistory);
 
             AstroData.ReturnAckState(DataGroupID, StationName, DeviceName);
         }

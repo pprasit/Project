@@ -316,11 +316,11 @@ namespace DataKeeper
                 ExistingStation.NewCCTVInformation(DeviceName, FieldName, Value, DataTimestamp);
         }
 
-        public static void NewGPSInformation(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp)
+        public static void NewGPSInformation(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp, Boolean IsHistory)
         {
             StationHandler ExistingStation = KeeperData.FirstOrDefault(Item => Item.StationName == StationName);
             if (ExistingStation != null)
-                ExistingStation.NewGPSInformation(DataGroupID, DeviceName, FieldName, Value, DataTimestamp);            
+                ExistingStation.NewGPSInformation(DataGroupID, DeviceName, FieldName, Value, DataTimestamp, IsHistory);            
         }
 
         public static void ReturnAckState(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName)
