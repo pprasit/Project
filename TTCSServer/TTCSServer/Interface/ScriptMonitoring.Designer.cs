@@ -32,39 +32,40 @@
             this.BtnSendToStation = new System.Windows.Forms.Button();
             this.BtnClose = new System.Windows.Forms.Button();
             this.BtnRefresh = new System.Windows.Forms.Button();
-            this.BtnClearAll = new System.Windows.Forms.Button();
             this.ScriptGrid = new System.Windows.Forms.DataGridView();
             this.Column14 = new System.Windows.Forms.DataGridViewImageColumn();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ScriptMessage = new System.Windows.Forms.DataGridView();
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column13 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column15 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.ScriptLifeTime = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptGrid)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScriptMessage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.ScriptLifeTime);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.BtnSendToStation);
             this.panel1.Controls.Add(this.BtnClose);
             this.panel1.Controls.Add(this.BtnRefresh);
-            this.panel1.Controls.Add(this.BtnClearAll);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(5, 519);
             this.panel1.Name = "panel1";
@@ -86,7 +87,7 @@
             // BtnClose
             // 
             this.BtnClose.Dock = System.Windows.Forms.DockStyle.Left;
-            this.BtnClose.Location = new System.Drawing.Point(272, 5);
+            this.BtnClose.Location = new System.Drawing.Point(136, 5);
             this.BtnClose.Name = "BtnClose";
             this.BtnClose.Size = new System.Drawing.Size(136, 36);
             this.BtnClose.TabIndex = 1;
@@ -97,24 +98,13 @@
             // BtnRefresh
             // 
             this.BtnRefresh.Dock = System.Windows.Forms.DockStyle.Left;
-            this.BtnRefresh.Location = new System.Drawing.Point(136, 5);
+            this.BtnRefresh.Location = new System.Drawing.Point(0, 5);
             this.BtnRefresh.Name = "BtnRefresh";
             this.BtnRefresh.Size = new System.Drawing.Size(136, 36);
             this.BtnRefresh.TabIndex = 2;
             this.BtnRefresh.Text = "Refresh";
             this.BtnRefresh.UseVisualStyleBackColor = true;
             this.BtnRefresh.Click += new System.EventHandler(this.BtnRefresh_Click);
-            // 
-            // BtnClearAll
-            // 
-            this.BtnClearAll.Dock = System.Windows.Forms.DockStyle.Left;
-            this.BtnClearAll.Location = new System.Drawing.Point(0, 5);
-            this.BtnClearAll.Name = "BtnClearAll";
-            this.BtnClearAll.Size = new System.Drawing.Size(136, 36);
-            this.BtnClearAll.TabIndex = 0;
-            this.BtnClearAll.Text = "Remove All Script";
-            this.BtnClearAll.UseVisualStyleBackColor = true;
-            this.BtnClearAll.Click += new System.EventHandler(this.BtnClearAll_Click);
             // 
             // ScriptGrid
             // 
@@ -126,28 +116,21 @@
             this.Column14,
             this.Column1,
             this.Column2,
-            this.Column7,
-            this.Column6,
             this.Column3,
             this.Column4,
             this.Column5,
+            this.Column6,
+            this.Column7,
             this.Column8,
-            this.Column9,
-            this.Column10,
-            this.Column11,
-            this.Column12,
-            this.Column13,
-            this.Column15});
+            this.Column9});
             this.ScriptGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ScriptGrid.Location = new System.Drawing.Point(5, 5);
+            this.ScriptGrid.Location = new System.Drawing.Point(0, 0);
             this.ScriptGrid.Name = "ScriptGrid";
             this.ScriptGrid.ReadOnly = true;
             this.ScriptGrid.RowHeadersVisible = false;
             this.ScriptGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ScriptGrid.Size = new System.Drawing.Size(1334, 514);
+            this.ScriptGrid.Size = new System.Drawing.Size(1320, 358);
             this.ScriptGrid.TabIndex = 1;
-            this.ScriptGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.ScriptGrid_CellMouseClick);
-            this.ScriptGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.ScriptGrid_CellMouseDoubleClick);
             // 
             // Column14
             // 
@@ -158,140 +141,153 @@
             // 
             // Column1
             // 
-            this.Column1.HeaderText = "BlockID";
+            this.Column1.HeaderText = "ScriptID";
             this.Column1.Name = "Column1";
             this.Column1.ReadOnly = true;
-            this.Column1.Width = 70;
+            this.Column1.Width = 120;
             // 
             // Column2
             // 
-            this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column2.HeaderText = "BlockName";
+            this.Column2.HeaderText = "BlockID";
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
-            // 
-            // Column7
-            // 
-            this.Column7.HeaderText = "Num";
-            this.Column7.Name = "Column7";
-            this.Column7.ReadOnly = true;
-            this.Column7.Width = 40;
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "Count";
-            this.Column6.Name = "Column6";
-            this.Column6.ReadOnly = true;
-            this.Column6.Width = 40;
+            this.Column2.Width = 120;
             // 
             // Column3
             // 
-            this.Column3.HeaderText = "StationName";
+            this.Column3.HeaderText = "Life";
             this.Column3.Name = "Column3";
             this.Column3.ReadOnly = true;
             // 
             // Column4
             // 
-            this.Column4.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column4.HeaderText = "ExeTimeS";
+            this.Column4.HeaderText = "DeviceName";
             this.Column4.Name = "Column4";
             this.Column4.ReadOnly = true;
             // 
             // Column5
             // 
             this.Column5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column5.HeaderText = "ExeTimeE";
+            this.Column5.HeaderText = "CommandName";
             this.Column5.Name = "Column5";
             this.Column5.ReadOnly = true;
             // 
+            // Column6
+            // 
+            this.Column6.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column6.HeaderText = "Parameters";
+            this.Column6.Name = "Column6";
+            this.Column6.ReadOnly = true;
+            // 
+            // Column7
+            // 
+            this.Column7.HeaderText = "ScriptState";
+            this.Column7.Name = "Column7";
+            this.Column7.ReadOnly = true;
+            this.Column7.Width = 150;
+            // 
             // Column8
             // 
-            this.Column8.HeaderText = "DeviceName";
+            this.Column8.HeaderText = "Exe Start";
             this.Column8.Name = "Column8";
             this.Column8.ReadOnly = true;
+            this.Column8.Width = 150;
             // 
             // Column9
             // 
-            this.Column9.HeaderText = "DeviceCategory";
+            this.Column9.HeaderText = "Exe End";
             this.Column9.Name = "Column9";
             this.Column9.ReadOnly = true;
+            this.Column9.Width = 150;
+            // 
+            // ScriptMessage
+            // 
+            this.ScriptMessage.AllowUserToAddRows = false;
+            this.ScriptMessage.AllowUserToDeleteRows = false;
+            this.ScriptMessage.BackgroundColor = System.Drawing.Color.White;
+            this.ScriptMessage.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.ScriptMessage.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column10,
+            this.Column11});
+            this.ScriptMessage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScriptMessage.Location = new System.Drawing.Point(0, 0);
+            this.ScriptMessage.Name = "ScriptMessage";
+            this.ScriptMessage.ReadOnly = true;
+            this.ScriptMessage.RowHeadersVisible = false;
+            this.ScriptMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.ScriptMessage.Size = new System.Drawing.Size(1320, 120);
+            this.ScriptMessage.TabIndex = 2;
             // 
             // Column10
             // 
             this.Column10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column10.HeaderText = "CommandName";
+            this.Column10.HeaderText = "Message";
             this.Column10.Name = "Column10";
             this.Column10.ReadOnly = true;
             // 
             // Column11
             // 
-            this.Column11.HeaderText = "Owner";
+            this.Column11.HeaderText = "DateTime";
             this.Column11.Name = "Column11";
             this.Column11.ReadOnly = true;
+            this.Column11.Width = 150;
             // 
-            // Column12
+            // splitContainer1
             // 
-            this.Column12.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column12.HeaderText = "Parameter";
-            this.Column12.Name = "Column12";
-            this.Column12.ReadOnly = true;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 3);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // Column13
+            // splitContainer1.Panel1
             // 
-            this.Column13.HeaderText = "State";
-            this.Column13.Name = "Column13";
-            this.Column13.ReadOnly = true;
+            this.splitContainer1.Panel1.Controls.Add(this.ScriptGrid);
             // 
-            // Column15
+            // splitContainer1.Panel2
             // 
-            this.Column15.HeaderText = "";
-            this.Column15.Name = "Column15";
-            this.Column15.ReadOnly = true;
-            this.Column15.Width = 30;
+            this.splitContainer1.Panel2.Controls.Add(this.ScriptMessage);
+            this.splitContainer1.Size = new System.Drawing.Size(1320, 482);
+            this.splitContainer1.SplitterDistance = 358;
+            this.splitContainer1.TabIndex = 3;
             // 
-            // ScriptLifeTime
+            // tabControl1
             // 
-            this.ScriptLifeTime.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ScriptLifeTime.FormattingEnabled = true;
-            this.ScriptLifeTime.Items.AddRange(new object[] {
-            "0.5",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7"});
-            this.ScriptLifeTime.Location = new System.Drawing.Point(544, 12);
-            this.ScriptLifeTime.Name = "ScriptLifeTime";
-            this.ScriptLifeTime.Size = new System.Drawing.Size(121, 21);
-            this.ScriptLifeTime.TabIndex = 8;
-            this.ScriptLifeTime.SelectedIndexChanged += new System.EventHandler(this.ScriptLifeTime_SelectedIndexChanged);
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(5, 5);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(1334, 514);
+            this.tabControl1.TabIndex = 4;
             // 
-            // label3
+            // tabPage1
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(671, 17);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(31, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "Days";
+            this.tabPage1.Controls.Add(this.splitContainer1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1326, 488);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Script List";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // label2
+            // tabPage2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(452, 17);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(86, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Script Life Time :";
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1326, 488);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // ScriptMonitoring
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1344, 565);
-            this.Controls.Add(this.ScriptGrid);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -304,8 +300,14 @@
             this.Text = "Script Monitoring";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScriptMonitoring_FormClosing);
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptGrid)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScriptMessage)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -314,27 +316,25 @@
 
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button BtnClose;
-        private System.Windows.Forms.Button BtnClearAll;
         private System.Windows.Forms.DataGridView ScriptGrid;
         private System.Windows.Forms.Button BtnRefresh;
         private System.Windows.Forms.Button BtnSendToStation;
         private System.Windows.Forms.DataGridViewImageColumn Column14;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
+        private System.Windows.Forms.DataGridView ScriptMessage;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column11;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column13;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column15;
-        private System.Windows.Forms.ComboBox ScriptLifeTime;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
     }
 }

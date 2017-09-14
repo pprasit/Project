@@ -69,6 +69,8 @@ namespace TTCSServer
             DatabaseSynchronization.SetDBConnection(Properties.Settings.Default.DatabaseName, Properties.Settings.Default.DatabaseUserName, Properties.Settings.Default.DatabasePassword, Properties.Settings.Default.DatabaseServerName);
             FITSHandler.CreateMaximObject();
             ScriptManager.CreateScriptPool();
+
+            ScriptEngine.NewScriptChecker("192.168.2.110", "astronet", "P@ssw0rd");
         }
 
         private void InitializeStation()
@@ -445,14 +447,16 @@ namespace TTCSServer
 
         private void BtnScriptManager_Click(object sender, EventArgs e)
         {
-            if (ObjScriptMonitoring == null)
-            {
-                ObjScriptMonitoring = new ScriptMonitoring();
-                ScriptManager.SetMonitoringObject(ObjScriptMonitoring);
-            }
+            //ScriptFTPEngine.GenNewScript();
 
+            if (ObjScriptMonitoring == null)            
+                ObjScriptMonitoring = new ScriptMonitoring();                           
+
+            ScriptEngine.SetMonitoringObject(ObjScriptMonitoring);            
             ObjScriptMonitoring.Owner = this;
             ObjScriptMonitoring.Show();
+
+            ObjScriptMonitoring.GetScript();
         }
 
         private void BtnUserManagenment_Click(object sender, EventArgs e)
@@ -466,8 +470,12 @@ namespace TTCSServer
 
         private void MainWindows_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ScriptManager.IsScriptActive = false;
-            Environment.Exit(0);
+            try
+            {
+                ScriptManager.IsScriptActive = false;
+                Environment.Exit(0);
+            }
+            catch { }
         }
     }
 }

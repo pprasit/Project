@@ -60,6 +60,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="FluentFTP, Version=18.0.2.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentFTP.18.0.2\lib\net45\FluentFTP.dll</HintPath>
+    </Reference>
     <Reference Include="MongoDB.Bson">
       <HintPath>..\..\..\..\..\Desktop\net45\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -113,6 +116,7 @@
     <Compile Include="Engine\Command\InformationFieldNames.cs" />
     <Compile Include="Engine\DatabaseSynchronization.cs" />
     <Compile Include="Engine\DBEngine.cs" />
+    <Compile Include="Engine\ScriptEngine.cs" />
     <Compile Include="Engine\ScriptStructure.cs" />
     <Compile Include="Engine\ServerInformationAck.cs" />
     <Compile Include="Engine\StationHandler.cs" />

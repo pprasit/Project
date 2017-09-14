@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,45 @@ namespace DataKeeper.Engine
     {
         public WSConnection WSConnection { get; set; }
         public ScriptTB Script { get; set; }
+    }
+
+    [DataContract]
+    public class ScriptStructureNew
+    {
+        [DataMember]
+        public String ScriptID { get; set; }
+        [DataMember]
+        public String BlockID { get; set; }
+        [DataMember]
+        public String Life { get; set; }
+        [DataMember]
+        public String StationName { get; set; }
+        [DataMember]
+        public String DeviceName { get; set; }
+        [DataMember]
+        public String CommandName { get; set; }
+        [DataMember]
+        public List<String> Parameters { get; set; }
+        [DataMember]
+        public String ScritpState { get; set; }
+        [DataMember]
+        public String ExecuteionTimeStart { get; set; }
+        [DataMember]
+        public String ExecuteionTimeEnd { get; set; }
+
+        public ScriptStructureNew(String ScriptID, String BlockID, String Life, String StationName, String DeviceName, String CommandName, List<String> Parameters, String ScritpState, String ExecuteionTimeStart, String ExecuteionTimeEnd)
+        {
+            this.ScriptID = ScriptID;
+            this.BlockID = BlockID;
+            this.Life = Life;
+            this.StationName = StationName;
+            this.DeviceName = DeviceName;
+            this.CommandName = CommandName;
+            this.Parameters = Parameters;
+            this.ScritpState = ScritpState;
+            this.ExecuteionTimeStart = ExecuteionTimeStart;
+            this.ExecuteionTimeEnd = ExecuteionTimeEnd;
+        }
     }
 
     public class ScriptStructure

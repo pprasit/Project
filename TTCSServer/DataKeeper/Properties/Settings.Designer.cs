@@ -34,5 +34,17 @@ namespace DataKeeper.Properties {
                 this["StretchProfile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public long LastestScriptDate {
+            get {
+                return ((long)(this["LastestScriptDate"]));
+            }
+            set {
+                this["LastestScriptDate"] = value;
+            }
+        }
     }
 }

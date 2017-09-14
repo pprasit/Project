@@ -209,6 +209,39 @@ namespace DataKeeper.Engine
             return NewField;
         }
 
+        public Boolean NewScriptInformation(List<ScriptStructureNew> ScriptCollection,out String Message)
+        {
+            Boolean ResultState = false;
+            String OutputMessage = "";
+
+            Task TaskPost = Task.Run(() =>
+            {
+                try
+                {
+                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnNewScript");
+                    MInfo.Invoke(ServerCallBackObject, new Object[] { ScriptCollection });
+                    ResultState = true;
+                }
+                catch (Exception e)
+                {
+                    OutputMessage = e.Message;
+                }
+            });
+
+            if (!TaskPost.Wait(10))
+                OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
+            else
+            {
+                if (ResultState)
+                    OutputMessage = "Send script to station successful";                    
+                else
+                    OutputMessage = "An erroe occur because (" + OutputMessage + ")";
+            }
+
+            Message = OutputMessage;
+            return ResultState;
+        }
+
         public void NewTS700MMInformation(DEVICENAME DeviceName, TS700MM FieldName, Object Value, DateTime DataTimestamp)
         {
             ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.TS700MM).Value;

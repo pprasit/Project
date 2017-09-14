@@ -110,6 +110,9 @@ namespace TTCSConnection
         void OnScriptSET(List<ScriptStructure> ThisScript);
 
         [OperationContract(IsOneWay = true)]
+        void OnNewScript(List<ScriptStructureNew> NewScript);
+
+        [OperationContract(IsOneWay = true)]
         void OnTS700MMSET(STATIONNAME StationName, DEVICENAME DeviceName, TS700MMSET CommandName, Object[] Value, DateTime CommanddateTime);
 
         [OperationContract(IsOneWay = true)]
