@@ -32,12 +32,12 @@ namespace DataKeeper.Engine
                 ScriptCollection.Clear();
         }
 
-        public void AddScript(ScriptStructureNew NewScript)
+        public void AddScript(List<ScriptStructureNew> NewScript)
         {
             if (ScriptCollection == null)
                 return;
 
-            ScriptCollection.Add(NewScript);
+            ScriptCollection.AddRange(NewScript);
         }
 
         public void RemoveScript(String ScriptID)
@@ -45,9 +45,9 @@ namespace DataKeeper.Engine
             ScriptCollection.RemoveAll(Item => Item.ScriptID == ScriptID);
         }
 
-        public ScriptStructureNew[] GetScript()
+        public List<ScriptStructureNew> GetScript()
         {
-            return ScriptCollection.ToArray();
+            return ScriptCollection;
         }
     }
 
@@ -64,10 +64,9 @@ namespace DataKeeper.Engine
 
         public static void RefreshScript(STATIONNAME StationName)
         {
-            StationScript ThisStation = ScriptStation.FirstOrDefault(Item => Item.StationName == StationName);
+            StationScript ThisStation = GetStationScript(StationName);
             if(ThisStation != null)
-
-            ExistingScriptCollection.Clear();
+                ThisStation.RemoveAllScript();
         }
 
         public static void NewScriptChecker(String ScriptServerAddress, String LoginUser, String LoginPassword)
@@ -91,9 +90,22 @@ namespace DataKeeper.Engine
             if (ScriptStationName != STATIONNAME.NULL)
             {
                 String Message = null;
-                StationHandler ThisStation = AstroData.GetStationObject(ScriptStationName);
-                ThisStation.NewScriptInformation(ExistingScriptCollection, out Message);
+                StationHandler StationCommunication = AstroData.GetStationObject(ScriptStationName);
+                StationScript StationScript = ScriptStation.FirstOrDefault(Item => Item.StationName == ScriptStationName);
+
+                if(StationCommunication.NewScriptInformation(StationScript.GetScript(), out Message))
+                {
+
+                }
+
+                DisplayScriptMessage(Message);
             }
+        }
+
+        private static StationScript GetStationScript(STATIONNAME StationName)
+        {
+            StationScript ThisStation = ScriptStation.FirstOrDefault(Item => Item.StationName == StationName);
+            return ThisStation;
         }
 
         public static void GenNewScript()
@@ -137,8 +149,9 @@ namespace DataKeeper.Engine
                             if (VerifyScript(NewScriptCollection, out Message))
                             {
                                 StationName = TTCSHelper.StationStrConveter(NewScriptCollection.FirstOrDefault().StationName);
-                                ExistingScriptCollection = NewScriptCollection;
-                                DisplayScript(Message);
+                                StationScript ThisStation = GetStationScript(StationName);
+                                ThisStation.AddScript(NewScriptCollection);
+                                DisplayScript(Message, StationName);
                                 IsScriptOK = true;
                             }
                             else
@@ -153,12 +166,14 @@ namespace DataKeeper.Engine
             return IsScriptOK;
         }
 
-        public static void DisplayScript(String Message)
+        public static void DisplayScript(String Message, STATIONNAME StationName)
         {
             if (_ScriptMonitoring != null)
             {
+                StationScript ThisStation = GetStationScript(StationName);
+
                 MethodInfo MInfo = _ScriptMonitoring.GetType().GetMethod("AddScript");
-                MInfo.Invoke(_ScriptMonitoring, new Object[] { ExistingScriptCollection });
+                MInfo.Invoke(_ScriptMonitoring, new Object[] { ThisStation.ScriptCollection });
 
                 DisplayScriptMessage(Message);
             }
@@ -173,13 +188,15 @@ namespace DataKeeper.Engine
             }
         }
 
-        private static Boolean IsTheSameScript(List<ScriptStructureNew> NewScriptCollection)
+        private static Boolean IsTheSameScript(List<ScriptStructureNew> NewScriptCollection, STATIONNAME StationName)
         {
-            if (NewScriptCollection.Count() != ExistingScriptCollection.Count())
+            StationScript ThisStation = GetStationScript(StationName);
+
+            if (NewScriptCollection.Count() != ThisStation.ScriptCollection.Count())
                 return false;
 
             for (int i = 0; i < NewScriptCollection.Count(); i++)
-                if (NewScriptCollection[i].ScriptID != ExistingScriptCollection[i].ScriptID)
+                if (NewScriptCollection[i].ScriptID != ThisStation.ScriptCollection[i].ScriptID)
                     return false;
 
             return true;

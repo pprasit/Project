@@ -50,6 +50,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.StationSelection = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptMessage)).BeginInit();
@@ -59,6 +62,7 @@
             this.splitContainer1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -67,7 +71,7 @@
             this.panel1.Controls.Add(this.BtnClose);
             this.panel1.Controls.Add(this.BtnRefresh);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(5, 519);
+            this.panel1.Location = new System.Drawing.Point(5, 561);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.panel1.Size = new System.Drawing.Size(1334, 41);
@@ -124,12 +128,12 @@
             this.Column8,
             this.Column9});
             this.ScriptGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ScriptGrid.Location = new System.Drawing.Point(0, 0);
+            this.ScriptGrid.Location = new System.Drawing.Point(0, 34);
             this.ScriptGrid.Name = "ScriptGrid";
             this.ScriptGrid.ReadOnly = true;
             this.ScriptGrid.RowHeadersVisible = false;
             this.ScriptGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ScriptGrid.Size = new System.Drawing.Size(1320, 358);
+            this.ScriptGrid.Size = new System.Drawing.Size(1320, 332);
             this.ScriptGrid.TabIndex = 1;
             // 
             // Column14
@@ -215,7 +219,7 @@
             this.ScriptMessage.ReadOnly = true;
             this.ScriptMessage.RowHeadersVisible = false;
             this.ScriptMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ScriptMessage.Size = new System.Drawing.Size(1320, 120);
+            this.ScriptMessage.Size = new System.Drawing.Size(1320, 154);
             this.ScriptMessage.TabIndex = 2;
             // 
             // Column10
@@ -242,12 +246,13 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.ScriptGrid);
+            this.splitContainer1.Panel1.Controls.Add(this.panel2);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.ScriptMessage);
-            this.splitContainer1.Size = new System.Drawing.Size(1320, 482);
-            this.splitContainer1.SplitterDistance = 358;
+            this.splitContainer1.Size = new System.Drawing.Size(1320, 524);
+            this.splitContainer1.SplitterDistance = 366;
             this.splitContainer1.TabIndex = 3;
             // 
             // tabControl1
@@ -258,7 +263,7 @@
             this.tabControl1.Location = new System.Drawing.Point(5, 5);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1334, 514);
+            this.tabControl1.Size = new System.Drawing.Size(1334, 556);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
@@ -267,7 +272,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1326, 488);
+            this.tabPage1.Size = new System.Drawing.Size(1326, 530);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Script List";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -282,11 +287,39 @@
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.StationSelection);
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1320, 34);
+            this.panel2.TabIndex = 2;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(27, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Station Selection :";
+            // 
+            // StationSelection
+            // 
+            this.StationSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.StationSelection.FormattingEnabled = true;
+            this.StationSelection.Location = new System.Drawing.Point(126, 6);
+            this.StationSelection.Name = "StationSelection";
+            this.StationSelection.Size = new System.Drawing.Size(162, 21);
+            this.StationSelection.TabIndex = 1;
+            // 
             // ScriptMonitoring
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1344, 565);
+            this.ClientSize = new System.Drawing.Size(1344, 607);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -308,6 +341,8 @@
             this.splitContainer1.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -336,5 +371,8 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.ComboBox StationSelection;
+        private System.Windows.Forms.Label label1;
     }
 }

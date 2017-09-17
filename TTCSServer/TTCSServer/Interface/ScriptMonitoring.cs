@@ -19,12 +19,25 @@ namespace TTCSServer.Interface
         public ScriptMonitoring()
         {
             InitializeComponent();
+            GetStatioName();
             ScriptManager.ScriptLifeTimeValue = Properties.Settings.Default.ScriptLifeTimeValue;
+        }
+
+        private void GetStatioName()
+        {
+            List<STATIONNAME> AllStationName = Enum.GetValues(typeof(STATIONNAME)).Cast<STATIONNAME>().ToList();
+            foreach (STATIONNAME StationName in AllStationName)
+                StationSelection.Items.Add(StationName.ToString());
+
+            StationSelection.SelectedIndex = 0;
         }
 
         public void GetScript()
         {
-            ScriptEngine.RefreshScript();
+            STATIONNAME? StationName = TTCSHelper.StationConveter(StationSelection.Text);
+
+            if (StationName != null)
+                ScriptEngine.RefreshScript(StationName.Value);
         }
 
         public void AddScript(List<ScriptStructureNew> NewScriptCollection)
