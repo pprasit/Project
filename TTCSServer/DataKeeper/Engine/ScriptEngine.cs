@@ -143,20 +143,20 @@ namespace DataKeeper.Engine
                         String jsonString = r.ReadToEnd();
                         List<ScriptStructureNew> NewScriptCollection = ConvertJSonToObject<List<ScriptStructureNew>>(jsonString);
 
-                        if (!IsTheSameScript(NewScriptCollection))
-                        {
-                            String Message = "";
-                            if (VerifyScript(NewScriptCollection, out Message))
-                            {
-                                StationName = TTCSHelper.StationStrConveter(NewScriptCollection.FirstOrDefault().StationName);
-                                StationScript ThisStation = GetStationScript(StationName);
-                                ThisStation.AddScript(NewScriptCollection);
-                                DisplayScript(Message, StationName);
-                                IsScriptOK = true;
-                            }
-                            else
-                                DisplayScriptMessage(Message);
-                        }
+                        //if (!IsTheSameScript(NewScriptCollection))
+                        //{
+                        //    String Message = "";
+                        //    if (VerifyScript(NewScriptCollection, out Message))
+                        //    {
+                        //        StationName = TTCSHelper.StationStrConveter(NewScriptCollection.FirstOrDefault().StationName);
+                        //        StationScript ThisStation = GetStationScript(StationName);
+                        //        ThisStation.AddScript(NewScriptCollection);
+                        //        DisplayScript(Message, StationName);
+                        //        IsScriptOK = true;
+                        //    }
+                        //    else
+                        //        DisplayScriptMessage(Message);
+                        //}
 
                         fs.Close();
                     }
