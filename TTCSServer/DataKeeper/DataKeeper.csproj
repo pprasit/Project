@@ -78,6 +78,10 @@
     <Reference Include="MongoDB.Driver.Legacy">
       <HintPath>..\..\..\..\..\Desktop\net45\MongoDB.Driver.Legacy.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -116,6 +120,7 @@
     <Compile Include="Engine\Command\InformationFieldNames.cs" />
     <Compile Include="Engine\DatabaseSynchronization.cs" />
     <Compile Include="Engine\DBEngine.cs" />
+    <Compile Include="Engine\ScriptConfigure.cs" />
     <Compile Include="Engine\ScriptEngine.cs" />
     <Compile Include="Engine\ScriptStructure.cs" />
     <Compile Include="Engine\ServerInformationAck.cs" />
@@ -217,6 +222,9 @@
     <Content Include="Dll\MongoDB.Driver.dll" />
     <Content Include="Dll\MongoDB.Driver.GridFS.dll" />
     <Content Include="Dll\MongoDB.Driver.Legacy.dll" />
+    <Content Include="Dll\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Dll\ZedGraph.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

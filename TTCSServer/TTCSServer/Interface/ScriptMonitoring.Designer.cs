@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.BtnGenerate = new System.Windows.Forms.Button();
             this.BtnSendToStation = new System.Windows.Forms.Button();
             this.BtnClose = new System.Windows.Forms.Button();
             this.BtnRefresh = new System.Windows.Forms.Button();
@@ -47,12 +48,12 @@
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.StationSelection = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.StationSelection = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScriptMessage)).BeginInit();
@@ -60,13 +61,14 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.BtnGenerate);
             this.panel1.Controls.Add(this.BtnSendToStation);
             this.panel1.Controls.Add(this.BtnClose);
             this.panel1.Controls.Add(this.BtnRefresh);
@@ -76,6 +78,16 @@
             this.panel1.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.panel1.Size = new System.Drawing.Size(1334, 41);
             this.panel1.TabIndex = 0;
+            // 
+            // BtnGenerate
+            // 
+            this.BtnGenerate.Location = new System.Drawing.Point(608, 6);
+            this.BtnGenerate.Name = "BtnGenerate";
+            this.BtnGenerate.Size = new System.Drawing.Size(123, 35);
+            this.BtnGenerate.TabIndex = 4;
+            this.BtnGenerate.Text = "Generate Test Script";
+            this.BtnGenerate.UseVisualStyleBackColor = true;
+            this.BtnGenerate.Click += new System.EventHandler(this.BtnGenerate_Click);
             // 
             // BtnSendToStation
             // 
@@ -255,6 +267,35 @@
             this.splitContainer1.SplitterDistance = 366;
             this.splitContainer1.TabIndex = 3;
             // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.StationSelection);
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1320, 34);
+            this.panel2.TabIndex = 2;
+            // 
+            // StationSelection
+            // 
+            this.StationSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.StationSelection.FormattingEnabled = true;
+            this.StationSelection.Location = new System.Drawing.Point(126, 6);
+            this.StationSelection.Name = "StationSelection";
+            this.StationSelection.Size = new System.Drawing.Size(162, 21);
+            this.StationSelection.TabIndex = 1;
+            this.StationSelection.SelectedIndexChanged += new System.EventHandler(this.StationSelection_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(27, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(93, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Station Selection :";
+            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -282,38 +323,10 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1326, 488);
+            this.tabPage2.Size = new System.Drawing.Size(1326, 530);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.StationSelection);
-            this.panel2.Controls.Add(this.label1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1320, 34);
-            this.panel2.TabIndex = 2;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(27, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(93, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Station Selection :";
-            // 
-            // StationSelection
-            // 
-            this.StationSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.StationSelection.FormattingEnabled = true;
-            this.StationSelection.Location = new System.Drawing.Point(126, 6);
-            this.StationSelection.Name = "StationSelection";
-            this.StationSelection.Size = new System.Drawing.Size(162, 21);
-            this.StationSelection.TabIndex = 1;
             // 
             // ScriptMonitoring
             // 
@@ -339,10 +352,10 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -374,5 +387,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ComboBox StationSelection;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button BtnGenerate;
     }
 }

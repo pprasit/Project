@@ -46,9 +46,12 @@ namespace TTCSServer.Interface
             {
                 ScriptGrid.Rows.Clear();
 
-                foreach (ScriptStructureNew ThisScript in NewScriptCollection)
-                    ScriptGrid.Rows.Add(DeletePNG, ThisScript.ScriptID, ThisScript.BlockID, ThisScript.Life, ThisScript.DeviceName, ThisScript.CommandName, String.Join(", ", ThisScript.Parameters),
-                        ThisScript.ScritpState, new DateTime(Convert.ToInt64(ThisScript.ExecuteionTimeStart)).ToString(), new DateTime(Convert.ToInt64(ThisScript.ExecuteionTimeEnd)));
+                if(NewScriptCollection.Count > 0)
+                {
+                    foreach (ScriptStructureNew ThisScript in NewScriptCollection)
+                        ScriptGrid.Rows.Add(DeletePNG, ThisScript.ScriptID, ThisScript.BlockID, ThisScript.Life, ThisScript.DeviceName, ThisScript.CommandName, String.Join(", ", ThisScript.Parameters),
+                            ThisScript.ScritpState, new DateTime(Convert.ToInt64(ThisScript.ExecuteionTimeStart)).ToString(), new DateTime(Convert.ToInt64(ThisScript.ExecuteionTimeEnd)));
+                }
             }));
         }
 
@@ -97,6 +100,16 @@ namespace TTCSServer.Interface
         private void BtnSendToStation_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void BtnGenerate_Click(object sender, EventArgs e)
+        {
+            ScriptEngine.GenNewScript();
+        }
+
+        private void StationSelection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            GetScript();
         }
     }
 }

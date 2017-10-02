@@ -213,6 +213,11 @@ namespace DataKeeper.Engine
         {
             Boolean ResultState = false;
             String OutputMessage = "";
+            if (ServerCallBackObject == null)
+            {
+                Message = "Station not connected.";
+                return false;
+            }
 
             Task TaskPost = Task.Run(() =>
             {

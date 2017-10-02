@@ -11,6 +11,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace DataKeeper.Engine
 {
@@ -56,6 +57,8 @@ namespace DataKeeper.Engine
         private static FtpClient Client = null;
         private static List<StationScript> ScriptStation = new List<StationScript>();
         private static Object _ScriptMonitoring = null;
+        public static List<ScriptConfigure> scriptConfigure = new List<ScriptConfigure>();
+        private static String ScriptConfig = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\script_config.json";
 
         public static void SetMonitoringObject(Object _ScriptMonitoring)
         {
@@ -64,18 +67,89 @@ namespace DataKeeper.Engine
 
         public static void RefreshScript(STATIONNAME StationName)
         {
-            StationScript ThisStation = GetStationScript(StationName);
-            if(ThisStation != null)
-                ThisStation.RemoveAllScript();
+            StationScript stationScript = GetStationScript(StationName);
+            if (stationScript != null)
+            {
+                stationScript.RemoveAllScript();
+            }
+            else
+            {                
+                stationScript = new StationScript(StationName);
+                ScriptStation.Add(stationScript);
+            }
+
+            String LastestScript = GetLastestFile("\\\\192.168.2.110\\ftp\\Script\\" + StationName);
+
+            if (ExtractScriptData(LastestScript, StationName, scriptConfigure, false))
+                SendScriptToStation(StationName);
+            else
+            {
+                DisplayScript("", StationName);
+            }
         }
 
         public static void NewScriptChecker(String ScriptServerAddress, String LoginUser, String LoginPassword)
         {
+            using (StreamReader r = new StreamReader(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\script_config.json"))
+            {
+                String jsonString = r.ReadToEnd();
+                scriptConfigure = JsonConvert.DeserializeObject<List<ScriptConfigure>>(jsonString);
+
+                initialConfig();
+            }
+
+            Task ScriptTask = Task.Run(async () =>
+            {               
+                while (true)
+                {                   
+                    foreach (STATIONNAME StationName in Enum.GetValues(typeof(STATIONNAME)))
+                    {
+                        if(StationName != STATIONNAME.NULL)
+                        {
+                            StationScript stationScript = GetStationScript(StationName);
+
+                            if (stationScript == null)
+                            {
+                                stationScript = new StationScript(StationName);
+                                ScriptStation.Add(stationScript);
+                            }
+
+                            String LastestScript = GetLastestFile("\\\\192.168.2.110\\ftp\\Script\\" + StationName);
+
+                            if(LastestScript != null)
+                            {
+                                //Console.WriteLine("Lastest: " + LastestScript);
+
+                                STATIONNAME ScriptStationName = StationName;
+                                if (ExtractScriptData(LastestScript, StationName, scriptConfigure, true))
+                                    SendScriptToStation(StationName);
+                            }
+                            //Console.WriteLine(StationName);
+                        }
+                
+                    }
+
+                    using (StreamWriter sw = new StreamWriter(ScriptConfig))
+                    {
+                        //Console.WriteLine(scriptConfigure.Count);
+
+                        String DataJson = JsonConvert.SerializeObject(scriptConfigure);
+                        sw.WriteLine(DataJson);
+                    }
+
+                    await Task.Delay(1000);
+                }
+            });
+
+            /*
+
             Task ScriptTask = Task.Run(async () =>
             {
                 while (true)
                 {
-                    String LastestScript = GetLastestFile("\\\\192.168.2.110/ftp/Script");
+                    Console.WriteLine("CHECKING FILE");
+
+                    String LastestScript = GetLastestFile("\\\\192.168.2.110\\ftp\\Script");
                     STATIONNAME ScriptStationName = STATIONNAME.NULL;
                     if (ExtractScriptData(LastestScript, ScriptServerAddress, LoginUser, LoginPassword, out ScriptStationName))
                         SendScriptToStation(ScriptStationName);
@@ -83,6 +157,7 @@ namespace DataKeeper.Engine
                     await Task.Delay(1000);
                 }
             });
+            */
         }
 
         public static void SendScriptToStation(STATIONNAME ScriptStationName)
@@ -91,7 +166,7 @@ namespace DataKeeper.Engine
             {
                 String Message = null;
                 StationHandler StationCommunication = AstroData.GetStationObject(ScriptStationName);
-                StationScript StationScript = ScriptStation.FirstOrDefault(Item => Item.StationName == ScriptStationName);
+                StationScript StationScript = GetStationScript(ScriptStationName);
 
                 if(StationCommunication.NewScriptInformation(StationScript.GetScript(), out Message))
                 {
@@ -117,49 +192,162 @@ namespace DataKeeper.Engine
 
             //-----------------------------------------------------------------------------------Test Json Write-----------------------------------------------------------------------------------------
             List<ScriptStructureNew> ScriptList = new List<ScriptStructureNew>();
-            ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
-            ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
 
-            String DataJsonTest = ConvertObjectToJSon(ScriptList);
-            var remoteFileStream = Client.OpenWrite(@"\Script\" + DateTime.Now.Ticks.ToString() + ".txt");
+            int station_random = new Random().Next(1, 4);
+            String stationName = null;
+
+            if(station_random == 1)
+            {
+                stationName = "AIRFORCE";
+                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+            }
+            else if(station_random == 2)
+            {
+                stationName = "ASTROPARK";
+                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+            }
+            else if (station_random == 3)
+            {
+                stationName = "USA";
+                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.USA.ToString(), DEVICENAME.USA_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.USA.ToString(), DEVICENAME.USA_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+            }                      
+
+            String DataJsonTest = JsonConvert.SerializeObject(ScriptList);
+
+            var remoteFileStream = Client.OpenWrite(@"\Script\"+ stationName +"\\" + DateTime.Now.Ticks.ToString() + ".txt");
 
             Byte[] DataByte = System.Text.Encoding.UTF8.GetBytes(DataJsonTest);
             remoteFileStream.Write(DataByte, 0, DataByte.Count());
+            remoteFileStream.Close();
+            FtpReply status = Client.GetReply();
+            Client.Disconnect();
             //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         }
 
-        private static Boolean ExtractScriptData(String FileName, String FTPServerAddress, String LoginUser, String LoginPassword, out STATIONNAME StationName)
+        private static Boolean ExtractScriptData(String FileName, STATIONNAME StationName, List<ScriptConfigure> scriptConfigures, bool checkSameScript)
         {
             Boolean IsScriptOK = false;
-            StationName = STATIONNAME.NULL;
+            //StationName = STATIONNAME.NULL;
+  
+            String FilePathStr = FileName;
 
-            using (var Impersonation = new ImpersonateUser(LoginUser, FTPServerAddress, LoginPassword, ImpersonateUser.LOGON32_LOGON_NEW_CREDENTIALS))
+            if (File.Exists(FilePathStr))
             {
-                String FilePathStr = FileName;
-                using (FileStream fs = new FileStream(FilePathStr, FileMode.Open, FileAccess.Read, FileShare.None))
-                {
-                    using (StreamReader r = new StreamReader(fs))
+                try
+                {                        
+                    using (FileStream fs = new FileStream(FilePathStr, FileMode.Open, FileAccess.Read, FileShare.None))
                     {
-                        String jsonString = r.ReadToEnd();
-                        List<ScriptStructureNew> NewScriptCollection = ConvertJSonToObject<List<ScriptStructureNew>>(jsonString);
+                        using (StreamReader r = new StreamReader(fs))
+                        {
+                            //Console.WriteLine("Reading... " + FilePathStr);                            
+                            String jsonString = r.ReadToEnd();
 
-                        //if (!IsTheSameScript(NewScriptCollection))
-                        //{
-                        //    String Message = "";
-                        //    if (VerifyScript(NewScriptCollection, out Message))
-                        //    {
-                        //        StationName = TTCSHelper.StationStrConveter(NewScriptCollection.FirstOrDefault().StationName);
-                        //        StationScript ThisStation = GetStationScript(StationName);
-                        //        ThisStation.AddScript(NewScriptCollection);
-                        //        DisplayScript(Message, StationName);
-                        //        IsScriptOK = true;
-                        //    }
-                        //    else
-                        //        DisplayScriptMessage(Message);
-                        //}
+                            if (jsonString.Length > 0)
+                            {
 
-                        fs.Close();
+                                try
+                                {
+                                    List<ScriptStructureNew> NewScriptCollection = JsonConvert.DeserializeObject<List<ScriptStructureNew>>(jsonString);
+
+                                    String TempFileNameStr = FilePathStr.Split('\\').Last();
+                                    TempFileNameStr = TempFileNameStr.Replace(".txt", "");
+
+
+                                    if (!IsTheSameScript(TempFileNameStr, NewScriptCollection, StationName) || !checkSameScript)
+                                    {
+                                        Console.WriteLine("FOUNDING: " + FilePathStr);
+
+                                        StationScript scriptTemp = ScriptStation.FirstOrDefault(Item => Item.StationName == StationName);
+
+                                        if (scriptConfigure == null)
+                                        {
+                                            scriptConfigure = new List<ScriptConfigure>();
+                                            scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr));
+                                        }
+                                        else if (scriptTemp == null)
+                                        {
+                                            scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr));
+                                        }
+                                        else
+                                        {
+                                            scriptTemp.LastestScriptFileName = TempFileNameStr;
+                                            ScriptConfigure tempScript = scriptConfigure.FirstOrDefault(Item => Item.config_name == StationName.ToString());
+
+                                            if (tempScript != null)
+                                            {
+                                                tempScript.config_value = TempFileNameStr;
+                                            }
+                                            else
+                                            {
+                                                scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr));
+                                            }
+                                        }
+
+                                        String Message = "";
+                                        if (VerifyScript(NewScriptCollection, out Message))
+                                        {
+                                            StationName = TTCSHelper.StationStrConveter(NewScriptCollection.FirstOrDefault().StationName);
+                                            StationScript ThisStationTemp = GetStationScript(StationName);
+
+                                            if (ThisStationTemp == null)
+                                            {
+                                                ThisStationTemp = new StationScript(StationName);
+                                                ScriptStation.Add(ThisStationTemp);
+                                            }
+                                            else
+                                            {
+                                                ThisStationTemp.RemoveAllScript();
+                                            }
+
+                                            ThisStationTemp.AddScript(NewScriptCollection);
+
+                                            DisplayScript(Message, StationName);
+                                            IsScriptOK = true;
+                                        }
+                                        else
+                                            DisplayScriptMessage(Message);
+
+                                        fs.Close();
+                                    }
+                                }
+                                catch (JsonReaderException ex)
+                                {
+                                    fs.Close();
+
+                                    try
+                                    {
+                                        Console.WriteLine("File isn't jSon, Deleted.");
+                                        File.Delete(@FilePathStr);
+                                    }
+                                    catch (Exception x)
+                                    {
+                                        Console.WriteLine(x);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                fs.Close();
+
+                                try
+                                {
+                                    Console.WriteLine("File size <= 0 byte, Deleted.");
+                                    File.Delete(@FilePathStr);
+                                }
+                                catch (Exception x)
+                                {
+                                    Console.WriteLine(x);
+                                }
+                            }
+                        }
                     }
+                }
+                catch(Exception z)
+                {
+                    Console.WriteLine(z);
                 }
             }
 
@@ -175,7 +363,8 @@ namespace DataKeeper.Engine
                 MethodInfo MInfo = _ScriptMonitoring.GetType().GetMethod("AddScript");
                 MInfo.Invoke(_ScriptMonitoring, new Object[] { ThisStation.ScriptCollection });
 
-                DisplayScriptMessage(Message);
+                if(Message != "")
+                    DisplayScriptMessage(Message);
             }
         }
 
@@ -188,16 +377,37 @@ namespace DataKeeper.Engine
             }
         }
 
-        private static Boolean IsTheSameScript(List<ScriptStructureNew> NewScriptCollection, STATIONNAME StationName)
-        {
+        private static Boolean IsTheSameScript(String FilePathStr, List<ScriptStructureNew> NewScriptCollection, STATIONNAME StationName)
+        {                        
             StationScript ThisStation = GetStationScript(StationName);
+            if (ThisStation != null)
+            {
+                if (ThisStation.LastestScriptFileName == FilePathStr)
+                {
+                    return true;
+                }
 
-            if (NewScriptCollection.Count() != ThisStation.ScriptCollection.Count())
-                return false;
-
-            for (int i = 0; i < NewScriptCollection.Count(); i++)
-                if (NewScriptCollection[i].ScriptID != ThisStation.ScriptCollection[i].ScriptID)
+                if (NewScriptCollection.Count() != ThisStation.ScriptCollection.Count())
+                {
+                    Console.WriteLine(StationName + " | COUNT: " + NewScriptCollection.Count() + " == " + ThisStation.ScriptCollection.Count());
                     return false;
+                }
+
+                for (int i = 0; i < NewScriptCollection.Count(); i++)
+                {
+                    if (NewScriptCollection[i].ScriptID != ThisStation.ScriptCollection[i].ScriptID)
+                    {
+                        Console.WriteLine(StationName + " | NOT SAME -- SCRIPT ID (" + NewScriptCollection[i].ScriptID + " != " + ThisStation.ScriptCollection[i].ScriptID);
+                        return false;
+                    }
+                }
+                //Console.WriteLine("SAME FILE ALERT");
+            }
+            else
+            {
+                return true;
+            }
+
 
             return true;
         }
@@ -267,26 +477,37 @@ namespace DataKeeper.Engine
             return true;
         }
 
-        public static string ConvertObjectToJSon<T>(T obj)
-        {
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T));
-            MemoryStream ms = new MemoryStream();
-            ser.WriteObject(ms, obj);
-            string jsonString = Encoding.UTF8.GetString(ms.ToArray());
-            ms.Close();
-            return jsonString;
-        }
-
-        public static T ConvertJSonToObject<T>(string jsonString)
-        {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
-            T obj = (T)serializer.ReadObject(ms);
-            return obj;
-        }
-
         private static String GetLastestFile(String RootPath)
         {
+            String LastestScriptStr = null;
+            Int64 LastestFileDate = Properties.Settings.Default.LastestScriptDate;
+
+            if (Directory.Exists(RootPath))
+            {
+                //Console.WriteLine("FOUND FILE: " + RootPath);
+
+                String[] ScriptList = Directory.GetFiles(RootPath);
+
+                Int64 TempName = 0;
+
+                foreach (String ThisFile in ScriptList)
+                {
+                    String TempFileNameStr = ThisFile.Replace(RootPath + "\\", "");
+                    TempFileNameStr = TempFileNameStr.Replace(".txt", "");
+
+                    Int64.TryParse(TempFileNameStr, out TempName);
+                    if (LastestFileDate < TempName)
+                    {
+                        LastestScriptStr = ThisFile;
+                    }
+                    
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(RootPath);
+            }
+            /*
             String[] ScriptList = Directory.GetFiles(RootPath);
 
             String LastestScriptStr = null;
@@ -301,8 +522,21 @@ namespace DataKeeper.Engine
                 if (LastestFileDate < TempName)
                     LastestScriptStr = ThisFile;
             }
-
+            */
             return LastestScriptStr;
+        }
+
+        private static void initialConfig()
+        {           
+            if (scriptConfigure != null)
+            {
+                foreach (ScriptConfigure config in scriptConfigure)
+                {
+                    StationScript stationScript = new StationScript(TTCSHelper.StationStrConveter(config.config_name));
+                    stationScript.LastestScriptFileName = config.config_value;
+                    ScriptStation.Add(stationScript);
+                }
+            }          
         }
     }
 }
