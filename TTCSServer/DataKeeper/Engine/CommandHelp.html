@@ -87,12 +87,12 @@
             return succeed;
         }
 
-        $(document).ready(function () {
+        $(document).ready(function () {            
             var SelectedStation = null;
             var SelectedDevice = null;
             var GetXml = null;
             var SetXml = null;
-            var URL = 'http://192.168.2.110:8093';
+            var URL = 'http://192.168.70.16:8093';
 
             $("#GetPanel").html("");
             $("#SetPanel").html("");
@@ -216,6 +216,7 @@
             }
 
             function SetInformationHtmlHandler(data) {
+				console.log(data);
                 $("#SetPanel").html("");
                 var StrHtml = '<table style="width:100%;">';
                 var RowCount = 1;

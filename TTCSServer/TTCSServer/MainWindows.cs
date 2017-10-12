@@ -28,12 +28,13 @@ namespace TTCSServer
 
         public MainWindows()
         {
+            DBScheduleEngine.ConnectDB();
             InitializeComponent();
             InitializeInterface();
             InitializeServer();
             InitializeWebService();
             InitializeSetCommand();
-            InitializeWS();
+            InitializeWS();            
         }
 
         private void InitializeSetCommand()

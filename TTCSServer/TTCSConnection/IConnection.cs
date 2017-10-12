@@ -7,6 +7,7 @@ using System.Text;
 using DataKeeper.Engine;
 using DataKeeper.Engine.Command;
 using DataKeeper;
+using MongoDB.Bson;
 
 namespace TTCSConnection
 {
@@ -62,6 +63,15 @@ namespace TTCSConnection
         void AddGPS(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime, Boolean IsHistory);
 
         [OperationContract]
+        void AddDeviceData(STATIONNAME StationName, DataPacket[] Datas);
+
+        [OperationContract]
+        Boolean AddDelayDeviceData(STATIONNAME StationName, DataPacket[] Datas);
+
+        [OperationContract]
+        Boolean ScheduleEvented(ScriptStructureNew Script);
+
+        [OperationContract]
         Boolean AddASTROCLIENT(STATIONNAME StationName, DEVICENAME DeviceName, ASTROCLIENT[] FieldName, Object[] Value, DateTime[] DateTime);
 
         [OperationContract]
@@ -111,6 +121,9 @@ namespace TTCSConnection
 
         [OperationContract(IsOneWay = true)]
         void OnNewScript(List<ScriptStructureNew> NewScript);
+
+        [OperationContract(IsOneWay = true)]
+        void OnCheckLastestInformation(long DateTimeUTC);
 
         [OperationContract(IsOneWay = true)]
         void OnTS700MMSET(STATIONNAME StationName, DEVICENAME DeviceName, TS700MMSET CommandName, Object[] Value, DateTime CommanddateTime);

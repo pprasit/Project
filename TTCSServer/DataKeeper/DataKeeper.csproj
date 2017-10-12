@@ -119,6 +119,8 @@
     <Compile Include="Engine\Command\InformationCommandNames.cs" />
     <Compile Include="Engine\Command\InformationFieldNames.cs" />
     <Compile Include="Engine\DatabaseSynchronization.cs" />
+    <Compile Include="Engine\DataPacket.cs" />
+    <Compile Include="Engine\DBScheduleEngine.cs" />
     <Compile Include="Engine\DBEngine.cs" />
     <Compile Include="Engine\ScriptConfigure.cs" />
     <Compile Include="Engine\ScriptEngine.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="LogTB.cs">
       <DependentUpon>AstroDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="NetworkConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

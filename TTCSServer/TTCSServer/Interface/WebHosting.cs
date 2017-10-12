@@ -237,7 +237,14 @@ namespace TTCSServer.Interface
             if (UserSessionHandler.VerifyTimeout(SessionID))
             {
                 STATIONNAME ThisStation = HostingHelper.ConvertStationNameStrToSTATIONNAME(StationNameStr);
+
+                var TempDeviceName = DeviceCategoryStr.Split('_');
+
                 DEVICECATEGORY ThisDeviceCategory = HostingHelper.ConvertDevicecCategoryStrToDEVICECATEGORY(DeviceCategoryStr);
+                if (TempDeviceName.Length > 1)
+                {
+                    ThisDeviceCategory = HostingHelper.ConvertDevicecCategoryStrToDEVICECATEGORY(TempDeviceName[1]);
+                }               
 
                 if (ThisStation == STATIONNAME.NULL)
                     return HostingHelper.ReturnError("Invalid station name. Please check.", myXml, xNav);
@@ -321,7 +328,14 @@ namespace TTCSServer.Interface
             if (UserSessionHandler.VerifyTimeout(SessionID))
             {
                 STATIONNAME ThisStation = HostingHelper.ConvertStationNameStrToSTATIONNAME(StationName);
+
+                var TempDeviceName = DeviceCategory.Split('_');
                 DEVICECATEGORY ThisDeviceCategory = HostingHelper.ConvertDevicecCategoryStrToDEVICECATEGORY(DeviceCategory);
+
+                if (TempDeviceName.Length > 1)
+                {
+                    ThisDeviceCategory = HostingHelper.ConvertDevicecCategoryStrToDEVICECATEGORY(TempDeviceName[1]);
+                }
 
                 if (ThisStation == STATIONNAME.NULL)
                     return HostingHelper.ReturnError("Invalid station name. Please check.", myXml, xNav);
@@ -339,6 +353,8 @@ namespace TTCSServer.Interface
                 }
                 else
                     return HostingHelper.ReturnError("An error occur while getting information", myXml, xNav);
+                
+                
             }
             else
                 return HostingHelper.ReturnError("Session is timeout. Please login to the system.", myXml, xNav);
@@ -362,7 +378,8 @@ namespace TTCSServer.Interface
 
             if (UserSessionHandler.VerifyTimeout(SessionID))
             {
-                STATIONNAME ThisStation = HostingHelper.ConvertStationNameStrToSTATIONNAME(StationName);
+                STATIONNAME ThisStation = HostingHelper.ConvertStationNameStrToSTATIONNAME(StationName);                
+
                 DEVICENAME ThisDevice = HostingHelper.ConvertDevicecNameStrToDEVICENAME(DeviceName);
                 dynamic ThisFieldName = HostingHelper.ConvertFieldNameStrToFIELDNAME(FieldName);
 

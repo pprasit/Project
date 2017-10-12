@@ -233,12 +233,58 @@ namespace DataKeeper.Engine
                 }
             });
 
-            if (!TaskPost.Wait(10))
+            if (!TaskPost.Wait(1000))
                 OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
             else
             {
                 if (ResultState)
                     OutputMessage = "Send script to station successful";                    
+                else
+                    OutputMessage = "An erroe occur because (" + OutputMessage + ")";
+            }
+
+            Message = OutputMessage;
+            return ResultState;
+        }        
+
+        public Boolean CheckLastesInformation(long DateTimeUTC, out String Message)
+        {
+            Boolean ResultState = false;
+            String OutputMessage = "";
+            if (ServerCallBackObject == null)
+            {
+                Message = "Station not connected.";
+                return false;
+            }
+
+            Task TaskPost = Task.Run(() =>
+            {
+                try
+                {
+                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnCheckLastestInformation");
+                    try
+                    {
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { DateTimeUTC });
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    
+                    ResultState = true;
+                }
+                catch (Exception e)
+                {
+                    OutputMessage = e.Message;
+                }
+            });
+
+            if (!TaskPost.Wait(1000))
+                OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
+            else
+            {
+                if (ResultState)
+                    OutputMessage = "Send script to station successful";
                 else
                     OutputMessage = "An erroe occur because (" + OutputMessage + ")";
             }

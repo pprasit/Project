@@ -26,7 +26,17 @@ namespace DataKeeper.Engine
                     GetOnlineStation();
                     GetOnlineDevice();
                     GetAvaliableDevice();
+                    
                     await Task.Delay(1000);
+                }
+            });
+
+            Task MissingTask = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    GetMissingData();
+                    await Task.Delay(5000);
                 }
             });
         }
@@ -77,6 +87,24 @@ namespace DataKeeper.Engine
             }
             else
                 AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER, DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_ONLINEDEVICES, "", DateTime.Now);
+        }
+
+        private void GetMissingData()
+        {
+            ReturnKnowType ThisResult = AstroData.GetAllOnlineStation();
+            if (ThisResult.ReturnValue != null)
+            {
+                List<StationHandler> AllStation = (List<StationHandler>)ThisResult.ReturnValue;
+
+                foreach (StationHandler ThisStation in AllStation)
+                {
+                    if (ThisStation.IsStationConnected && ThisStation.StationName != STATIONNAME.ASTROSERVER)
+                    {
+                        StationHandler StationCommunication = AstroData.GetStationObject(ThisStation.StationName);
+                        StationCommunication.CheckLastesInformation(DateTime.UtcNow.Ticks, out String Message);
+                    }
+                }
+            }
         }
 
         private void GetOnlineDevice()

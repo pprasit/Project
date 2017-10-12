@@ -50,7 +50,7 @@ namespace TTCSServer.Interface
                 {
                     foreach (ScriptStructureNew ThisScript in NewScriptCollection)
                         ScriptGrid.Rows.Add(DeletePNG, ThisScript.ScriptID, ThisScript.BlockID, ThisScript.Life, ThisScript.DeviceName, ThisScript.CommandName, String.Join(", ", ThisScript.Parameters),
-                            ThisScript.ScritpState, new DateTime(Convert.ToInt64(ThisScript.ExecuteionTimeStart)).ToString(), new DateTime(Convert.ToInt64(ThisScript.ExecuteionTimeEnd)));
+                            ThisScript.ScriptState, new DateTime(Convert.ToInt64(ThisScript.ExecutionTimeStart)).ToString(), new DateTime(Convert.ToInt64(ThisScript.ExecutionTimeEnd)));
                 }
             }));
         }

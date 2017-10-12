@@ -34,6 +34,8 @@ namespace DataKeeper.Engine
         ASTROSERVER
     }
 
+    public enum FILESTATE { NULL, SAME, COMMANDCHANGE, NOTSAME, DIFFID, RESEND }
+
     public enum ReturnStatus { SUCESSFUL, FAILED, WORKING, ONCALLBACK }
     public enum DATAACTION { INSERT, UPDATE, DELETE, SYNCALL }
 

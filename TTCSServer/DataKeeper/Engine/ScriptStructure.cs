@@ -1,5 +1,8 @@
 ﻿using DataKeeper.Engine.Command;
 using DataKeeper.Interface;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,7 +17,7 @@ using System.Web.Script.Serialization;
 
 namespace DataKeeper.Engine
 {
-    public enum SCRIPTSTATE { WAITINGSERVER, WAITINGSTATION, SENDINGTOSTATION, EXECUTING, CANCELED, EXECUTED, ENDTIMEPASSED, UPDATED }
+    public enum SCRIPTSTATE { WAITINGSERVER, SENDINGTOSTATION, WAITINGSTATION, EXECUTING, CANCELED, EXECUTED, ENDTIMEPASSED, FAILED }
 
     public class ScriptBuffer
     {
@@ -25,6 +28,8 @@ namespace DataKeeper.Engine
     [DataContract]
     public class ScriptStructureNew
     {
+        [DataMember]
+        public String _id { get; set; }
         [DataMember]
         public String ScriptID { get; set; }
         [DataMember]
@@ -40,13 +45,15 @@ namespace DataKeeper.Engine
         [DataMember]
         public List<String> Parameters { get; set; }
         [DataMember]
-        public String ScritpState { get; set; }
+        public String ScriptState { get; set; }
         [DataMember]
-        public String ExecuteionTimeStart { get; set; }
+        public String ExecutionTimeStart { get; set; }
         [DataMember]
-        public String ExecuteionTimeEnd { get; set; }
+        public String ExecutionTimeEnd { get; set; }
+        [DataMember]
+        public String MustResent { get; set; }
 
-        public ScriptStructureNew(String ScriptID, String BlockID, String Life, String StationName, String DeviceName, String CommandName, List<String> Parameters, String ScritpState, String ExecuteionTimeStart, String ExecuteionTimeEnd)
+        public ScriptStructureNew(String ScriptID, String BlockID, String Life, String StationName, String DeviceName, String CommandName, List<String> Parameters, String ScriptState, String ExecutionTimeStart, String ExecutionTimeEnd, String MustResent)
         {
             this.ScriptID = ScriptID;
             this.BlockID = BlockID;
@@ -55,9 +62,10 @@ namespace DataKeeper.Engine
             this.DeviceName = DeviceName;
             this.CommandName = CommandName;
             this.Parameters = Parameters;
-            this.ScritpState = ScritpState;
-            this.ExecuteionTimeStart = ExecuteionTimeStart;
-            this.ExecuteionTimeEnd = ExecuteionTimeEnd;
+            this.ScriptState = ScriptState;
+            this.ExecutionTimeStart = ExecutionTimeStart;
+            this.ExecutionTimeEnd = ExecutionTimeEnd;
+            this.MustResent = MustResent;
         }
     }
 

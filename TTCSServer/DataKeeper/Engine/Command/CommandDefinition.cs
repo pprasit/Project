@@ -282,7 +282,7 @@ namespace DataKeeper.Engine.Command
 
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_CONNECT, null, null);
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_DISCONNECT, null, null);
-            CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_EXPOSE, Decare3Parameter(typeof(String), typeof(Double), typeof(Boolean)), ParaDesc3("Parameter 1 : Image Name -> Data type String. Example Jupiter_03022016", "Parameter 2 : Exposure time -> Data type Double seconds. Example 30.5", "Parameter 2 : Taking light frame -> Data Type Boolean Double. Example true, false"));
+            CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_EXPOSE, Decare4Parameter(typeof(String), typeof(Double), typeof(Boolean), typeof(String)), ParaDesc4("Parameter 1 : Image Name -> Data type String. Example Jupiter_03022016", "Parameter 2 : Exposure time -> Data type Double seconds. Example 30.5", "Parameter 3 : Taking light frame -> Data Type Boolean Double. Example true, false", "Parameter 4 : PI Name Lastname  -> Data Type String. Example BugBunny"));
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_ABORTEXPOSE, null, null);
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_QUIT, null, null);
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_FITSKEY, Decare2Parameter(typeof(String), typeof(Object)), ParaDesc2("Parameter 1 : FITS Key name -> Data type String. Example RA", "Parameter 2 : FITS value object -> Data type object. Example 10 25 30.2"));
@@ -368,6 +368,16 @@ namespace DataKeeper.Engine.Command
             return Parameter;
         }
 
+        public static List<Type> Decare4Parameter(Type Para1, Type Para2, Type Para3, Type Para4)
+        {
+            List<Type> Parameter = new List<Type>();
+            Parameter.Add(Para1);
+            Parameter.Add(Para2);
+            Parameter.Add(Para3);
+            Parameter.Add(Para4);
+            return Parameter;
+        }
+
         public static List<String> ParaDesc1(String Desc1)
         {
             List<String> Parameter = new List<String>();
@@ -389,6 +399,16 @@ namespace DataKeeper.Engine.Command
             Parameter.Add(Desc1);
             Parameter.Add(Desc2);
             Parameter.Add(Desc3);
+            return Parameter;
+        }
+
+        public static List<String> ParaDesc4(String Desc1, String Desc2, String Desc3, String Desc4)
+        {
+            List<String> Parameter = new List<String>();
+            Parameter.Add(Desc1);
+            Parameter.Add(Desc2);
+            Parameter.Add(Desc3);
+            Parameter.Add(Desc4);
             return Parameter;
         }
 

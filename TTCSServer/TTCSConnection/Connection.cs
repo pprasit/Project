@@ -161,6 +161,41 @@ namespace TTCSConnection
             AstroData.ReturnAckState(DataGroupID, StationName, DeviceName);
         }
 
+        public void AddDeviceData(STATIONNAME StationName, DataPacket[] Datas)
+        {
+            //Console.WriteLine(StationName);
+
+            StationHandler StationCommunication = AstroData.GetStationObject(StationName);
+
+            foreach (DataPacket Data in Datas)
+            {                                
+                DBScheduleEngine.InsertData(Data.DataId, Data.DeviceCategory, Data.DeviceName, Data.FieldName, Data.Value, Data.DateTimeUTC);
+            }            
+        }
+
+        public Boolean AddDelayDeviceData(STATIONNAME StationName, DataPacket[] Datas)
+        {
+            Console.WriteLine("AddDelayDeviceData - " + Datas[0].DataId);
+
+            StationHandler StationCommunication = AstroData.GetStationObject(StationName);
+
+            String Msg = null;
+            //StationCommunication.ReceivedInformation(Datas, out Msg);
+
+            foreach (DataPacket Data in Datas)
+            {                
+                DBScheduleEngine.InsertData(Data.DataId, Data.DeviceCategory, Data.DeviceName, Data.FieldName, Data.Value, Data.DateTimeUTC);                
+            }
+
+            return true;
+        }
+
+        public Boolean ScheduleEvented(ScriptStructureNew Script)
+        {
+            DBScheduleEngine.UpdateSchedule(Script);
+            return true;
+        }
+
         public Boolean AddASTROCLIENT(STATIONNAME StationName, DEVICENAME DeviceName, ASTROCLIENT[] FieldName, Object[] Value, DateTime[] DateTime)
         {
             for (int i = 0; i < FieldName.Count(); i++)
