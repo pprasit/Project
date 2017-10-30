@@ -16,7 +16,7 @@ namespace DataKeeper.Engine
         public DBEngine()
         {
             _client = new MongoClient("mongodb://192.168.2.215:27017");
-            _database = _client.GetDatabase("STATION_DATA");
+            _database = _client.GetDatabase("STATION_DATA_V2");
         }
 
         public void insert(String StationName, String DeviceName, String FieldName, String Value, DateTime DataTimestamp)

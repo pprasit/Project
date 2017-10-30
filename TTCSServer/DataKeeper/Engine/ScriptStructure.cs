@@ -51,9 +51,11 @@ namespace DataKeeper.Engine
         [DataMember]
         public String ExecutionTimeEnd { get; set; }
         [DataMember]
+        public String Owner { get; set; }
+        [DataMember]
         public String MustResent { get; set; }
 
-        public ScriptStructureNew(String ScriptID, String BlockID, String Life, String StationName, String DeviceName, String CommandName, List<String> Parameters, String ScriptState, String ExecutionTimeStart, String ExecutionTimeEnd, String MustResent)
+        public ScriptStructureNew(String ScriptID, String BlockID, String Life, String StationName, String DeviceName, String CommandName, List<String> Parameters, String ScriptState, String ExecutionTimeStart, String ExecutionTimeEnd, String Owner, String MustResent)
         {
             this.ScriptID = ScriptID;
             this.BlockID = BlockID;
@@ -65,6 +67,7 @@ namespace DataKeeper.Engine
             this.ScriptState = ScriptState;
             this.ExecutionTimeStart = ExecutionTimeStart;
             this.ExecutionTimeEnd = ExecutionTimeEnd;
+            this.Owner = Owner;
             this.MustResent = MustResent;
         }
     }

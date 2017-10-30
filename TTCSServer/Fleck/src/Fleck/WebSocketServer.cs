@@ -15,14 +15,9 @@ namespace Fleck
         private Action<IWebSocketConnection> _config;
 
         public WebSocketServer(string location)
-            : this(8181, location)
-        {
-        }
-
-        public WebSocketServer(int port, string location)
         {
             var uri = new Uri(location);
-            Port = uri.Port > 0 ? uri.Port : port;
+            Port = uri.Port;
             Location = location;
             _locationIP = ParseIPAddress(uri);
             _scheme = uri.Scheme;
@@ -75,31 +70,27 @@ namespace Fleck
 
         public void Start(Action<IWebSocketConnection> config)
         {
-            try
+            var ipLocal = new IPEndPoint(_locationIP, Port);
+            ListenerSocket.Bind(ipLocal);
+            ListenerSocket.Listen(100);
+            Port = ((IPEndPoint)ListenerSocket.LocalEndPoint).Port;
+            FleckLog.Info(string.Format("Server started at {0} (actual port {1})", Location, Port));
+            if (_scheme == "wss")
             {
-                var ipLocal = new IPEndPoint(_locationIP, Port);
-                ListenerSocket.Bind(ipLocal);
-                ListenerSocket.Listen(100);
-                Port = ((IPEndPoint)ListenerSocket.LocalEndPoint).Port;
-                FleckLog.Info(string.Format("Server started at {0} (actual port {1})", Location, Port));
-                if (_scheme == "wss")
+                if (Certificate == null)
                 {
-                    if (Certificate == null)
-                    {
-                        FleckLog.Error("Scheme cannot be 'wss' without a Certificate");
-                        return;
-                    }
-
-                    if (EnabledSslProtocols == SslProtocols.None)
-                    {
-                        EnabledSslProtocols = SslProtocols.Tls;
-                        FleckLog.Debug("Using default TLS 1.0 security protocol.");
-                    }
+                    FleckLog.Error("Scheme cannot be 'wss' without a Certificate");
+                    return;
                 }
-                ListenForClients();
-                _config = config;
+
+                if (EnabledSslProtocols == SslProtocols.None)
+                {
+                    EnabledSslProtocols = SslProtocols.Tls;
+                    FleckLog.Debug("Using default TLS 1.0 security protocol.");
+                }
             }
-            catch { }
+            ListenForClients();
+            _config = config;
         }
 
         private void ListenForClients()

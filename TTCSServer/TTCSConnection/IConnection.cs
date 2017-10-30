@@ -27,7 +27,7 @@ namespace TTCSConnection
         Object DatabaseSync(STATIONNAME StationName, String TableName, DATAACTION Action, List<Object[]> TableField);
 
         [OperationContract]
-        void ReciveAcknowledge(STATIONNAME StationName, DEVICENAME StationDeviceName, DEVICENAME FieldDeviceName, String FieldName, Object[] Value, DateTime TimeRecive);
+        void ReciveAcknowledge(STATIONNAME StationName, DEVICENAME DeviceName, String FieldName, Object[] Value, DateTime TimeRecive);
 
         [OperationContract]
         void AddTS700MM(STATIONNAME StationName, DEVICENAME DeviceName, TS700MM[] FieldName, Object[] Value, DateTime[] DateTime);
@@ -63,7 +63,7 @@ namespace TTCSConnection
         void AddGPS(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime, Boolean IsHistory);
 
         [OperationContract]
-        void AddDeviceData(STATIONNAME StationName, DataPacket[] Datas);
+        void AddDeviceData(STATIONNAME StationName, DataPacket[] Datas, Boolean IsInsertDB = true, Boolean IsSentWebSocket = true);
 
         [OperationContract]
         Boolean AddDelayDeviceData(STATIONNAME StationName, DataPacket[] Datas);
@@ -106,6 +106,9 @@ namespace TTCSConnection
 
         [OperationContract]
         List<INFORMATIONSTRUCT> GetInformation(STATIONNAME StationName, DEVICENAME DeviceName, dynamic FieldName);
+
+        [OperationContract]
+        void GetNextScriptPart(STATIONNAME StationName);        
     }
 
     public interface ServerCallBack
@@ -120,7 +123,10 @@ namespace TTCSConnection
         void OnScriptSET(List<ScriptStructure> ThisScript);
 
         [OperationContract(IsOneWay = true)]
-        void OnNewScript(List<ScriptStructureNew> NewScript);
+        void OnNewScript(List<ScriptStructureNew> NewScript, Boolean IsHaveNextScript);
+
+        [OperationContract(IsOneWay = true)]
+        void OnNextScript(List<ScriptStructureNew> NewScript, Boolean IsHaveNextScript);
 
         [OperationContract(IsOneWay = true)]
         void OnCheckLastestInformation(long DateTimeUTC);

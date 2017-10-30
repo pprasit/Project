@@ -77,6 +77,7 @@ namespace DataKeeper.Engine
         public Object Value { get; set; }
         public DateTime? UpdateTime { get; set; }
         public Boolean IsUpdated { get; set; }
+        public Boolean IsFirstTime { get; set; }
         public ConcurrentDictionary<String, Object> ClientSubscribe { get; set; }
     }
 

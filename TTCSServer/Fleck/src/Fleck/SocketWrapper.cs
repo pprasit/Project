@@ -62,12 +62,12 @@ namespace Fleck
 
         public void Listen(int backlog)
         {
-            try { _socket.Listen(backlog); } catch { }
+            _socket.Listen(backlog);
         }
 
         public void Bind(EndPoint endPoint)
         {
-            try { _socket.Bind(endPoint); } catch { }
+            _socket.Bind(endPoint);
         }
 
         public bool Connected
@@ -148,8 +148,9 @@ namespace Fleck
 
             try
             {
-                Func<AsyncCallback, object, IAsyncResult> begin = null;
-                begin = (cb, s) => _stream.BeginWrite(buffer, 0, buffer.Length, cb, s);
+                Func<AsyncCallback, object, IAsyncResult> begin =
+                    (cb, s) =>
+                        steamAntiBug(buffer, cb, s);                    
 
                 Task task = Task.Factory.FromAsync(begin, _stream.EndWrite, null);
                 task.ContinueWith(t => callback(), TaskContinuationOptions.NotOnFaulted)
@@ -163,6 +164,19 @@ namespace Fleck
                 error(e);
                 return null;
             }
+        }
+
+        public IAsyncResult steamAntiBug(byte[] buffer, AsyncCallback cb, object s)
+        {
+            try
+            {
+                return _stream.BeginWrite(buffer, 0, buffer.Length, cb, s);
+            }
+            catch
+            {
+                return null;
+            }
+            
         }
     }
 }

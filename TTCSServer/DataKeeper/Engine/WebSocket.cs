@@ -106,12 +106,12 @@ namespace DataKeeper.Interface
 
             UserList = DatabaseSynchronization.GetAllUser();
 
-            FleckLog.Level = LogLevel.Debug;
+            FleckLog.Level = LogLevel.Info;
             AllConnection = new ConcurrentDictionary<String, WSConnection>();
             var server = new WebSocketServer(SocketServerAddress);
-            String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\astronet.narit.or.th-all.pfx";
+            //String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\astronet.narit.or.th-all.pfx";
 
-            server.Certificate = new X509Certificate2(CerPath);
+            //server.Certificate = new X509Certificate2(CerPath);
             server.Start(socket =>
             {
                 socket.OnOpen = () =>
@@ -318,7 +318,8 @@ namespace DataKeeper.Interface
 
             OnCloseHanlder(ThisConnection.IPAddress, ThisConnection.Port);
             ThisConnection.IsConnected = false;
-            AllConnection.TryRemove(ThisConnection.IPAddress + ThisConnection.Port.ToString(), out ThisConnection);
+            ThisConnection.WSClient.Close();
+            AllConnection.TryRemove(ThisConnection.IPAddress + ThisConnection.Port.ToString(), out ThisConnection);            
         }
 
         public static List<String> GetMonitoringInformation(String IPAddress, String Port)
@@ -833,8 +834,8 @@ namespace DataKeeper.Interface
                 SendMessage(ThisConnection.WSClient, ReturningJson);
             }
 
-            var json = new JavaScriptSerializer().Serialize(ThisResult);
-            SendMessage(ThisConnection.WSClient, json);
+            JavaScriptSerializer json = new JavaScriptSerializer() { MaxJsonLength = 2147483647 };            
+            SendMessage(ThisConnection.WSClient, json.Serialize(ThisResult));
         }
 
         private static DEVICENAME GetDeviceNameFromStr(String DeviceNameStr)
@@ -1048,28 +1049,40 @@ namespace DataKeeper.Interface
 
         private static void SendMessage(IWebSocketConnection Client, String Message)
         {
-            Client.Send(Message);
+            try
+            {
+                if (Client.IsAvailable)
+                {
+                    Client.Send(Message);
+                }
+            }
+            catch { }
+                      
         }
 
         private static void ReturnMessage(IWebSocketConnection Client, String StationName, String DeviceName, String FieldName, String Value, String DataType, String InformationType, String ReturnMessage, String ReturnResult)
         {
-            ResultStructure ThisReturnStructure = new ResultStructure();
-            ThisReturnStructure.StationName = StationName;
-            ThisReturnStructure.DeviceName = DeviceName;
-            ThisReturnStructure.FieldName = FieldName;
-            ThisReturnStructure.Value = Value;
-            ThisReturnStructure.DataType = DataType;
-            ThisReturnStructure.ParameterName = "null";
-            ThisReturnStructure.InformationType = InformationType;
-            ThisReturnStructure.ReturnMessage = ReturnMessage;
-            ThisReturnStructure.ReturnResult = ReturnResult;
-            ThisReturnStructure.DataTimeStamp = DateTime.Now.ToString();
+            if (Client.IsAvailable)
+            {
+                ResultStructure ThisReturnStructure = new ResultStructure();
+                ThisReturnStructure.StationName = StationName;
+                ThisReturnStructure.DeviceName = DeviceName;
+                ThisReturnStructure.FieldName = FieldName;
+                ThisReturnStructure.Value = Value;
+                ThisReturnStructure.DataType = DataType;
+                ThisReturnStructure.ParameterName = "null";
+                ThisReturnStructure.InformationType = InformationType;
+                ThisReturnStructure.ReturnMessage = ReturnMessage;
+                ThisReturnStructure.ReturnResult = ReturnResult;
+                ThisReturnStructure.DataTimeStamp = DateTime.Now.ToString();
 
-            JavaScriptSerializer Serializer = new JavaScriptSerializer();
-            Serializer.MaxJsonLength = Int32.MaxValue;
-            var json = Serializer.Serialize(ThisReturnStructure);
+                JavaScriptSerializer Serializer = new JavaScriptSerializer();
+                Serializer.MaxJsonLength = Int32.MaxValue;
+                var json = Serializer.Serialize(ThisReturnStructure);
 
-            Client.Send(json);
+                SendMessage(Client, json);
+            }
+            
             //SetReturningToMonitoring(TotalByte, CommandName, Value, ConditionCase);
         }
 
@@ -1098,7 +1111,14 @@ namespace DataKeeper.Interface
                     Serializer.MaxJsonLength = Int32.MaxValue;
                     var json = Serializer.Serialize(ThisResult);
 
-                    SendMessage(ThisConnection.Value.WSClient, json);
+                    if(ThisResult.FieldName == ASTROCLIENT.ASTROCLIENT_LASTESTEXECTIONCOMMAND.ToString())
+                    {
+                        SendMessage(ThisConnection.Value.WSClient, json);
+                    }
+                    else
+                    {
+                        SendMessage(ThisConnection.Value.WSClient, json);
+                    }                    
                 }
             }
         }

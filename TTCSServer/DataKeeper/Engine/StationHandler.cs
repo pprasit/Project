@@ -24,6 +24,9 @@ namespace DataKeeper.Engine
         public List<DEVICEMAPPER> AvaliableDevices = null;
         public ConcurrentDictionary<DEVICEMAPPER, Object> DeviceStroage;
 
+        List<List<ScriptStructureNew>> Buffer;
+        int MAX_SCRIPT_PER_SEND = 20;
+
         public ReturnKnowType CreateEngine(String SiteSessionID, Object ServerCallBackObject)
         {
             try
@@ -207,18 +210,89 @@ namespace DataKeeper.Engine
             NewField.ClientSubscribe = new ConcurrentDictionary<string, object>();
 
             return NewField;
-        }
+        }        
 
-        public Boolean NewScriptInformation(List<ScriptStructureNew> ScriptCollection,out String Message)
+        public Boolean NewScriptInformation(List<ScriptStructureNew> ScriptCollections, out String Message)
         {
-            Boolean ResultState = false;
-            String OutputMessage = "";
             if (ServerCallBackObject == null)
             {
                 Message = "Station not connected.";
                 return false;
             }
 
+            String OutputMessage = "";         
+
+            Boolean ResultState = false;
+            List<ScriptStructureNew> ScriptStructureTemp = null;
+            Buffer = new List<List<ScriptStructureNew>>();
+
+            ScriptStructureTemp = new List<ScriptStructureNew>();
+
+            int i = 0;
+                
+            foreach (ScriptStructureNew ScriptCollection in ScriptCollections)
+            {
+                ScriptStructureTemp.Add(ScriptCollection);
+
+                if (i >= (MAX_SCRIPT_PER_SEND-1))
+                {
+                    Buffer.Add(ScriptStructureTemp);
+                    ScriptStructureTemp = new List<ScriptStructureNew>();
+                    i = 0;
+                }
+
+                ++i;
+            }
+
+            if(i != 0)
+            {
+                Buffer.Add(ScriptStructureTemp);
+            }
+
+            Boolean IsHaveNextScript = ((Buffer.Count-1) > 0 ? true : false);
+
+            foreach (List<ScriptStructureNew> ScriptCollection in Buffer)
+            {
+                Task TaskPost = Task.Run(() =>
+                {
+                    try
+                    {
+                        MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnNewScript");
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { ScriptCollection, IsHaveNextScript });
+                        ResultState = true;
+                        Buffer.RemoveAt(0);
+
+                        if(!IsHaveNextScript)
+                        {
+                            OutputMessage = "Script Sent to Station Successfully.";
+                        }
+                        else
+                        {
+                            OutputMessage = "Script Sent to Station (Continue).";
+                        }                        
+                    }
+                    catch (Exception e)
+                    {
+                        OutputMessage = e.Message;
+                    }
+                });
+
+                if (!TaskPost.Wait(1000))
+                    OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
+                else
+                {
+                    if (ResultState)
+                        OutputMessage = "Send script to station successful";
+                    else
+                        OutputMessage = "An erroe occur because (" + OutputMessage + ")";
+                }
+
+                Message = OutputMessage;
+
+                break;
+            }
+
+            /*           
             Task TaskPost = Task.Run(() =>
             {
                 try
@@ -244,8 +318,72 @@ namespace DataKeeper.Engine
             }
 
             Message = OutputMessage;
+            */
+
+            Message = OutputMessage;
+
             return ResultState;
-        }        
+        }
+
+        public Boolean NextScriptInformation(out String Message)
+        {
+            if (ServerCallBackObject == null)
+            {
+                Message = "Station not connected.";
+                return false;
+            }
+
+            String OutputMessage = "";
+
+            Boolean ResultState = false;
+
+            Boolean IsHaveNextScript = ((Buffer.Count - 1) > 0 ? true : false);
+
+            foreach (List<ScriptStructureNew> ScriptCollection in Buffer)
+            {            
+                Task TaskPost = Task.Run(() =>
+                {
+                    try
+                    {
+                        MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnNextScript");
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { ScriptCollection, IsHaveNextScript });
+                        ResultState = true;
+                        Buffer.RemoveAt(0);
+
+                        if (!IsHaveNextScript)
+                        {
+                            OutputMessage = "Script Sent to Station Successfully.";
+                        }
+                        else
+                        {
+                            OutputMessage = "Script Sent to Station (Continue).";
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        OutputMessage = e.Message;
+                    }
+                });
+
+                if (!TaskPost.Wait(1000))
+                    OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
+                else
+                {
+                    if (ResultState)
+                        OutputMessage = "Send script to station successful";
+                    else
+                        OutputMessage = "An erroe occur because (" + OutputMessage + ")";
+                }
+
+                Message = OutputMessage;
+
+                break;
+            }
+            
+            Message = OutputMessage;
+
+            return ResultState;
+        }
 
         public Boolean CheckLastesInformation(long DateTimeUTC, out String Message)
         {
@@ -531,8 +669,6 @@ namespace DataKeeper.Engine
                 }
             }
 
-
-
             if (ExistingInformation != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
@@ -725,7 +861,7 @@ namespace DataKeeper.Engine
                         }
 
                         MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod(MethodName);
-                        MInfo.Invoke(ServerCallBackObject, new Object[] { StationName, DeviceName, CommandName, Values, DateTime.Now });
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { StationName, DeviceName, CommandName, Values, DateTime.UtcNow });
                         ResultState = true;
                     }
                 }
@@ -814,7 +950,11 @@ namespace DataKeeper.Engine
 
         public INFORMATIONSTRUCT GetInformationObject(DEVICENAME DeviceName, dynamic FieldName)
         {
+            //Console.WriteLine(DeviceName.ToString());
+
             DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
+
+            if (ThisDevice == null) return null;
 
             List<INFORMATIONSTRUCT> TempList = DeviceInformationObjectHandler(ThisDevice);
             INFORMATIONSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName.ToString() == FieldName.ToString());

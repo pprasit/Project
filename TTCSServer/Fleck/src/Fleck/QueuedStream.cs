@@ -93,26 +93,22 @@ namespace Fleck
 
         public override void EndWrite(IAsyncResult asyncResult)
         {
-            try
+            if (asyncResult is QueuedWriteResult)
             {
-                if (asyncResult is QueuedWriteResult)
+                var queuedResult = asyncResult as QueuedWriteResult;
+                if (queuedResult.Exception != null) throw queuedResult.Exception;
+                var ar = queuedResult.ActualResult;
+                if (ar == null)
                 {
-                    var queuedResult = asyncResult as QueuedWriteResult;
-                    if (queuedResult.Exception != null) throw queuedResult.Exception;
-                    var ar = queuedResult.ActualResult;
-                    if (ar == null)
-                    {
-                        throw new NotSupportedException(
-                            "QueuedStream does not support synchronous write operations. Please wait for callback to be invoked before calling EndWrite.");
-                    }
-                    // EndWrite on actual stream should already be invoked.
+                    throw new NotSupportedException(
+                        "QueuedStream does not support synchronous write operations. Please wait for callback to be invoked before calling EndWrite.");
                 }
-                else
-                {
-                    throw new ArgumentException();
-                }
+                // EndWrite on actual stream should already be invoked.
             }
-            catch { }
+            else
+            {
+                throw new ArgumentException();
+            }
         }
 
         public override void Flush()

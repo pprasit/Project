@@ -2,6 +2,8 @@
 using DataKeeper.Engine.Command;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -660,6 +662,15 @@ namespace DataKeeper
         public static String ToDecimal3Place(Object Value)
         {
             return String.Format("{0:0.000}", Convert.ToDouble(Value));
+        }
+
+        public static byte[] ImageToByte2(Image img)
+        {
+            using (var stream = new MemoryStream())
+            {
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                return stream.ToArray();
+            }
         }
     }
 }

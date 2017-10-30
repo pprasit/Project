@@ -245,10 +245,10 @@ namespace DataKeeper.Engine
                 ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.USA.ToString(), DEVICENAME.USA_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
             }   
             */
-            stationName = "ASTROPARK";
-            ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMilliseconds(+1).Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString(), "False"));
-            ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMilliseconds(+2).Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SLEWRADEC.ToString(), new List<String> { "4 55 23.32", "+14 32 54.12" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString(), "False"));
-            ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMilliseconds(+3).Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "1.0", "true", "TigerStar" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString(), "False"));
+            stationName = "AIRFORCE";
+            ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMilliseconds(+1).Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString(), "CHAMP", "False"));
+            ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMilliseconds(+2).Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SLEWRADEC.ToString(), new List<String> { "4 55 23.32", "+14 32 54.12" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString(), "CHAMP", "False"));
+            ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.AddMilliseconds(+3).Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "1.0", "true", "TigerStar" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString(), "CHAMP", "False"));
 
             String DataJsonTest = JsonConvert.SerializeObject(ScriptList);
 
@@ -286,115 +286,123 @@ namespace DataKeeper.Engine
                                 {
                                     List<ScriptStructureNew> NewScriptCollection = JsonConvert.DeserializeObject<List<ScriptStructureNew>>(jsonString);
 
-                                    String TempFileNameStr = FilePathStr.Split('\\').Last();
-                                    TempFileNameStr = TempFileNameStr.Replace(".txt", "");
-
-                                    FILESTATE FileState = IsTheSameScript(TempFileNameStr, NewScriptCollection, StationName, scriptConfigures);
-
-                                    if (FileState != FILESTATE.SAME || !checkSameScript)
+                                    if (NewScriptCollection.Count > 0)
                                     {
-                                        bool IsMustInsertToDB = true;
-                                        
-                                        Console.WriteLine("FOUNDING: " + FilePathStr);
-                                        
-                                        StationScript scriptTemp = ScriptStation.FirstOrDefault(Item => Item.StationName == StationName);
-                                        scriptTemp.LastestScriptFileName = TempFileNameStr;
 
-                                        if (scriptConfigure == null)
-                                        {
-                                            scriptConfigure = new List<ScriptConfigure>();
-                                            scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr, false, true));
-                                        }
-                                        else if (scriptTemp == null)
-                                        {
-                                            scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr, false, true));
-                                        }
-                                        else
-                                        {                                            
-                                            ScriptConfigure tempScript = scriptConfigure.FirstOrDefault(Item => Item.config_name == StationName.ToString());
+                                        String TempFileNameStr = FilePathStr.Split('\\').Last();
+                                        TempFileNameStr = TempFileNameStr.Replace(".txt", "");
 
-                                            if (tempScript != null)
+                                        FILESTATE FileState = IsTheSameScript(TempFileNameStr, NewScriptCollection, StationName, scriptConfigures);
+
+                                        if (FileState != FILESTATE.SAME || !checkSameScript)
+                                        {
+                                            bool IsMustInsertToDB = true;
+
+                                            Console.WriteLine("FOUNDING: " + FilePathStr);
+
+                                            StationScript scriptTemp = ScriptStation.FirstOrDefault(Item => Item.StationName == StationName);
+                                            scriptTemp.LastestScriptFileName = TempFileNameStr;
+
+                                            if (scriptConfigure == null)
                                             {
-                                                if(tempScript.config_isaddtodb == true)
-                                                {
-                                                    IsMustInsertToDB = false;
-                                                }
-                                                else
-                                                {
-                                                    tempScript.config_isaddtodb = true;
-                                                }
-
-                                                tempScript.config_value = TempFileNameStr;
-                                                tempScript.config_status = false;
+                                                scriptConfigure = new List<ScriptConfigure>();
+                                                scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr, false, true));
                                             }
-                                            else
+                                            else if (scriptTemp == null)
                                             {
                                                 scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr, false, true));
                                             }
-                                        }
-
-                                        if (FileState == FILESTATE.NOTSAME)
-                                        {
-                                            IsMustInsertToDB = true;
-                                        }
-
-                                        //DBScheduleEngine.DropSchedule(StationName);
-                                        Console.WriteLine(IsMustInsertToDB);
-                                        
-                                        foreach (ScriptStructureNew Script in NewScriptCollection)
-                                        {
-                                            Script.MustResent = "False";
-
-                                            if (IsMustInsertToDB)
+                                            else
                                             {
-                                                Script.ScriptState = SCRIPTSTATE.WAITINGSERVER.ToString();
-                                                String _id = DBScheduleEngine.InsertSchedule(Script);
-                                                if (_id != null)
+                                                ScriptConfigure tempScript = scriptConfigure.FirstOrDefault(Item => Item.config_name == StationName.ToString());
+
+                                                if (tempScript != null)
                                                 {
-                                                    Script._id = _id;
+                                                    if (tempScript.config_isaddtodb == true)
+                                                    {
+                                                        IsMustInsertToDB = false;
+                                                    }
+                                                    else
+                                                    {
+                                                        tempScript.config_isaddtodb = true;
+                                                    }
+
+                                                    tempScript.config_value = TempFileNameStr;
+                                                    tempScript.config_status = false;
+                                                }
+                                                else
+                                                {
+                                                    scriptConfigure.Add(new ScriptConfigure(StationName.ToString(), TempFileNameStr, false, true));
                                                 }
                                             }
+
+                                            if (FileState == FILESTATE.NOTSAME)
+                                            {
+                                                IsMustInsertToDB = true;
+                                            }
+
+                                            //DBScheduleEngine.DropSchedule(StationName);
+                                            //Console.WriteLine(IsMustInsertToDB);                                         
+
+                                            String Message = "";
+                                            if (VerifyScript(NewScriptCollection, out Message))
+                                            {
+                                                foreach (ScriptStructureNew Script in NewScriptCollection)
+                                                {
+                                                    Script.MustResent = "False";
+
+                                                    if (IsMustInsertToDB)
+                                                    {
+                                                        Script.ScriptState = SCRIPTSTATE.WAITINGSERVER.ToString();
+                                                        String _id = DBScheduleEngine.InsertSchedule(Script);
+                                                        if (_id != null)
+                                                        {
+                                                            Script._id = _id;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        String _id = DBScheduleEngine.GetId(Script);
+                                                        Script._id = _id;
+                                                        //Console.WriteLine("OLD ID: " + _id);
+                                                    }
+                                                }
+
+                                                StationName = TTCSHelper.StationStrConveter(NewScriptCollection.FirstOrDefault().StationName);
+                                                StationScript ThisStationTemp = GetStationScript(StationName);
+
+                                                if (ThisStationTemp == null)
+                                                {
+                                                    ThisStationTemp = new StationScript(StationName);
+                                                    ScriptStation.Add(ThisStationTemp);
+                                                }
+                                                else
+                                                {
+                                                    ThisStationTemp.RemoveAllScript();
+                                                }
+
+                                                ThisStationTemp.AddScript(NewScriptCollection);
+
+                                                DisplayScript(Message, StationName);
+                                                IsScriptOK = true;
+
+                                                fs.Close();
+                                            }
                                             else
                                             {
-                                                String _id = DBScheduleEngine.GetId(Script);
-                                                Script._id = _id;
-                                                //Console.WriteLine("OLD ID: " + _id);
+                                                fs.Close();
+
+                                                DisplayScriptMessage(Message);
+
+                                                Console.WriteLine("Verifying command failed, Deleted.");
+                                                Console.WriteLine(Message);
+                                                File.Delete(@FilePathStr);                                            
                                             }
                                         }
-                                        
-
-                                        String Message = "";
-                                        if (VerifyScript(NewScriptCollection, out Message))
-                                        {
-                                            StationName = TTCSHelper.StationStrConveter(NewScriptCollection.FirstOrDefault().StationName);
-                                            StationScript ThisStationTemp = GetStationScript(StationName);
-
-                                            if (ThisStationTemp == null)
-                                            {
-                                                ThisStationTemp = new StationScript(StationName);
-                                                ScriptStation.Add(ThisStationTemp);
-                                            }
-                                            else
-                                            {
-                                                ThisStationTemp.RemoveAllScript();
-                                            }
-
-                                            ThisStationTemp.AddScript(NewScriptCollection);
-
-                                            DisplayScript(Message, StationName);
-                                            IsScriptOK = true;
-
-                                            fs.Close();
-                                        }
-                                        else
-                                        {
-                                            fs.Close();
-
-                                            DisplayScriptMessage(Message);
-
-                                            Console.WriteLine("Verifying command failed, Deleted.");
-                                            //File.Delete(@FilePathStr);                                            
-                                        }
+                                    }
+                                    else
+                                    {
+                                        //Console.WriteLine("No Data Received, Deleted.");
                                     }
                                 }
                                 catch (JsonReaderException ex)
@@ -404,7 +412,7 @@ namespace DataKeeper.Engine
                                     try
                                     {
                                         Console.WriteLine("File isn't jSon, Deleted.");
-                                        //File.Delete(@FilePathStr);
+                                        File.Delete(@FilePathStr);
                                     }
                                     catch (Exception x)
                                     {
@@ -416,7 +424,7 @@ namespace DataKeeper.Engine
                                     fs.Close();
 
                                     Console.WriteLine(ex2.Message);
-                                    //File.Delete(@FilePathStr);
+                                    File.Delete(@FilePathStr);
                                 }
                             }
                             else
@@ -426,7 +434,7 @@ namespace DataKeeper.Engine
                                 try
                                 {
                                     Console.WriteLine("File size <= 0 byte, Deleted.");
-                                    //File.Delete(@FilePathStr);
+                                    File.Delete(@FilePathStr);
                                 }
                                 catch (Exception x)
                                 {
@@ -577,6 +585,12 @@ namespace DataKeeper.Engine
                 if (!int.TryParse(ThisScript.Life, out Life))
                 {
                     Message = "Invlid life time at " + ThisScript.ScriptID + ". Please check spelling.";
+                    return false;
+                }
+                
+                if(String.IsNullOrEmpty(ThisScript.Owner))
+                {
+                    Message = "Invlid Owner can't be null or empty value at Script ID : " + ThisScript.ScriptID + ". Please check.";
                     return false;
                 }
 

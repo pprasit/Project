@@ -14,6 +14,8 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using System.IO;
 using System.Drawing;
+using FluentFTP;
+using System.Net;
 
 namespace DataKeeper
 {
@@ -31,6 +33,9 @@ namespace DataKeeper
         public static List<StationHandler> KeeperData = null;
         private static List<InformationBuffering> InfoBuffer = new List<InformationBuffering>();
         private static Object MainWindows = null;
+
+        private static FtpClient Client = null;
+        private static String FileName = null;
 
         public static void CreateTTCSData(Object MainWindows)
         {
@@ -98,7 +103,7 @@ namespace DataKeeper
             if (ThisStation != null)
                 ThisStation.StationConnected();
 
-            TTCSLog.NewLogInformation(StationName, DateTime.Now, "Station name : " + StationName.ToString() + " has been created, Status ready and waiting for command.", LogType.COMMUNICATION, null);
+            TTCSLog.NewLogInformation(StationName, DateTime.UtcNow, "Station name : " + StationName.ToString() + " has been created, Status ready and waiting for command.", LogType.COMMUNICATION, null);
             return CreateSiteResult;
         }
 
@@ -160,7 +165,7 @@ namespace DataKeeper
                 ExistingStation.NewASTROHEVENDOMEInformation(DeviceName, FieldName, Value, DataTimestamp);
         }
 
-        public static void NewIMAGINGInformation(STATIONNAME StationName, DEVICENAME DeviceName, IMAGING FieldName, Object Value, DateTime DataTimestamp)
+        public static void NewIMAGINGInformation(STATIONNAME StationName, DEVICENAME DeviceName, dynamic FieldName, Object Value, DateTime DataTimestamp)
         {
             StationHandler ExistingStation = KeeperData.FirstOrDefault(Item => Item.StationName == StationName);
             if (ExistingStation != null)
@@ -169,6 +174,7 @@ namespace DataKeeper
 
                 switch (FieldName)
                 {
+                    case IMAGING.IMAGING_CCD_ACTIVE_IMAGE_FILENAME: ActiveFileName(Value.ToString()); break;
                     case IMAGING.IMAGING_CCD_DOWNLOAD_STATUS: if (Value.ToString() == "Completed") LoadFITSImage(StationName, DeviceName, ExistingStation); break;
                     case IMAGING.IMAGING_PREVIEW_DOWNLOAD_STATUS: if (Value.ToString() == "Completed") LoadPerviewImage(StationName, DeviceName, ExistingStation); break;
                     case IMAGING.IMAGING_STARTX: SubFrameChecking(DeviceName, ExistingStation); break;
@@ -179,6 +185,31 @@ namespace DataKeeper
                     case IMAGING.IMAGING_CCD_BINY: SubFrameChecking(DeviceName, ExistingStation); break;
                 }
             }
+        }
+
+        public static void NewIMAGINGInformationHandle(STATIONNAME StationName, DEVICENAME DeviceName, String FieldName, Object Value, DateTime DataTimestamp)
+        {
+            StationHandler ExistingStation = KeeperData.FirstOrDefault(Item => Item.StationName == StationName);
+            if (ExistingStation != null)
+            {
+                switch (FieldName)
+                {
+                    case "IMAGING_CCD_ACTIVE_IMAGE_FILENAME": ActiveFileName(Value.ToString()); break;
+                    case "IMAGING_CCD_DOWNLOAD_STATUS": if (Value.ToString() == "Completed") LoadFITSImage(StationName, DeviceName, ExistingStation); break;
+                    case "IMAGING_PREVIEW_DOWNLOAD_STATUS": if (Value.ToString() == "Completed") LoadPerviewImage(StationName, DeviceName, ExistingStation); break;
+                    case "IMAGING_STARTX": SubFrameChecking(DeviceName, ExistingStation); break;
+                    case "IMAGING_STARTY": SubFrameChecking(DeviceName, ExistingStation); break;
+                    case "IMAGING_NUMX": SubFrameChecking(DeviceName, ExistingStation); break;
+                    case "IMAGING_NUMY": SubFrameChecking(DeviceName, ExistingStation); break;
+                    case "IMAGING_CCD_BINX": SubFrameChecking(DeviceName, ExistingStation); break;
+                    case "IMAGING_CCD_BINY": SubFrameChecking(DeviceName, ExistingStation); break;
+                }
+            }
+        }
+
+        private static void ActiveFileName(String FileNameStr)
+        {
+            FileName = FileNameStr +".FITS";
         }
 
         private static void SubFrameChecking(DEVICENAME DeviceName, StationHandler ExistingStation)
@@ -195,20 +226,58 @@ namespace DataKeeper
                 int BINY = Convert.ToInt32(ExistingStation.GetInformation(DeviceName, IMAGING.IMAGING_CCD_BINY).Value);
 
                 if (STARTX > 0 && STARTY > 0 && NUMX < CAMERAXSIZE && NUMY < CAMERAYSIZE && BINX > 1 && BINY > 1)
-                    ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_ISSUBFRAMEON, true, DateTime.Now);
+                    ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_ISSUBFRAMEON, true, DateTime.UtcNow);
                 else
-                    ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_ISSUBFRAMEON, false, DateTime.Now);
+                    ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_ISSUBFRAMEON, false, DateTime.UtcNow);
             }
             catch
             {
-                ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_ISSUBFRAMEON, false, DateTime.Now);
+                ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_ISSUBFRAMEON, false, DateTime.UtcNow);
             }
         }
 
-        private static void LoadPerviewImage(STATIONNAME StationName, DEVICENAME DeviceName, StationHandler ExistingStation)
+        public static void LoadPerviewImage(STATIONNAME StationName, DEVICENAME DeviceName, StationHandler ExistingStation)
         {
-            Task DomeTask = Task.Run(async () =>
+            Task PreviewTask = Task.Run(async () =>
             {
+                if(Client == null)
+                {
+                    Client = new FtpClient("192.168.2.217");
+                    Client.Credentials = new NetworkCredential("astronetbot", "P@ssw0rd");
+                    Client.ConnectTimeout = 1000;
+                }
+                
+                if(!Client.IsConnected) Client.Connect();
+
+                String FilePath = "/files/" + StationName.ToString() + "/PreviewImg.jpg";
+
+                if(Client.FileExists(@FilePath))
+                {
+                    Stream streamReader = null;
+                    await Client.DownloadAsync(streamReader, FilePath);
+                    Bitmap tmpBitmap = (Bitmap)Bitmap.FromStream(streamReader);
+                    Image Image = (Image)tmpBitmap;
+
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        Image.Save(m, Image.RawFormat);
+                        byte[] imageBytes = m.ToArray();
+
+                        //ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_BASE64, imageBytes, DateTime.UtcNow);
+                        //ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_READY, true, DateTime.UtcNow);
+                        AstroData.UpdateInformation(StationName, DeviceName, IMAGING.IMAGING_PREVIEW_BASE64.ToString(), imageBytes, DateTime.UtcNow);
+                        AstroData.UpdateInformation(StationName, DeviceName, IMAGING.IMAGING_PREVIEW_READY.ToString(), true, DateTime.UtcNow);
+                    }
+
+                    streamReader.Close();
+                }
+                else
+                {
+                    await Task.Delay(1000);
+                    LoadPerviewImage(StationName, DeviceName, ExistingStation);
+                }
+
+                /*
                 String GetPath = "";
                 switch (StationName)
                 {
@@ -243,12 +312,44 @@ namespace DataKeeper
                     await Task.Delay(1000);
                     LoadPerviewImage(StationName, DeviceName, ExistingStation);
                 }
+                */
             });
         }
 
         private static void LoadFITSImage(STATIONNAME StationName, DEVICENAME DeviceName, StationHandler ExistingStation)
         {
             Image<Gray, UInt16> ImageData = null;
+
+            Task PreviewTask = Task.Run(async () =>
+            {
+                if (Client == null)
+                {
+                    Client = new FtpClient("192.168.2.217");
+                    Client.Credentials = new NetworkCredential("astronetbot", "P@ssw0rd");
+                    Client.ConnectTimeout = 1000;
+                }
+
+                if (!Client.IsConnected) Client.Connect();
+
+                String FilePath = "/files/" + StationName.ToString() + "/FITS/"+ FileName;
+
+                if (Client.FileExists(FilePath))
+                {
+                    Client.DownloadFile(@"FITS/"+FileName, FilePath);
+
+                    ImageData = FITSHandler.ReadFITSFile(@"FITS/" + FileName);
+
+                    if (ImageData != null)
+                        ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_IMAGEARRAY16, ImageData.Data, DateTime.UtcNow);
+                }
+                else
+                {
+                    await Task.Delay(1000);
+                    LoadFITSImage(StationName, DeviceName, ExistingStation);
+                }
+            });
+
+            /*
             String PathName = null;
 
             switch (StationName)
@@ -272,6 +373,7 @@ namespace DataKeeper
                         ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_IMAGEARRAY16, ImageData.Data, DateTime.Now);
                 });
             }
+            */
         }
 
         public static void NewSQMInformation(STATIONNAME StationName, DEVICENAME DeviceName, SQM FieldName, Object Value, DateTime DataTimestamp)
@@ -579,6 +681,22 @@ namespace DataKeeper
                 return DEVICECATEGORY.T24WSC;
             else
                 return null;
+        }
+
+        public static void UpdateInformation(STATIONNAME StationName, DEVICENAME DeviceName, String FieldName, Object Value, DateTime DataTimestamp)
+        {
+            INFORMATIONSTRUCT ThisField = GetInformationObject(StationName, DeviceName, FieldName);
+
+            if(ThisField != null)
+            {
+                ThisField.Value = Value;
+                ThisField.UpdateTime = DataTimestamp;
+                UIHandler.DisplayToUI(StationName, DeviceName, ThisField);
+            }
+            else
+            {
+                TTCSLog.NewLogInformation(StationName, DateTime.UtcNow, "Station name : " + StationName.ToString() + " mapping error at: " + DeviceName +".", LogType.FAILED, null);                
+            }
         }
     }
 }

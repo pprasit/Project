@@ -347,12 +347,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fleck\Fleck.csproj">
-      <Project>{8b12d929-afa9-4307-beff-2ed0f1070fee}</Project>
-      <Name>Fleck</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
@@ -368,6 +362,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fleck\src\Fleck\Fleck.csproj">
+      <Project>{8b12d929-afa9-4307-beff-2ed0f1070fee}</Project>
+      <Name>Fleck</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
