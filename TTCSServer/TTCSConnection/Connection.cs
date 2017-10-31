@@ -28,25 +28,13 @@ namespace TTCSConnection
 
         #region Client Handler
 
-        public ReturnKnowType AstroCreateStation(STATIONNAME StationName)
-        {
-            try
-            {
-                return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co002) Failed to create site. Your client version is too old.");
-            }
-            catch (Exception e)
-            {
-                return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co001) Failed to create site at TTCSCreateSite see. (" + e.Message + ")");
-            }
-        }
-
-        public ReturnKnowType AstroCreateStation(STATIONNAME StationName, Double Version)
+        public ReturnKnowType AstroCreateStation(STATIONNAME StationName, Double Version = 0)
         {
             try
             {
                 if (Version != 1)
                 {
-                    return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co003) Failed to create site. Your client version is too old (Require version 1).");
+                    return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co003) Failed to create "+ StationName + ". Your client version is "+ Version + " (Require version 1).");
                 }
                 else
                 {                

@@ -13,12 +13,9 @@ namespace TTCSConnection
 {
     [ServiceContract(CallbackContract = typeof(ServerCallBack))]
     public interface IConnection
-    {
+    {       
         [OperationContract]
-        ReturnKnowType AstroCreateStation(STATIONNAME Site);
-
-        [OperationContract]
-        ReturnKnowType AstroCreateStation(STATIONNAME Site, double Version);
+        ReturnKnowType AstroCreateStation(STATIONNAME Site, double Version = 0);
 
         [OperationContract]
         ReturnKnowType AstroCreateClientInterface(String InterfaceName);
