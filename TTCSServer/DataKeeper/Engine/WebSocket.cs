@@ -1057,7 +1057,7 @@ namespace DataKeeper.Interface
             {
                 if (Client.IsAvailable)
                 {
-                    Client.Send(Message);
+                    Client.Send(Message).Wait();
                 }
             }
             catch { }

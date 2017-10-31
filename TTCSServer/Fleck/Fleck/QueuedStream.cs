@@ -69,7 +69,14 @@ namespace Fleck
 
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-            return _stream.BeginRead(buffer, offset, count, callback, state);
+            try
+            {
+                return _stream.BeginRead(buffer, offset, count, callback, state);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
@@ -88,7 +95,14 @@ namespace Fleck
 
         public override int EndRead(IAsyncResult asyncResult)
         {
-            return _stream.EndRead(asyncResult);
+            try
+            {
+                return _stream.EndRead(asyncResult);
+            }
+            catch
+            {
+                return 0;
+            }            
         }
 
         public override void EndWrite(IAsyncResult asyncResult)
@@ -100,8 +114,8 @@ namespace Fleck
                 var ar = queuedResult.ActualResult;
                 if (ar == null)
                 {
-                    throw new NotSupportedException(
-                        "QueuedStream does not support synchronous write operations. Please wait for callback to be invoked before calling EndWrite.");
+                    //throw new NotSupportedException(
+                    //    "QueuedStream does not support synchronous write operations. Please wait for callback to be invoked before calling EndWrite.");
                 }
                 // EndWrite on actual stream should already be invoked.
             }
