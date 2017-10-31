@@ -162,6 +162,10 @@ namespace DataKeeper.Interface
                         method.Invoke(ObjMainPage, new object[] { message });
                     }
                 };
+                socket.OnError = (Exception e) =>
+                {
+                    Console.WriteLine("Fleck exception: " + e.Message);
+                };
             });
         }
 
