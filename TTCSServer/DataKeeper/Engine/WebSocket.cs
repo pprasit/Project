@@ -211,7 +211,7 @@ namespace DataKeeper.Interface
                         if (SplitedParameter.Count() == 4 || SplitedParameter.Count() == 5)
                             SubscribeHandler(ThisConnection, SplitedParameter, CommandStr);
                         else
-                            ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Subscribe", "Invalid format for subscribe method. The format for 'Subscribe' method is 'Subscribe&Station=???&DeviceName=???&CommandName=???'", "Subscribe_Error");
+                            ReturnMessage(ThisConnection, "", "", "", "", "", "Subscribe", "Invalid format for subscribe method. The format for 'Subscribe' method is 'Subscribe&Station=???&DeviceName=???&CommandName=???'", "Subscribe_Error");
                     }
                     else if (SplitedParameter[0] == "Unsubscribe")
                         Unsubscribe(ThisConnection, SplitedParameter);
@@ -220,7 +220,7 @@ namespace DataKeeper.Interface
                         if (SplitedParameter.Count() >= 3)
                             GetHandler(ThisConnection, SplitedParameter);
                         else
-                            ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Subscribe", "Invalid format for get method. The format for 'Subscribe' method is 'Get&Station=???&DeviceName=???&CommandName=???'", "Subscribe_Error");
+                            ReturnMessage(ThisConnection, "", "", "", "", "", "Subscribe", "Invalid format for get method. The format for 'Subscribe' method is 'Get&Station=???&DeviceName=???&CommandName=???'", "Subscribe_Error");
                     }
                     else if (SplitedParameter[0] == "Set")
                     {
@@ -228,9 +228,9 @@ namespace DataKeeper.Interface
                             if (ThisConnection.UserPermission != "Guest")
                                 SetHandler(ThisConnection, SplitedParameter);
                             else
-                                ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Set", "You don't have a permission to send a set command to server.", "Set_Error");
+                                ReturnMessage(ThisConnection, "", "", "", "", "", "Set", "You don't have a permission to send a set command to server.", "Set_Error");
                         else
-                            ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Set", "Invalid format for set method. The format for 'Set' method is 'Set&Station=???&DeviceName=???&CommandName=???&ParameterName....'", "Set_Error");
+                            ReturnMessage(ThisConnection, "", "", "", "", "", "Set", "Invalid format for set method. The format for 'Set' method is 'Set&Station=???&DeviceName=???&CommandName=???&ParameterName....'", "Set_Error");
                     }
                     else if (SplitedParameter[0] == "Script")
                         ScriptHandler(ThisConnection, SplitedParameter);
@@ -409,7 +409,7 @@ namespace DataKeeper.Interface
             }
 
             var ReturningJson = new JavaScriptSerializer().Serialize(ThisResult);
-            SendMessage(ThisConnection.WSClient, ReturningJson);
+            SendMessage(ThisConnection, ReturningJson);
         }
 
         #endregion
@@ -561,7 +561,7 @@ namespace DataKeeper.Interface
             ThisResult.DataTimeStamp = DateTime.Now.ToString();
 
             var ReturningJson = new JavaScriptSerializer().Serialize(ThisResult);
-            SendMessage(ThisConnection.WSClient, ReturningJson);
+            SendMessage(ThisConnection, ReturningJson);
         }
 
         #endregion
@@ -615,7 +615,7 @@ namespace DataKeeper.Interface
 
                 if (UserName == null || Password == null)
                 {
-                    ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Authentication", "Invalid Username or Password. Username or password can not empty.", "Authentication_Error");
+                    ReturnMessage(ThisConnection, "", "", "", "", "", "Authentication", "Invalid Username or Password. Username or password can not empty.", "Authentication_Error");
                     return false;
                 }
                 else
@@ -628,7 +628,7 @@ namespace DataKeeper.Interface
                         ThisConnection.Password = Password;
                         ThisConnection.UserPermission = ThisUser.UserPermissionType;
 
-                        ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Authentication", "Login successful.", "Authentication_Successful");
+                        ReturnMessage(ThisConnection, "", "", "", "", "", "Authentication", "Login successful.", "Authentication_Successful");
                         return true;
                     }
                 }
@@ -636,7 +636,7 @@ namespace DataKeeper.Interface
             else if (ThisConnection.IsLogin)
                 return true;
 
-            ReturnMessage(ThisConnection.WSClient, "", "", "", "", "", "Authentication", "Invalid Username or Password. Please check.", "Authentication_Error");
+            ReturnMessage(ThisConnection, "", "", "", "", "", "Authentication", "Invalid Username or Password. Please check.", "Authentication_Error");
             return false;
         }
 
@@ -708,7 +708,7 @@ namespace DataKeeper.Interface
             }
 
             var json = new JavaScriptSerializer().Serialize(ThisResult);
-            SendMessage(ThisConnection.WSClient, json);
+            SendMessage(ThisConnection, json);
             //SetReturningToMonitoring(TotalByte, ThisStation == STATIONNAME.NULL ? "Error" : ThisStation.ToString() + " - " + (ThisDeviceCategory == DEVICECATEGORY.NULL ? "Error" : ThisDeviceNameStr.ToString()) + " - " +
             //    ThisFieldName == null ? "Error" : ThisFieldName.ToString(), ThisResult.Value.ToString(), ConditionCase);
         }
@@ -831,11 +831,11 @@ namespace DataKeeper.Interface
                 ReturningResult.DataTimeStamp = DateTime.Now.ToString();
 
                 var ReturningJson = new JavaScriptSerializer().Serialize(ReturningResult);
-                SendMessage(ThisConnection.WSClient, ReturningJson);
+                SendMessage(ThisConnection, ReturningJson);
             }
 
             JavaScriptSerializer json = new JavaScriptSerializer() { MaxJsonLength = 2147483647 };            
-            SendMessage(ThisConnection.WSClient, json.Serialize(ThisResult));
+            SendMessage(ThisConnection, json.Serialize(ThisResult));
         }
 
         private static DEVICENAME GetDeviceNameFromStr(String DeviceNameStr)
@@ -873,7 +873,7 @@ namespace DataKeeper.Interface
                 ReturnKnowType CommandResult = CommandDefinition.VerifyCommand(ThisStation, ThisDeviceCategory, ThisCommand, Parameter.ToArray());
 
                 if (CommandResult.ReturnType == ReturnStatus.FAILED)
-                    ReturnMessage(ThisConnection.WSClient, "", "", ThisCommand, "", "", "Set", CommandResult.ReturnMessage, "Set_Error");
+                    ReturnMessage(ThisConnection, "", "", ThisCommand, "", "", "Set", CommandResult.ReturnMessage, "Set_Error");
                 else
                 {
                     dynamic CommandName = TTCSHelper.CommandNameConverter(ThisDeviceCategory, ThisCommand);
@@ -883,13 +883,13 @@ namespace DataKeeper.Interface
                     String MessageLog = "Relay Command to Station : " + ThisStation.ToString() + ", Device : " + ThisDeviceName.ToString() + ", Category : " + ThisDeviceCategory.ToString() +
                         ", Command : " + ThisCommand.ToString();
                     SetDataGridAddRowLog(DateTime.Now.ToString(), MessageLog, "CMD", String.Join(", ", Values), ThisStation.ToString(), "");
-                    ReturnMessage(ThisConnection.WSClient, "", "", ThisCommand, "", "", "Set", "Commnad name -> '" + ThisCommand + "' had been verified.", "Set_Successful");
+                    ReturnMessage(ThisConnection, "", "", ThisCommand, "", "", "Set", "Commnad name -> '" + ThisCommand + "' had been verified.", "Set_Successful");
                 }
             }
             else if (ThisStation == STATIONNAME.NULL)
-                ReturnMessage(ThisConnection.WSClient, "", "", ThisCommand, "", "", "Set", "Invalid station name -> '" + StationNameStr + "' for command name '" + ThisCommand + "' type = Set", "Set_Error");
+                ReturnMessage(ThisConnection, "", "", ThisCommand, "", "", "Set", "Invalid station name -> '" + StationNameStr + "' for command name '" + ThisCommand + "' type = Set", "Set_Error");
             else if (ThisDeviceCategory == DEVICECATEGORY.NULL)
-                ReturnMessage(ThisConnection.WSClient, "", "", ThisCommand, "", "", "Set", "Invalid device name -> '" + DeviceNameStr + "' for command name '" + ThisCommand + "' type = Set", "Set_Error");
+                ReturnMessage(ThisConnection, "", "", ThisCommand, "", "", "Set", "Invalid device name -> '" + DeviceNameStr + "' for command name '" + ThisCommand + "' type = Set", "Set_Error");
         }
 
         #endregion
@@ -1047,22 +1047,22 @@ namespace DataKeeper.Interface
 
         #endregion
 
-        private static void SendMessage(IWebSocketConnection Client, String Message)
+        private static void SendMessage(WSConnection Client, String Message)
         {
             try
             {
-                if (Client.IsAvailable)
+                if (Client.IsConnected && Client.WSClient.IsAvailable)
                 {
-                    Client.Send(Message);
+                    Client.WSClient.Send(Message);
                 }
             }
             catch { }
                       
         }
 
-        private static void ReturnMessage(IWebSocketConnection Client, String StationName, String DeviceName, String FieldName, String Value, String DataType, String InformationType, String ReturnMessage, String ReturnResult)
+        private static void ReturnMessage(WSConnection Client, String StationName, String DeviceName, String FieldName, String Value, String DataType, String InformationType, String ReturnMessage, String ReturnResult)
         {
-            if (Client.IsAvailable)
+            if (Client.IsConnected && Client.WSClient.IsAvailable)
             {
                 ResultStructure ThisReturnStructure = new ResultStructure();
                 ThisReturnStructure.StationName = StationName;
@@ -1113,11 +1113,11 @@ namespace DataKeeper.Interface
 
                     if(ThisResult.FieldName == ASTROCLIENT.ASTROCLIENT_LASTESTEXECTIONCOMMAND.ToString())
                     {
-                        SendMessage(ThisConnection.Value.WSClient, json);
+                        SendMessage(ThisConnection.Value, json);
                     }
                     else
                     {
-                        SendMessage(ThisConnection.Value.WSClient, json);
+                        SendMessage(ThisConnection.Value, json);
                     }                    
                 }
             }

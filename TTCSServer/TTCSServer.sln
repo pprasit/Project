@@ -18,24 +18,42 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fleck", "Fleck\Fleck\Fleck.
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Ubuntu|Any CPU = Debug_Ubuntu|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Release_Ubuntu|Any CPU = Release_Ubuntu|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
 		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
 		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C0A7EFA-4F48-47F4-97BC-0AD4B44C24D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
 		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
 		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{938CFF8E-6C4B-4C8C-B240-7F4426CB1061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
 		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
 		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCA3A99C-77CF-4298-8D97-04F03C4C34D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
 		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
 		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
