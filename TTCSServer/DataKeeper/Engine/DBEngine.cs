@@ -25,7 +25,7 @@ namespace DataKeeper.Engine
                     {
                         { "Values", Value },
                         { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") },
-                        { "ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }
+                        { "ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
                     };
 
             Task TTask = Task.Run(async () =>
@@ -42,7 +42,7 @@ namespace DataKeeper.Engine
                         { "Values", Value },
                         { "Unit", Unit },
                         { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") },
-                        { "ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }
+                        { "ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
                     };
 
             Task TTask = Task.Run(async () =>
@@ -71,7 +71,7 @@ namespace DataKeeper.Engine
                         { "LoginDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss") },
                         { "LogoutDate", "" },
                         { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") },
-                        { "ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }
+                        { "ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
                     };
 
                 var collection2 = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
@@ -87,7 +87,7 @@ namespace DataKeeper.Engine
                 var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_" + FieldName);
                 var builder = Builders<BsonDocument>.Filter;
                 var filter = builder.Eq("Values", Value) & builder.Eq("State", "LOGIN") & builder.Eq("LogoutDate", "");
-                var update = Builders<BsonDocument>.Update.Set("State", State).Set("LogoutDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss")).Set("ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                var update = Builders<BsonDocument>.Update.Set("State", State).Set("LogoutDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss")).Set("ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 collection.UpdateMany(filter, update);
             });
@@ -148,7 +148,7 @@ namespace DataKeeper.Engine
                                     { "OpenDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss") },
                                     { "CloseDate", "" },
                                     { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") },
-                                    { "ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }
+                                    { "ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
                                 };
 
                             collection2.InsertOne(document);
@@ -171,7 +171,7 @@ namespace DataKeeper.Engine
                             { "OpenDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss") },
                             { "CloseDate", "" },
                             { "Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss") },
-                            { "ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }
+                            { "ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
                         };
 
                         collection.InsertOne(document);
@@ -200,7 +200,7 @@ namespace DataKeeper.Engine
                     var collection = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_TEMP");
                     var builder = Builders<BsonDocument>.Filter;
                     var filter = builder.Eq("SHUTTER", dome_side) & builder.Eq("State", "OPEN") & builder.Eq("CloseDate", "");
-                    var update = Builders<BsonDocument>.Update.Set("State", "CLOSE").Set("CloseDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss")).Set("ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                    var update = Builders<BsonDocument>.Update.Set("State", "CLOSE").Set("CloseDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss")).Set("ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
 
                     collection.UpdateMany(filter, update);
 
@@ -216,7 +216,7 @@ namespace DataKeeper.Engine
                         var collection2 = _database.GetCollection<BsonDocument>(StationName + "_" + DeviceName + "_STATE");
                         var builder2 = Builders<BsonDocument>.Filter;
                         var filter2 = builder2.Eq("State", "OPEN") & builder2.Eq("CloseDate", "");
-                        var update2 = Builders<BsonDocument>.Update.Set("State", "CLOSE").Set("CloseDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss")).Set("ServerTimeStamp", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                        var update2 = Builders<BsonDocument>.Update.Set("State", "CLOSE").Set("CloseDate", AccessDate.ToString("yyyy-MM-dd HH:mm:ss")).Set("Updated", DataTimestamp.ToString("yyyy-MM-dd HH:mm:ss")).Set("ServerTimeStamp", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
 
                         collection2.UpdateMany(filter2, update2);
 

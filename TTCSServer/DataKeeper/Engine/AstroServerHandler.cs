@@ -43,7 +43,7 @@ namespace DataKeeper.Engine
 
         private void GetServerStartTime()
         {
-            TTCSStartTime = DateTime.Now;
+            TTCSStartTime = DateTime.UtcNow;
         }
 
         private void CreateAstroStation()
@@ -56,7 +56,7 @@ namespace DataKeeper.Engine
 
         private void GetAvaliableDevice()
         {
-            AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER, DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_AVALIABLEDEVICES, DEVICECATEGORY.ASTROSERVER.ToString(), DateTime.Now);
+            AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER, DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_AVALIABLEDEVICES, DEVICECATEGORY.ASTROSERVER.ToString(), DateTime.UtcNow);
         }
 
         private void GetServerUpTime()
@@ -64,8 +64,8 @@ namespace DataKeeper.Engine
             if (TTCSStartTime == null)
                 return;
 
-            TimeSpan Span = DateTime.Now - TTCSStartTime.Value;
-            AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER,  DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_UPTIME_DATA, Span.ToString(@"dd\.hh\:mm\:ss"), DateTime.Now);
+            TimeSpan Span = DateTime.UtcNow - TTCSStartTime.Value;
+            AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER,  DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_UPTIME_DATA, Span.ToString(@"dd\.hh\:mm\:ss"), DateTime.UtcNow);
         }
 
         private void GetOnlineStation()
@@ -83,10 +83,10 @@ namespace DataKeeper.Engine
                 }
 
                 if (OnlineStation.Count > 0)
-                    AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER, DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_ALLONLINESTATION, String.Join(", ", OnlineStation), DateTime.Now);
+                    AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER, DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_ALLONLINESTATION, String.Join(", ", OnlineStation), DateTime.UtcNow);
             }
             else
-                AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER, DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_ONLINEDEVICES, "", DateTime.Now);
+                AstroData.NewASTROSERVERInformation(STATIONNAME.ASTROSERVER, DEVICENAME.ASTROPARK_SERVER, ASTROSERVER.ASTROSERVER_ONLINEDEVICES, "", DateTime.UtcNow);
         }
 
         private void GetMissingData()
@@ -120,10 +120,10 @@ namespace DataKeeper.Engine
             //        OnlineDevice.Add(ThisDevice.DeviceName.ToString());
 
             //    if (OnlineDevice.Count > 0)
-            //        TTCSData.NewData(STATIONNAME.MainServer, DEVICENAME.TTCSMainServer,Command.InformationdName.TTCSSERVER_ONLINEDEVICES, String.Join(", ", OnlineDevice), DateTime.Now);
+            //        TTCSData.NewData(STATIONNAME.MainServer, DEVICENAME.TTCSMainServer,Command.InformationdName.TTCSSERVER_ONLINEDEVICES, String.Join(", ", OnlineDevice), DateTime.UtcNow);
             //}
             //else
-            //    TTCSData.NewData(STATIONNAME.MainServer, DEVICENAME.TTCSMainServer, Command.InformationdName.TTCSSERVER_ONLINEDEVICES, "", DateTime.Now);
+            //    TTCSData.NewData(STATIONNAME.MainServer, DEVICENAME.TTCSMainServer, Command.InformationdName.TTCSSERVER_ONLINEDEVICES, "", DateTime.UtcNow);
         }
     }
 }

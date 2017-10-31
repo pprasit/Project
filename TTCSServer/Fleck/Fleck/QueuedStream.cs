@@ -110,7 +110,7 @@ namespace Fleck
             if (asyncResult is QueuedWriteResult)
             {
                 var queuedResult = asyncResult as QueuedWriteResult;
-                if (queuedResult.Exception != null) throw queuedResult.Exception;
+                //if (queuedResult.Exception != null) throw queuedResult.Exception;
                 var ar = queuedResult.ActualResult;
                 if (ar == null)
                 {
@@ -150,48 +150,56 @@ namespace Fleck
 
         IAsyncResult BeginWriteInternal(byte[] buffer, int offset, int count, AsyncCallback callback, object state, WriteData queued)
         {
-            _pendingWrite++;
-            var result = _stream.BeginWrite(buffer, offset, count, ar =>
+            try
             {
+                _pendingWrite++;
+
+                var result = _stream.BeginWrite(buffer, offset, count, ar =>
+                {
                 // callback can be executed even before return value of BeginWriteInternal is set to this property
                 queued.AsyncResult.ActualResult = ar;
-                try
-                {
+                    try
+                    {
                     // so that we can call BeginWrite again
                     _stream.EndWrite(ar);
-                }
-                catch (Exception exc)
-                {
-                    queued.AsyncResult.Exception = exc;
-                }
+                    }
+                    catch (Exception exc)
+                    {
+                        queued.AsyncResult.Exception = exc;
+                    }
 
                 // one down, another is good to go
                 lock (_queue)
-                {
-                    _pendingWrite--;
-                    while (_queue.Count > 0)
                     {
-                        var data = _queue.Dequeue();
-                        try
+                        _pendingWrite--;
+                        while (_queue.Count > 0)
                         {
-                            data.AsyncResult.ActualResult = BeginWriteInternal(data.Buffer, data.Offset, data.Count, data.Callback, data.State, data);
-                            break;
+                            var data = _queue.Dequeue();
+                            try
+                            {
+                                data.AsyncResult.ActualResult = BeginWriteInternal(data.Buffer, data.Offset, data.Count, data.Callback, data.State, data);
+                                break;
+                            }
+                            catch (Exception exc)
+                            {
+                                _pendingWrite--;
+                                data.AsyncResult.Exception = exc;
+                                data.Callback(data.AsyncResult);
+                            }
                         }
-                        catch (Exception exc)
-                        {
-                            _pendingWrite--;
-                            data.AsyncResult.Exception = exc;
-                            data.Callback(data.AsyncResult);
-                        }
+                        callback(queued.AsyncResult);
                     }
-                    callback(queued.AsyncResult);
-                }
-            }, state);
+                }, state);
 
-            // always return the wrapped async result.
-            // this is especially important if the underlying stream completed the operation synchronously (hence "result.CompletedSynchronously" is true!)
-            queued.AsyncResult.ActualResult = result;
-            return queued.AsyncResult;
+                // always return the wrapped async result.
+                // this is especially important if the underlying stream completed the operation synchronously (hence "result.CompletedSynchronously" is true!)
+                queued.AsyncResult.ActualResult = result;
+                return queued.AsyncResult;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         #region Nested type: WriteData

@@ -703,7 +703,7 @@ namespace DataKeeper.Engine
                 if (ThisField != null)
                 {
                     ThisField.Value = true;
-                    ThisField.UpdateTime = DateTime.Now;
+                    ThisField.UpdateTime = DateTime.UtcNow;
 
                     WebSockets.ReturnWebSubscribe(StationName, ThisField.DeviceName, ThisField.FieldName.ToString(), ThisField.Value, ThisField.UpdateTime.Value);
                     UIHandler.DisplayToUI(StationName, ThisField.DeviceName, ThisField);
@@ -722,7 +722,7 @@ namespace DataKeeper.Engine
                 if (ThisField != null)
                 {
                     ThisField.Value = false;
-                    ThisField.UpdateTime = DateTime.Now;
+                    ThisField.UpdateTime = DateTime.UtcNow;
 
                     WebSockets.ReturnWebSubscribe(StationName, ThisField.DeviceName, ThisField.FieldName.ToString(), ThisField.Value, ThisField.UpdateTime.Value);
                     UIHandler.DisplayToUI(StationName, ThisField.DeviceName, ThisField);
@@ -885,7 +885,7 @@ namespace DataKeeper.Engine
         private static ReturnKnowType CreateKnowTypeMessage(String Message, ReturnStatus Status)
         {
             ReturnKnowType ThisKnowType = new ReturnKnowType();
-            ThisKnowType.ReturnDateTime = DateTime.Now;
+            ThisKnowType.ReturnDateTime = DateTime.UtcNow;
             ThisKnowType.ReturnMessage = Message;
             ThisKnowType.ReturnType = Status;
             ThisKnowType.ReturnValue = null;

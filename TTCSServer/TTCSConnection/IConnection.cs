@@ -18,6 +18,9 @@ namespace TTCSConnection
         ReturnKnowType AstroCreateStation(STATIONNAME Site);
 
         [OperationContract]
+        ReturnKnowType AstroCreateStation(STATIONNAME Site, double Version);
+
+        [OperationContract]
         ReturnKnowType AstroCreateClientInterface(String InterfaceName);
 
         [OperationContract]

@@ -265,7 +265,7 @@ namespace DataKeeper
 
                         //ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_BASE64, imageBytes, DateTime.UtcNow);
                         //ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_READY, true, DateTime.UtcNow);
-                        AstroData.UpdateInformation(StationName, DeviceName, IMAGING.IMAGING_PREVIEW_BASE64.ToString(), imageBytes, DateTime.UtcNow);
+                        AstroData.UpdateInformation(StationName, DeviceName, IMAGING.IMAGING_PREVIEW_BASE64.ToString(), Convert.ToBase64String(imageBytes), DateTime.UtcNow);
                         AstroData.UpdateInformation(StationName, DeviceName, IMAGING.IMAGING_PREVIEW_READY.ToString(), true, DateTime.UtcNow);
                     }
 
@@ -301,8 +301,8 @@ namespace DataKeeper
                         Image.Save(m, Image.RawFormat);
                         byte[] imageBytes = m.ToArray();
 
-                        ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_BASE64, imageBytes, DateTime.Now);
-                        ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_READY, true, DateTime.Now);
+                        ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_BASE64, imageBytes, DateTime.UtcNow);
+                        ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_PREVIEW_READY, true, DateTime.UtcNow);
                     }
 
                     streamReader.Close();
@@ -370,7 +370,7 @@ namespace DataKeeper
                     ImageData = FITSHandler.ReadFITSFile(PathName);
 
                     if (ImageData != null)
-                        ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_IMAGEARRAY16, ImageData.Data, DateTime.Now);
+                        ExistingStation.NewIMAGINGInformation(DeviceName, IMAGING.IMAGING_CCD_IMAGEARRAY16, ImageData.Data, DateTime.UtcNow);
                 });
             }
             */

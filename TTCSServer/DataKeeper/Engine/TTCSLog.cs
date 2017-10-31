@@ -43,7 +43,7 @@ namespace DataKeeper.Engine
         public static void NewLogInformation(STATIONNAME StationName, DateTime LogDate, String Message, LogType LogCategory, long? UserID)
         {
             InformationLogs NewLog = new InformationLogs();
-            NewLog.LogID = (long)(DateTime.Now - DateTime.MinValue).TotalMilliseconds;
+            NewLog.LogID = (long)(DateTime.UtcNow - DateTime.MinValue).TotalMilliseconds;
             NewLog.UserID = UserID;
             NewLog.LogName = "Log from " + StationName.ToString();
             NewLog.LogDate = LogDate;
@@ -64,7 +64,7 @@ namespace DataKeeper.Engine
         public static void NewLogInformation(STATIONNAME StationName, DateTime LogDate, String LogName, Object[] Value, String Message, LogType LogCategory, long? UserID)
         {
             InformationLogs NewLog = new InformationLogs();
-            NewLog.LogID = (long)(DateTime.Now - DateTime.MinValue).TotalMilliseconds;
+            NewLog.LogID = (long)(DateTime.UtcNow - DateTime.MinValue).TotalMilliseconds;
             NewLog.UserID = UserID;
             NewLog.LogName = LogName;
             NewLog.LogDate = LogDate;
@@ -73,7 +73,7 @@ namespace DataKeeper.Engine
             NewLog.LogCategory = LogCategory;
             NewLog.StationName = StationName;
 
-            if (DateTime.Now.Hour == 1)
+            if (DateTime.UtcNow.Hour == 1)
                 TTCSTempLogInformation.Clear();
 
             TTCSLogInformation.Add(NewLog);

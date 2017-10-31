@@ -229,20 +229,20 @@ namespace DataKeeper.Engine
             if(station_random == 1)
             {
                 stationName = "AIRFORCE";
-                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
-                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.Ticks.ToString(), "30", STATIONNAME.AIRFORCE.ToString(), DEVICENAME.AIRFORCE_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString()));
             }
             else if(station_random == 2)
             {
                 stationName = "ASTROPARK";
-                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
-                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.Ticks.ToString(), "30", STATIONNAME.ASTROPARK.ToString(), DEVICENAME.ASTROPARK_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString()));
             }
             else if (station_random == 3)
             {
                 stationName = "USA";
-                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.USA.ToString(), DEVICENAME.USA_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
-                ScriptList.Add(new ScriptStructureNew(DateTime.Now.Ticks.ToString(), DateTime.Now.Ticks.ToString(), "30", STATIONNAME.USA.ToString(), DEVICENAME.USA_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.Now.AddMinutes(-2).Ticks.ToString(), DateTime.Now.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.Ticks.ToString(), "30", STATIONNAME.USA.ToString(), DEVICENAME.USA_TS700MM.ToString(), TS700MMSET.TS700MM_MOUNT_SETENABLE.ToString(), new List<String> { }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString()));
+                ScriptList.Add(new ScriptStructureNew(DateTime.UtcNow.Ticks.ToString(), DateTime.UtcNow.Ticks.ToString(), "30", STATIONNAME.USA.ToString(), DEVICENAME.USA_IMAGING.ToString(), IMAGINGSET.IMAGING_CCD_EXPOSE.ToString(), new List<String> { "FileName", "12.0", "true" }, SCRIPTSTATE.WAITINGSERVER.ToString(), DateTime.UtcNow.AddMinutes(-2).Ticks.ToString(), DateTime.UtcNow.AddMinutes(+2).Ticks.ToString()));
             }   
             */
             stationName = "AIRFORCE";
@@ -345,7 +345,7 @@ namespace DataKeeper.Engine
                                             //Console.WriteLine(IsMustInsertToDB);                                         
 
                                             String Message = "";
-                                            if (VerifyScript(NewScriptCollection, out Message))
+                                            if (VerifyScript(StationName, NewScriptCollection, out Message))
                                             {
                                                 foreach (ScriptStructureNew Script in NewScriptCollection)
                                                 {
@@ -535,69 +535,76 @@ namespace DataKeeper.Engine
             return FILESTATE.SAME;
         }
 
-        private static Boolean VerifyScript(List<ScriptStructureNew> ScriptCollection, out String Message)
+        private static Boolean VerifyScript(STATIONNAME StationName, List<ScriptStructureNew> ScriptCollection, out String Message)
         {
             foreach (ScriptStructureNew ThisScript in ScriptCollection)
             {
-                STATIONNAME StationName = TTCSHelper.StationStrConveter(ThisScript.StationName);
+                STATIONNAME ScriptStationName = TTCSHelper.StationStrConveter(ThisScript.StationName);
+                
                 if (StationName == STATIONNAME.NULL)
                 {
-                    Message = "Invlid station same at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
+                    Message = "Invalid station same at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
+                    return false;
+                }
+
+                if (StationName != ScriptStationName)
+                {
+                    Message = "Invalid station name not match in folder at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
                     return false;
                 }
 
                 DEVICENAME DeviceName = TTCSHelper.DeviceNameStrConverter(ThisScript.DeviceName);
                 if (DeviceName == DEVICENAME.NULL)
                 {
-                    Message = "Invlid device name at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
+                    Message = "Invalid device name at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
                     return false;
                 }
 
                 DEVICECATEGORY DeviceCategory = TTCSHelper.ConvertDeviceNameToDeviceCategory(StationName, DeviceName);
                 if (DeviceCategory == DEVICECATEGORY.NULL)
                 {
-                    Message = "Invlid devicecategory at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
+                    Message = "Invalid devicecategory at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
                     return false;
                 }
 
                 Object CommandName = TTCSHelper.CommandNameConverter(DeviceCategory, ThisScript.CommandName);
                 if (CommandName == null)
                 {
-                    Message = "Invlid command name at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
+                    Message = "Invalid command name at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
                     return false;
                 }
 
                 Int64 StartDateLong = 0;
                 if (!Int64.TryParse(ThisScript.ExecutionTimeStart, out StartDateLong))
                 {
-                    Message = "Invlid start datetime at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
+                    Message = "Invalid start datetime at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
                     return false;
                 }
 
                 Int64 EndDateLong = 0;
                 if (!Int64.TryParse(ThisScript.ExecutionTimeEnd, out EndDateLong))
                 {
-                    Message = "Invlid end datetime at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
+                    Message = "Invalid end datetime at script ID : " + ThisScript.ScriptID + ". Please check spelling.";
                     return false;
                 }
 
                 int Life = 0;
                 if (!int.TryParse(ThisScript.Life, out Life))
                 {
-                    Message = "Invlid life time at " + ThisScript.ScriptID + ". Please check spelling.";
+                    Message = "Invalid life time at " + ThisScript.ScriptID + ". Please check spelling.";
                     return false;
                 }
                 
                 if(String.IsNullOrEmpty(ThisScript.Owner))
                 {
-                    Message = "Invlid Owner can't be null or empty value at Script ID : " + ThisScript.ScriptID + ". Please check.";
+                    Message = "Invalid Owner can't be null or empty value at Script ID : " + ThisScript.ScriptID + ". Please check.";
                     return false;
                 }
 
                 ReturnKnowType CommandResult = CommandDefinition.VerifyCommand(StationName, DeviceCategory, CommandName, ThisScript.Parameters.ToArray());
                 if (CommandResult.ReturnType == ReturnStatus.FAILED)
                 {
-                    Message = "Invlid parameter at script ID : " + ThisScript.ScriptID + " at Command " + CommandName +". With: " + CommandResult.ReturnMessage +". Please check spelling.";
+                    Message = "Invalid parameter at script ID : " + ThisScript.ScriptID + " at Command " + CommandName +". With: " + CommandResult.ReturnMessage +". Please check spelling.";
                     return false;
                 }
             }

@@ -32,15 +32,34 @@ namespace TTCSConnection
         {
             try
             {
-                OperationContext context = OperationContext.Current;
-                ServerCallBack SiteCallBack = OperationContext.Current.GetCallbackChannel<ServerCallBack>();
-                CallBackHandler.AddSiteConnection(StationName, context.SessionId, SiteCallBack);
+                return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co002) Failed to create site. Your client version is too old.");
+            }
+            catch (Exception e)
+            {
+                return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co001) Failed to create site at TTCSCreateSite see. (" + e.Message + ")");
+            }
+        }
 
-                OperationContext.Current.Channel.Closed += StationChannel_Closed;
-                OperationContext.Current.Channel.Faulted += StationChannel_Closed;
+        public ReturnKnowType AstroCreateStation(STATIONNAME StationName, Double Version)
+        {
+            try
+            {
+                if (Version != 1)
+                {
+                    return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co003) Failed to create site. Your client version is too old (Require version 1).");
+                }
+                else
+                {                
+                    OperationContext context = OperationContext.Current;
+                    ServerCallBack SiteCallBack = OperationContext.Current.GetCallbackChannel<ServerCallBack>();
+                    CallBackHandler.AddSiteConnection(StationName, context.SessionId, SiteCallBack);
 
-                ReturnKnowType CreateSiteResult = AstroData.CreateStation(StationName, context.SessionId, SiteCallBack);
-                return CreateSiteResult;
+                    OperationContext.Current.Channel.Closed += StationChannel_Closed;
+                    OperationContext.Current.Channel.Faulted += StationChannel_Closed;
+
+                    ReturnKnowType CreateSiteResult = AstroData.CreateStation(StationName, context.SessionId, SiteCallBack);
+                    return CreateSiteResult;
+                }
             }
             catch (Exception e)
             {
@@ -168,83 +187,95 @@ namespace TTCSConnection
         public void AddDeviceData(STATIONNAME StationName, DataPacket[] Datas, Boolean IsInsertDB = true, Boolean IsSentWebSocket = true)
         {
             //Console.WriteLine(StationName);
+            Task DeviceTask = Task.Run(() =>
+            {
+                //Console.WriteLine("AddDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
 
-            StationHandler StationCommunication = AstroData.GetStationObject(StationName);
-            
-            foreach (DataPacket Data in Datas)
-            {                            
-                if(Data.DeviceCategory == DEVICECATEGORY.CCTV)
+                StationHandler StationCommunication = AstroData.GetStationObject(StationName);
+
+                foreach (DataPacket Data in Datas)
                 {
-                    //Console.WriteLine(Data.DeviceCategory);
-
-                    if (Data.FieldName.ToString() != CCTV.CCTV_CONNECTED.ToString())
+                    if (Data.DeviceCategory == DEVICECATEGORY.CCTV)
                     {
-                        //Data.Value = Convert.ToBase64String((byte[])Data.Value);
-                        //Image<Bgr, Byte> imageCV = new Image<Bgr, byte>((Bitmap)Data.Value);
-                        //Byte[] ByteData = TTCSHelper.ImageToByte2((Bitmap)Data.Value);
-                        //Data.Value = Convert.ToBase64String(ByteData);
-                    }                    
-                }
-                else if(Data.DeviceCategory == DEVICECATEGORY.IMAGING)
-                {
-                    //Console.WriteLine(Data.FieldName);
+                        //Console.WriteLine(Data.DeviceCategory);
 
-                    if(Data.FieldName.ToString() == IMAGING.IMAGING_CCD_DOWNLOAD_STATUS.ToString())
-                    {
-                        if(Data.Value.ToString() == "Completed")
+                        if (Data.FieldName.ToString() == CCTV.CCTV_DEVICE1_IMAGE.ToString() || Data.FieldName.ToString() == CCTV.CCTV_DEVICE2_IMAGE.ToString())
                         {
-                            String FileName = StationCommunication.GetInformation(Data.DeviceName, IMAGING.IMAGING_CCD_ACTIVE_IMAGE_FILENAME).Value + ".FITS";
-                            String[] TempBlockID = FileName.Split('_');
-                            String BlockID = TempBlockID[0];
-
-                            DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
-                        }                        
-                    }
-                    else if (Data.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_DOWNLOAD_STATUS.ToString())
-                    {
-                        if (Data.Value.ToString() == "Completed")
-                        {
-                            AstroData.LoadPerviewImage(StationName, Data.DeviceName, StationCommunication);
+                            if(Data.Value.GetType() == typeof(Byte[]))
+                            {
+                                Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                            }
+                            
+                            //Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                            //Image<Bgr, Byte> imageCV = new Image<Bgr, byte>((Bitmap)Data.Value);
+                            //Byte[] ByteData = TTCSHelper.ImageToByte2((Bitmap)Data.Value);
+                            //Data.Value = Convert.ToBase64String(ByteData);
                         }
                     }
+                    else if (Data.DeviceCategory == DEVICECATEGORY.IMAGING)
+                    {
+                        //Console.WriteLine(Data.FieldName);
 
-                    //AstroData.NewIMAGINGInformationHandle(StationName, Data.DeviceName, Data.FieldName, Data.Value, new DateTime(Data.DateTimeUTC));
+                        if (Data.FieldName.ToString() == IMAGING.IMAGING_CCD_DOWNLOAD_STATUS.ToString())
+                        {
+                            if (Data.Value.ToString() == "Completed")
+                            {
+                                String FileName = StationCommunication.GetInformation(Data.DeviceName, IMAGING.IMAGING_CCD_ACTIVE_IMAGE_FILENAME).Value + ".FITS";
+                                String[] TempBlockID = FileName.Split('_');
+                                String BlockID = TempBlockID[0];
+
+                                DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+                            }
+                        }
+                        else if (Data.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_DOWNLOAD_STATUS.ToString())
+                        {
+                            if (Data.Value.ToString() == "Completed")
+                            {
+                                AstroData.LoadPerviewImage(StationName, Data.DeviceName, StationCommunication);
+                            }
+                        }
+
+                        //AstroData.NewIMAGINGInformationHandle(StationName, Data.DeviceName, Data.FieldName, Data.Value, new DateTime(Data.DateTimeUTC));
+                    }
+
+                    if (IsInsertDB)
+                    {
+                        DBScheduleEngine.InsertData(Data.DataId, StationName, Data.DeviceCategory, Data.DeviceName, Data.FieldName, Data.Value, Data.DateTimeUTC);
+                    }
+
+                    if (IsSentWebSocket)
+                    {
+                        WebSockets.ReturnWebSubscribe(StationName, Data.DeviceName, Data.FieldName.ToString(), Data.Value, new DateTime(Data.DateTimeUTC));
+                    }
+
+                    AstroData.UpdateInformation(StationName, Data.DeviceName, Data.FieldName, Data.Value, new DateTime(Data.DateTimeUTC));
                 }
-
-                if (IsInsertDB)
-                {
-                    DBScheduleEngine.InsertData(Data.DataId, StationName, Data.DeviceCategory, Data.DeviceName, Data.FieldName, Data.Value, Data.DateTimeUTC);
-                }
-
-                if (IsSentWebSocket)
-                {
-                    WebSockets.ReturnWebSubscribe(StationName, Data.DeviceName, Data.FieldName.ToString(), Data.Value, new DateTime(Data.DateTimeUTC));
-                }
-
-                AstroData.UpdateInformation(StationName, Data.DeviceName, Data.FieldName, Data.Value, new DateTime(Data.DateTimeUTC));
-            }
+            });
         }
 
         public Boolean AddDelayDeviceData(STATIONNAME StationName, DataPacket[] Datas)
         {
-            Console.WriteLine("AddDelayDeviceData - " + Datas[0].DataId);
-
-            StationHandler StationCommunication = AstroData.GetStationObject(StationName);
-
-            //StationCommunication.ReceivedInformation(Datas, out Msg);
-
-            foreach (DataPacket Data in Datas)
+            Task DelayTask = Task.Run(() =>
             {
-                if (Data.DeviceCategory == DEVICECATEGORY.CCTV)
-                {
-                    if (Data.FieldName.ToString() != CCTV.CCTV_CONNECTED.ToString())
-                    {
-                        Data.Value = Convert.ToBase64String((byte[])Data.Value);
-                    }
-                }
+                Console.WriteLine("AddDelayDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
 
-                DBScheduleEngine.InsertData(Data.DataId, StationName, Data.DeviceCategory, Data.DeviceName, Data.FieldName, Data.Value, Data.DateTimeUTC);                
-            }
+                StationHandler StationCommunication = AstroData.GetStationObject(StationName);
+
+                //StationCommunication.ReceivedInformation(Datas, out Msg);
+
+                foreach (DataPacket Data in Datas)
+                {
+                    if (Data.DeviceCategory == DEVICECATEGORY.CCTV)
+                    {
+                        if (Data.FieldName.ToString() != CCTV.CCTV_CONNECTED.ToString())
+                        {
+                            Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                        }
+                    }
+
+                    DBScheduleEngine.InsertData(Data.DataId, StationName, Data.DeviceCategory, Data.DeviceName, Data.FieldName, Data.Value, Data.DateTimeUTC);
+                }
+            });           
 
             return true;
         }
@@ -354,7 +385,7 @@ namespace TTCSConnection
             if (AstroData.IsStationConnected(ThisContext.SessionId))
             {
                 STATIONNAME ThisStation = AstroData.GetStationName(ThisContext.SessionId);
-                TTCSLog.NewLogInformation(ThisStation, DateTime.Now, "Station name : " + ThisStation.ToString() + " is now disconnceted.", LogType.COMMUNICATION, null);
+                TTCSLog.NewLogInformation(ThisStation, DateTime.UtcNow, "Station name : " + ThisStation.ToString() + " is now disconnceted.", LogType.COMMUNICATION, null);
                 AstroData.SetStationDisconnected(ThisContext.SessionId);
                 AstroData.StationDisconnected(ThisStation);
             }

@@ -122,7 +122,7 @@ namespace DataKeeper.Interface
                     ThisConnection.WSClient = socket;
                     ThisConnection.IPAddress = socket.ConnectionInfo.ClientIpAddress;
                     ThisConnection.Port = socket.ConnectionInfo.ClientPort;
-                    ThisConnection.ConnectedTime = DateTime.Now;
+                    ThisConnection.ConnectedTime = DateTime.UtcNow;
                     ThisConnection.IsLogin = false;
                     ThisConnection.IsConnected = true;
                     ThisConnection.UserName = null;
@@ -171,13 +171,13 @@ namespace DataKeeper.Interface
 
         private static void OnConnectHandler(WSConnection ThisConnection)
         {
-            DisplayClient(ThisConnection.IPAddress, ThisConnection.Port, "Connected", DateTime.Now, 1);
+            DisplayClient(ThisConnection.IPAddress, ThisConnection.Port, "Connected", DateTime.UtcNow, 1);
 
             Task MessageTask = Task.Run(() =>
             {
                 while (ThisConnection.IsConnected)
                 {
-                    SetDataGridEditRow(ThisConnection.IPAddress, ThisConnection.Port, ThisConnection.ConnectedTime, null, DateTime.Now);
+                    SetDataGridEditRow(ThisConnection.IPAddress, ThisConnection.Port, ThisConnection.ConnectedTime, null, DateTime.UtcNow);
                     Thread.Sleep(1000);
                 }
             });
@@ -202,7 +202,7 @@ namespace DataKeeper.Interface
             {
                 ThisConnection.BreakTimout = true;
                 String[] SplitedInformation = Message.Split(new char[] { ',' });
-                SetDataGridEditRow(ThisConnection.IPAddress, ThisConnection.Port, ThisConnection.ConnectedTime, Message, DateTime.Now);
+                SetDataGridEditRow(ThisConnection.IPAddress, ThisConnection.Port, ThisConnection.ConnectedTime, Message, DateTime.UtcNow);
 
                 RemoveConnectionHistory(ThisConnection.IPAddress);
 
@@ -352,7 +352,7 @@ namespace DataKeeper.Interface
             ThisResult.InformationType = "Get";
             ThisResult.ReturnMessage = "null";
             ThisResult.ReturnResult = "Get_Error";
-            ThisResult.DataTimeStamp = DateTime.Now.ToString();
+            ThisResult.DataTimeStamp = DateTime.UtcNow.ToString();
 
             foreach (String ThisStr in SplitedCommand)
             {
@@ -562,7 +562,7 @@ namespace DataKeeper.Interface
             ThisResult.ReturnMessage = Message;
             ThisResult.InformationType = "Script";
             ThisResult.ReturnResult = ScriptState;
-            ThisResult.DataTimeStamp = DateTime.Now.ToString();
+            ThisResult.DataTimeStamp = DateTime.UtcNow.ToString();
 
             var ReturningJson = new JavaScriptSerializer().Serialize(ThisResult);
             SendMessage(ThisConnection, ReturningJson);
@@ -679,7 +679,7 @@ namespace DataKeeper.Interface
             ThisResult.InformationType = "Unsubscribe";
             ThisResult.ReturnResult = "Unsubscribe_Error";
             ThisResult.ReturnMessage = "Can not Unsubscribe information.";
-            ThisResult.DataTimeStamp = DateTime.Now.ToString();
+            ThisResult.DataTimeStamp = DateTime.UtcNow.ToString();
 
             if (ThisStation != STATIONNAME.NULL && ThisDeviceCategory != DEVICECATEGORY.NULL && ThisFieldName != null)
             {
@@ -760,7 +760,7 @@ namespace DataKeeper.Interface
             ThisResult.InformationType = "Subscribe";
             ThisResult.ReturnMessage = "null";
             ThisResult.ReturnResult = "Subscribe_Error";
-            ThisResult.DataTimeStamp = DateTime.Now.ToString();
+            ThisResult.DataTimeStamp = DateTime.UtcNow.ToString();
 
             if (ThisStation != STATIONNAME.NULL && ThisDeviceCategory != DEVICECATEGORY.NULL && ThisFieldName != null)
             {
@@ -832,7 +832,7 @@ namespace DataKeeper.Interface
                 ReturningResult.InformationType = "Subscribe";
                 ReturningResult.ReturnMessage = "null";
                 ReturningResult.ReturnResult = "Subscribe_Successful";
-                ReturningResult.DataTimeStamp = DateTime.Now.ToString();
+                ReturningResult.DataTimeStamp = DateTime.UtcNow.ToString();
 
                 var ReturningJson = new JavaScriptSerializer().Serialize(ReturningResult);
                 SendMessage(ThisConnection, ReturningJson);
@@ -882,11 +882,11 @@ namespace DataKeeper.Interface
                 {
                     dynamic CommandName = TTCSHelper.CommandNameConverter(ThisDeviceCategory, ThisCommand);
                     Object[] Values = CommandDefinition.ValueConvertion(Parameter.ToArray());
-                    AstroData.SetCommandHandler(ThisStation, ThisDeviceCategory, ThisDeviceName, CommandName, Values, DateTime.Now);
+                    AstroData.SetCommandHandler(ThisStation, ThisDeviceCategory, ThisDeviceName, CommandName, Values, DateTime.UtcNow);
 
                     String MessageLog = "Relay Command to Station : " + ThisStation.ToString() + ", Device : " + ThisDeviceName.ToString() + ", Category : " + ThisDeviceCategory.ToString() +
                         ", Command : " + ThisCommand.ToString();
-                    SetDataGridAddRowLog(DateTime.Now.ToString(), MessageLog, "CMD", String.Join(", ", Values), ThisStation.ToString(), "");
+                    SetDataGridAddRowLog(DateTime.UtcNow.ToString(), MessageLog, "CMD", String.Join(", ", Values), ThisStation.ToString(), "");
                     ReturnMessage(ThisConnection, "", "", ThisCommand, "", "", "Set", "Commnad name -> '" + ThisCommand + "' had been verified.", "Set_Successful");
                 }
             }
@@ -903,7 +903,7 @@ namespace DataKeeper.Interface
         private static void DisplayClient(String IPAddress, int Port, String Message, DateTime LastestRecive, int EventState)
         {
             if (EventState == 1)
-                SetDataGridAddRow(IPAddress, Port, Message, DateTime.Now);
+                SetDataGridAddRow(IPAddress, Port, Message, DateTime.UtcNow);
             else if (EventState == 2)
                 SetDataGridRemoveRow(IPAddress, Port);
             else
@@ -966,7 +966,7 @@ namespace DataKeeper.Interface
                 {
                     if (StartTime != null)
                     {
-                        TimeSpan Span = DateTime.Now - StartTime.Value;
+                        TimeSpan Span = DateTime.UtcNow - StartTime.Value;
                         ClientGrid[3, i].Value = Span.ToString(@"dd\.hh\:mm\:ss");
                     }
 
@@ -1043,7 +1043,7 @@ namespace DataKeeper.Interface
 
         private static void ActionDataGridAddRow(String IPAddress, int Port, String Message, DateTime OnlineTime)
         {
-            TimeSpan Span = DateTime.Now - OnlineTime;
+            TimeSpan Span = DateTime.UtcNow - OnlineTime;
             ClientGrid.Rows.Add(ClientGrid.RowCount + 1, IPAddress, Port.ToString(), Span.ToString(@"dd\.hh\:mm\:ss"), Message);
         }
 
@@ -1078,7 +1078,7 @@ namespace DataKeeper.Interface
                 ThisReturnStructure.InformationType = InformationType;
                 ThisReturnStructure.ReturnMessage = ReturnMessage;
                 ThisReturnStructure.ReturnResult = ReturnResult;
-                ThisReturnStructure.DataTimeStamp = DateTime.Now.ToString();
+                ThisReturnStructure.DataTimeStamp = DateTime.UtcNow.ToString();
 
                 JavaScriptSerializer Serializer = new JavaScriptSerializer();
                 Serializer.MaxJsonLength = Int32.MaxValue;

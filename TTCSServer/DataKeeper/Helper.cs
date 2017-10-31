@@ -20,7 +20,7 @@ namespace DataKeeper
 
         public static String GenNewID()
         {
-            long ticks = DateTime.Now.Ticks;
+            long ticks = DateTime.UtcNow.Ticks;
             byte[] bytes = BitConverter.GetBytes(ticks);
             string id = Convert.ToBase64String(bytes)
                                     .Replace('+', '_')
@@ -50,7 +50,7 @@ namespace DataKeeper
             ThisReturn.ReturnMessage = Message;
             ThisReturn.ReturnType = Status;
             ThisReturn.ReturnValue = Value;
-            ThisReturn.ReturnDateTime = DateTime.Now;
+            ThisReturn.ReturnDateTime = DateTime.UtcNow;
 
             return ThisReturn;
         }
@@ -238,13 +238,13 @@ namespace DataKeeper
 
         public static Int64 GetDateTimeMiliSec()
         {
-            int ThisYear = DateTime.Now.Year;
+            int ThisYear = DateTime.UtcNow.Year;
 
             if (ThisYear > 2500)
                 ThisYear = ThisYear - 543;
 
-            Int64 MiliSec = DateToMilisec(ThisYear.ToString(), DateTime.Now.Month.ToString(), DateTime.Now.Day.ToString(), DateTime.Now.Hour.ToString(), DateTime.Now.Minute.ToString(),
-                DateTime.Now.Second.ToString(), DateTime.Now.Millisecond.ToString());
+            Int64 MiliSec = DateToMilisec(ThisYear.ToString(), DateTime.UtcNow.Month.ToString(), DateTime.UtcNow.Day.ToString(), DateTime.UtcNow.Hour.ToString(), DateTime.UtcNow.Minute.ToString(),
+                DateTime.UtcNow.Second.ToString(), DateTime.UtcNow.Millisecond.ToString());
 
             return MiliSec;
         }

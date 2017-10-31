@@ -66,12 +66,12 @@ namespace TTCSServer.Interface
                         int LastestRow = ScriptMessage.RowCount - 1;
 
                         if (ScriptMessage[0, LastestRow].Value.ToString() != Message)
-                            ScriptMessage.Rows.Add(Message, DateTime.Now.ToString());
+                            ScriptMessage.Rows.Add(Message, DateTime.UtcNow.ToString());
                         else
-                            ScriptMessage[1, LastestRow].Value = DateTime.Now.ToString();
+                            ScriptMessage[1, LastestRow].Value = DateTime.UtcNow.ToString();
                     }
                     else
-                        ScriptMessage.Rows.Add(Message, DateTime.Now.ToString());
+                        ScriptMessage.Rows.Add(Message, DateTime.UtcNow.ToString());
                 }));
             }
             catch (Exception e)

@@ -436,7 +436,7 @@ namespace TTCSServer.Interface
 
             if (UserSessionHandler.VerifyTimeout(SessionID))
             {
-                ReturnKnowType CommandResult = AstroData.GRBHandler(Ra, Dec, FOV, DateTime.Now);
+                ReturnKnowType CommandResult = AstroData.GRBHandler(Ra, Dec, FOV, DateTime.UtcNow);
 
                 XmlSerializer xmlSerializer3 = new XmlSerializer(typeof(ReturnKnowType));
                 using (var xs = xNav.AppendChild()) { xmlSerializer3.Serialize(xs, CommandResult); }
@@ -484,7 +484,7 @@ namespace TTCSServer.Interface
                     dynamic ThisCommandName = CommandDefinition.GetCommandNameENUM(CommandName);
                     XmlSerializer xmlSerializer2 = new XmlSerializer(typeof(ReturnMessage));
 
-                    ReturnKnowType CommandResult = AstroData.SetCommandHandler(ThisStation, ThisDeviceCategory, ThisDeviceName, ThisCommandName.Value, CommandDefinition.ValueConvertion(HostingHelper.SplitValue(Value)), DateTime.Now);
+                    ReturnKnowType CommandResult = AstroData.SetCommandHandler(ThisStation, ThisDeviceCategory, ThisDeviceName, ThisCommandName.Value, CommandDefinition.ValueConvertion(HostingHelper.SplitValue(Value)), DateTime.UtcNow);
 
                     XmlSerializer xmlSerializer3 = new XmlSerializer(typeof(ReturnKnowType));
                     using (var xs = xNav.AppendChild()) { xmlSerializer3.Serialize(xs, CommandResult); }
@@ -508,7 +508,7 @@ namespace TTCSServer.Interface
             ThisOutput.FieldName = "NULL";
             ThisOutput.Value = Message;
             ThisOutput.DataType = "Get_Error";
-            ThisOutput.UpdateTime = DateTime.Now.ToString();
+            ThisOutput.UpdateTime = DateTime.UtcNow.ToString();
 
             var json = new JavaScriptSerializer().Serialize(ThisOutput);
             return new HttpResponseMessage() { Content = new StringContent(json, Encoding.UTF8, "application/json") };

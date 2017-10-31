@@ -45,7 +45,7 @@ namespace TTCSServer.Interface
             if (StartTime == null)
                 return;
 
-            TimeSpan Span = DateTime.Now - StartTime.Value;
+            TimeSpan Span = DateTime.UtcNow - StartTime.Value;
             AddCommand(OnlineTime, Span.ToString(@"dd\.hh\:mm\:ss"));
         }
 

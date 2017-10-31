@@ -112,7 +112,7 @@ namespace DataKeeper.Engine
             ReturnKnowType NewResult = new ReturnKnowType();
             NewResult.ReturnType = ReturnType;
             NewResult.ReturnMessage = ReturnMessage;
-            NewResult.ReturnDateTime = DateTime.Now;
+            NewResult.ReturnDateTime = DateTime.UtcNow;
             NewResult.ReturnValue = null;
 
             PrintMessage(ReturnType, ReturnMessage, NewResult);
@@ -124,7 +124,7 @@ namespace DataKeeper.Engine
             ReturnKnowType NewResult = new ReturnKnowType();
             NewResult.ReturnType = ReturnType;
             NewResult.ReturnMessage = ReturnMessage;
-            NewResult.ReturnDateTime = DateTime.Now;
+            NewResult.ReturnDateTime = DateTime.UtcNow;
             NewResult.ReturnValue = ReturnValue;
 
             PrintMessage(ReturnType, ReturnMessage, NewResult);
@@ -162,7 +162,7 @@ namespace DataKeeper.Engine
             ReturnLogInformation ThisReturn = new ReturnLogInformation();
             ThisReturn.ReturnType = ReturnType;
             ThisReturn.ReturnMessage = ReturnMessage;
-            ThisReturn.ReturnDateTime = DateTime.Now;
+            ThisReturn.ReturnDateTime = DateTime.UtcNow;
             ThisReturn.ReturnValue = null;
 
             return ThisReturn;
@@ -173,7 +173,7 @@ namespace DataKeeper.Engine
             ReturnLogInformation ThisReturn = new ReturnLogInformation();
             ThisReturn.ReturnType = ReturnType;
             ThisReturn.ReturnMessage = ReturnMessage;
-            ThisReturn.ReturnDateTime = DateTime.Now;
+            ThisReturn.ReturnDateTime = DateTime.UtcNow;
             ThisReturn.ReturnValue = ReturnValue;
 
             return ThisReturn;
@@ -192,7 +192,7 @@ namespace DataKeeper.Engine
             ReturnDeviceInformation ThisReturn = new ReturnDeviceInformation();
             ThisReturn.ReturnType = ReturnType;
             ThisReturn.ReturnMessage = ReturnMessage;
-            ThisReturn.ReturnDateTime = DateTime.Now;
+            ThisReturn.ReturnDateTime = DateTime.UtcNow;
             ThisReturn.ReturnValue = null;
 
             PrintMessage(ReturnType, ReturnMessage, ThisReturn);
@@ -204,7 +204,7 @@ namespace DataKeeper.Engine
             ReturnDeviceInformation ThisReturn = new ReturnDeviceInformation();
             ThisReturn.ReturnType = ReturnType;
             ThisReturn.ReturnMessage = ReturnMessage;
-            ThisReturn.ReturnDateTime = DateTime.Now;
+            ThisReturn.ReturnDateTime = DateTime.UtcNow;
             ThisReturn.ReturnValue = ReturnValue;
 
             PrintMessage(ReturnType, ReturnMessage, ThisReturn);
