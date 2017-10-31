@@ -149,8 +149,7 @@ namespace Fleck
             try
             {
                 Func<AsyncCallback, object, IAsyncResult> begin =
-                    (cb, s) =>
-                        steamAntiBug(buffer, cb, s);                    
+                    (cb, s) => _stream.BeginWrite(buffer, 0, buffer.Length, cb, s);
 
                 Task task = Task.Factory.FromAsync(begin, _stream.EndWrite, null);
                 task.ContinueWith(t => callback(), TaskContinuationOptions.NotOnFaulted)
@@ -164,19 +163,6 @@ namespace Fleck
                 error(e);
                 return null;
             }
-        }
-
-        public IAsyncResult steamAntiBug(byte[] buffer, AsyncCallback cb, object s)
-        {
-            try
-            {
-                return _stream.BeginWrite(buffer, 0, buffer.Length, cb, s);
-            }
-            catch
-            {
-                return null;
-            }
-            
         }
     }
 }

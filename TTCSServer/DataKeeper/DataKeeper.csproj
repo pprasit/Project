@@ -364,8 +364,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fleck\src\Fleck\Fleck.csproj">
-      <Project>{8b12d929-afa9-4307-beff-2ed0f1070fee}</Project>
+    <ProjectReference Include="..\Fleck\Fleck\Fleck.csproj">
+      <Project>{8B12D929-AFA9-4307-BEFF-2ED0F1070FEE}</Project>
       <Name>Fleck</Name>
     </ProjectReference>
   </ItemGroup>
