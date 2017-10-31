@@ -109,9 +109,9 @@ namespace DataKeeper.Interface
             FleckLog.Level = LogLevel.Info;
             AllConnection = new ConcurrentDictionary<String, WSConnection>();
             var server = new WebSocketServer(SocketServerAddress);
-            //String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\astronet.narit.or.th-all.pfx";
+            String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\astronet.narit.or.th-all.pfx";
 
-            //server.Certificate = new X509Certificate2(CerPath);
+            server.Certificate = new X509Certificate2(CerPath);
             server.Start(socket =>
             {
                 socket.OnOpen = () =>
@@ -161,6 +161,10 @@ namespace DataKeeper.Interface
                         MethodInfo method = ObjMainPage.GetType().GetMethod("RelayMessageToMonitoring");
                         method.Invoke(ObjMainPage, new object[] { message });
                     }
+                };
+                socket.OnError = (Exception e) =>
+                {
+                    Console.WriteLine("Fleck exception: " + e.Message);
                 };
             });
         }
