@@ -181,6 +181,8 @@ namespace DataKeeper.Engine
                 StationHandler StationCommunication = AstroData.GetStationObject(ScriptStationName);
                 StationScript StationScript = GetStationScript(ScriptStationName);
 
+                DBScheduleEngine.UpdateFailSchedule(ScriptStationName);
+
                 //DBScheduleEngine.DropSchedule(ScriptStationName);
 
                 foreach (ScriptStructureNew Script in StationScript.ScriptCollection)

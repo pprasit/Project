@@ -21,6 +21,9 @@ namespace TTCSConnection
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public partial class Connection : IConnection
     {
+        private Double RequirePackageVersion = 1.1;
+
+
         public Boolean TTCSCheckConnection()
         {
             return true;
@@ -32,9 +35,9 @@ namespace TTCSConnection
         {
             try
             {
-                if (Version != 1)
+                if (Version != RequirePackageVersion)
                 {
-                    return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co003) Failed to create "+ StationName + ". Your client version is "+ Version + " (Require version 1).");
+                    return ReturnKnowType.DefineReturn(ReturnStatus.FAILED, "(#Co003) Failed to create "+ StationName + ". Your client version is "+ Version + " (Require version "+ RequirePackageVersion +").");
                 }
                 else
                 {                
@@ -191,7 +194,14 @@ namespace TTCSConnection
                         {
                             if(Data.Value.GetType() == typeof(Byte[]))
                             {
-                                Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                                try
+                                {
+                                    Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                                }
+                                catch(Exception e)
+                                {
+                                    TTCSLog.NewLogInformation(StationName, DateTime.UtcNow, "Station name : " + StationName.ToString() + " CCTV error at: " + e.Message + ".", LogType.ERROR, null);
+                                }
                             }
                             
                             //Data.Value = Convert.ToBase64String((byte[])Data.Value);

@@ -63,22 +63,26 @@ namespace DataKeeper.Engine
             return document["_id"].ToString();
         }
 
-        public static Boolean UpdateSchedule(ScriptStructureNew Script)
+        public static Boolean UpdateFailSchedule(STATIONNAME StationName)
         {
-            if (_database == null)
-                return false;
-
-            var collection = _database.GetCollection<BsonDocument>(Script.StationName + "_SCHEDULE");
+            var collection = _database.GetCollection<BsonDocument>(StationName + "_SCHEDULE");
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Eq("ScriptState", SCRIPTSTATE.EXECUTING.ToString());
             var update = Builders<BsonDocument>.Update.Set("ScriptState", SCRIPTSTATE.FAILED.ToString());
 
             collection.UpdateMany(filter, update);
+            return true;
+        }
 
-            collection = _database.GetCollection<BsonDocument>(Script.StationName + "_SCHEDULE");
-            builder = Builders<BsonDocument>.Filter;
-            filter = builder.Eq("StationName", Script.StationName) & builder.Eq("BlockID", Script.BlockID) & builder.Eq("ScriptID", Script.ScriptID);
-            update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState).Set("MustResent", Script.MustResent);
+        public static Boolean UpdateSchedule(ScriptStructureNew Script)
+        {
+            if (_database == null)
+                return false;            
+
+            var collection = _database.GetCollection<BsonDocument>(Script.StationName + "_SCHEDULE");
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("StationName", Script.StationName) & builder.Eq("BlockID", Script.BlockID) & builder.Eq("ScriptID", Script.ScriptID);
+            var update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState).Set("MustResent", Script.MustResent);
 
             collection.UpdateMany(filter, update);
 
