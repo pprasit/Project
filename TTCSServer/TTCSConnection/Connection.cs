@@ -21,7 +21,7 @@ namespace TTCSConnection
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public partial class Connection : IConnection
     {
-        private Double RequirePackageVersion = 1.1;
+        private Double RequirePackageVersion = 1.2;
 
 
         public Boolean TTCSCheckConnection()
@@ -196,7 +196,8 @@ namespace TTCSConnection
                             {
                                 try
                                 {
-                                    Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                                    byte[] Image7Z = SevenZip.Compression.LZMA.SevenZipHelper.Decompress((byte[])Data.Value);
+                                    Data.Value = Convert.ToBase64String(Image7Z);
                                 }
                                 catch(Exception e)
                                 {
