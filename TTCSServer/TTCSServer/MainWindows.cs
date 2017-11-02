@@ -478,5 +478,11 @@ namespace TTCSServer
             }
             catch { }
         }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            LabelLocal.Text = DateTime.Now.ToString();
+            LabelUTC.Text = DateTime.UtcNow.ToString();
+        }
     }
 }

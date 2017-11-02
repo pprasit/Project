@@ -20,8 +20,9 @@ namespace Fleck
                 case "policy-file-request":
                     return FlashSocketPolicyRequestHandler.Create(request);
             }
-            
-            throw new WebSocketException(WebSocketStatusCodes.UnsupportedDataType);
+
+            return null;
+            //throw new WebSocketException(WebSocketStatusCodes.UnsupportedDataType);
         }
         
         public static string GetVersion(WebSocketHttpRequest request) 

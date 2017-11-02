@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -84,6 +85,11 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label7 = new System.Windows.Forms.Label();
+            this.LabelLocal = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.LabelUTC = new System.Windows.Forms.Label();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TTCSLogGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -103,6 +109,10 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label29);
+            this.groupBox1.Controls.Add(this.LabelUTC);
+            this.groupBox1.Controls.Add(this.LabelLocal);
+            this.groupBox1.Controls.Add(this.label28);
             this.groupBox1.Controls.Add(this.BtnUserManagenment);
             this.groupBox1.Controls.Add(this.BtnScriptManager);
             this.groupBox1.Controls.Add(this.BtnSetup);
@@ -691,6 +701,52 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Avaliable Device";
             // 
+            // LabelLocal
+            // 
+            this.LabelLocal.AutoSize = true;
+            this.LabelLocal.Location = new System.Drawing.Point(1003, 16);
+            this.LabelLocal.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.LabelLocal.Name = "LabelLocal";
+            this.LabelLocal.Size = new System.Drawing.Size(137, 13);
+            this.LabelLocal.TabIndex = 7;
+            this.LabelLocal.Text = "YYYY/MM/DD HH:ii:ss AM";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(941, 16);
+            this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(62, 13);
+            this.label28.TabIndex = 6;
+            this.label28.Text = "Local Time:";
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(945, 33);
+            this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(58, 13);
+            this.label29.TabIndex = 8;
+            this.label29.Text = "UTC Time:";
+            // 
+            // LabelUTC
+            // 
+            this.LabelUTC.AutoSize = true;
+            this.LabelUTC.Location = new System.Drawing.Point(1003, 34);
+            this.LabelUTC.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.LabelUTC.Name = "LabelUTC";
+            this.LabelUTC.Size = new System.Drawing.Size(137, 13);
+            this.LabelUTC.TabIndex = 9;
+            this.LabelUTC.Text = "YYYY/MM/DD HH:ii:ss AM";
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // MainWindows
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -783,6 +839,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
         private System.Windows.Forms.Button BtnScriptManager;
         private System.Windows.Forms.Button BtnUserManagenment;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label LabelUTC;
+        private System.Windows.Forms.Label LabelLocal;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
