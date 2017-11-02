@@ -7,7 +7,7 @@
     <ProjectGuid>{CE33DF18-F9C8-4D6F-9057-DBB4DB96E973}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>LzmaAlone</RootNamespace>
-    <AssemblyName>Lzma#</AssemblyName>
+    <AssemblyName>Lzma</AssemblyName>
     <WarningLevel>4</WarningLevel>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>

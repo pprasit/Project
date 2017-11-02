@@ -72,6 +72,9 @@ namespace TTCSConnection
         Boolean ScheduleEvented(ScriptStructureNew Script);
 
         [OperationContract]
+        Boolean DelayScheduleEvented(ScriptStructureNew[] Script);        
+
+        [OperationContract]
         Boolean AddASTROCLIENT(STATIONNAME StationName, DEVICENAME DeviceName, ASTROCLIENT[] FieldName, Object[] Value, DateTime[] DateTime);
 
         [OperationContract]

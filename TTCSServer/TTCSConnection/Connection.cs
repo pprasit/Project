@@ -285,6 +285,17 @@ namespace TTCSConnection
             return true;
         }
 
+        public Boolean DelayScheduleEvented(List<ScriptStructureNew> Scripts)
+        {
+            foreach (ScriptStructureNew Script in Scripts)
+            {
+                DBScheduleEngine.UpdateSchedule(Script);
+            }
+
+            return true;
+        }
+        
+
         public void GetNextScriptPart(STATIONNAME StationName)
         {
             String Output = "";

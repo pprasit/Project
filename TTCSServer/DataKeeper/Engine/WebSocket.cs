@@ -635,6 +635,16 @@ namespace DataKeeper.Interface
                         ReturnMessage(ThisConnection, "", "", "", "", "", "Authentication", "Login successful.", "Authentication_Successful");
                         return true;
                     }
+                    else
+                    {
+                        ThisConnection.IsLogin = true;
+                        ThisConnection.UserName = "Guest";
+                        ThisConnection.Password = "";
+                        ThisConnection.UserPermission = "Guest";
+
+                        ReturnMessage(ThisConnection, "", "", "", "", "", "Authentication", "Login successful.", "Authentication_Successful");
+                        return true;
+                    }
                 }
             }
             else if (ThisConnection.IsLogin)
