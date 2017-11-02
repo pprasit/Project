@@ -195,9 +195,8 @@ namespace TTCSConnection
                             if(Data.Value.GetType() == typeof(Byte[]))
                             {
                                 try
-                                {
-                                    byte[] Image7Z = SevenZip.Compression.LZMA.SevenZipHelper.Decompress((byte[])Data.Value);
-                                    Data.Value = Convert.ToBase64String(Image7Z);
+                                {                                    
+                                    Data.Value = Convert.ToBase64String((byte[])Data.Value);
                                 }
                                 catch(Exception e)
                                 {
@@ -285,7 +284,7 @@ namespace TTCSConnection
             return true;
         }
 
-        public Boolean DelayScheduleEvented(List<ScriptStructureNew> Scripts)
+        public Boolean DelayScheduleEvented(ScriptStructureNew[] Scripts)
         {
             foreach (ScriptStructureNew Script in Scripts)
             {

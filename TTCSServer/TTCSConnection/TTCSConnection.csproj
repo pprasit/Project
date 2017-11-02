@@ -88,10 +88,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\7zip\Compress\LzmaAlone\LzmaAlone.csproj">
-      <Project>{ce33df18-f9c8-4d6f-9057-dbb4db96e973}</Project>
-      <Name>LzmaAlone</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DataKeeper\DataKeeper.csproj">
       <Project>{938cff8e-6c4b-4c8c-b240-7f4426cb1061}</Project>
       <Name>DataKeeper</Name>
