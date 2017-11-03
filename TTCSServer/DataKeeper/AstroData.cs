@@ -253,9 +253,8 @@ namespace DataKeeper
 
                 if(Client.FileExists(@FilePath))
                 {
-                    Stream streamReader = null;
-                    await Client.DownloadAsync(streamReader, FilePath);
-                    Bitmap tmpBitmap = (Bitmap)Bitmap.FromStream(streamReader);
+                    await Client.DownloadFileAsync(@"/TEMP/"+StationName.ToString()+ "_PreviewImg.jpg", FilePath);
+                    Bitmap tmpBitmap = (Bitmap)Bitmap.FromFile(@"/TEMP/" + StationName.ToString() + "_PreviewImg.jpg");
                     Image Image = (Image)tmpBitmap;
 
                     using (MemoryStream m = new MemoryStream())
@@ -269,7 +268,7 @@ namespace DataKeeper
                         AstroData.UpdateInformation(StationName, DeviceName, IMAGING.IMAGING_PREVIEW_READY.ToString(), true, DateTime.UtcNow);
                     }
 
-                    streamReader.Close();
+                    //streamReader.Close();
                 }
                 else
                 {

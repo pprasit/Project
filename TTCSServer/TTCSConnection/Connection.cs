@@ -15,13 +15,14 @@ using DataKeeper.Interface;
 using System.Drawing;
 using Emgu.CV;
 using Emgu.CV.Structure;
+using Newtonsoft.Json.Linq;
 
 namespace TTCSConnection
 {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public partial class Connection : IConnection
     {
-        private Double RequirePackageVersion = 1.3;
+        private Double RequirePackageVersion = 1.5;
 
 
         public Boolean TTCSCheckConnection()
@@ -191,26 +192,20 @@ namespace TTCSConnection
                 {
                     if (Data.DeviceCategory == DEVICECATEGORY.CCTV)
                     {
-                        //Console.WriteLine(Data.DeviceCategory);
+                        //Console.WriteLine(Data.Value);
 
                         if (Data.FieldName.ToString() == CCTV.CCTV_DEVICE1_IMAGE.ToString() || Data.FieldName.ToString() == CCTV.CCTV_DEVICE2_IMAGE.ToString())
+                        {                            
+                            Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
+                        }
+                    }
+                    else if (Data.DeviceCategory == DEVICECATEGORY.ALLSKY)
+                    {
+                        //Console.WriteLine(Data.Value);
+
+                        if (Data.FieldName.ToString() == ALLSKY.ALLSKY_IMAGE.ToString())
                         {
-                            if(Data.Value.GetType() == typeof(Byte[]))
-                            {
-                                try
-                                {                                    
-                                    Data.Value = Convert.ToBase64String((byte[])Data.Value);
-                                }
-                                catch(Exception e)
-                                {
-                                    TTCSLog.NewLogInformation(StationName, DateTime.UtcNow, "Station name : " + StationName.ToString() + " CCTV error at: " + e.Message + ".", LogType.ERROR, null);
-                                }
-                            }
-                            
-                            //Data.Value = Convert.ToBase64String((byte[])Data.Value);
-                            //Image<Bgr, Byte> imageCV = new Image<Bgr, byte>((Bitmap)Data.Value);
-                            //Byte[] ByteData = TTCSHelper.ImageToByte2((Bitmap)Data.Value);
-                            //Data.Value = Convert.ToBase64String(ByteData);
+                            Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
                         }
                     }
                     else if (Data.DeviceCategory == DEVICECATEGORY.IMAGING)
@@ -219,21 +214,26 @@ namespace TTCSConnection
 
                         if (Data.FieldName.ToString() == IMAGING.IMAGING_CCD_DOWNLOAD_STATUS.ToString())
                         {
-                            if (Data.Value.ToString() == "Completed")
-                            {
-                                String FileName = StationCommunication.GetInformation(Data.DeviceName, IMAGING.IMAGING_CCD_ACTIVE_IMAGE_FILENAME).Value + ".FITS";
-                                String[] TempBlockID = FileName.Split('_');
-                                String BlockID = TempBlockID[0];
+                            String[] TempValue = Data.Value.ToString().Split(';');
 
-                                DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+                            if (TempValue.Count() > 1)
+                            {
+                                if (TempValue[0] == "Completed")
+                                {
+                                    //   /files/AIRFORCE/FITS/maIeayp9iEO57G9LXZVPA_TakenFromClient.FITS
+
+                                    String[] TmpFileName = TempValue[1].Split('/');
+                                    String FileName = TmpFileName[(TmpFileName.Count() - 1)];
+                                    String[] TempBlockID = FileName.Split('_');
+                                    String BlockID = TempBlockID[0];
+
+                                    DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+                                }
                             }
                         }
                         else if (Data.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_DOWNLOAD_STATUS.ToString())
-                        {
-                            if (Data.Value.ToString() == "Completed")
-                            {
-                                AstroData.LoadPerviewImage(StationName, Data.DeviceName, StationCommunication);
-                            }
+                        {       
+                            AstroData.LoadPerviewImage(StationName, Data.DeviceName, StationCommunication);   
                         }
 
                         //AstroData.NewIMAGINGInformationHandle(StationName, Data.DeviceName, Data.FieldName, Data.Value, new DateTime(Data.DateTimeUTC));
@@ -274,7 +274,40 @@ namespace TTCSConnection
                     {
                         if (Data.FieldName.ToString() != CCTV.CCTV_CONNECTED.ToString())
                         {
-                            Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                            Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
+                        }
+                    }
+                    else if (Data.DeviceCategory == DEVICECATEGORY.ALLSKY)
+                    {
+                        //Console.WriteLine(Data.Value);
+
+                        if (Data.FieldName.ToString() == ALLSKY.ALLSKY_IMAGE.ToString())
+                        {
+                            Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
+                        }
+                    }
+                    else if (Data.DeviceCategory == DEVICECATEGORY.IMAGING)
+                    {
+                        //Console.WriteLine(Data.FieldName);
+
+                        if (Data.FieldName.ToString() == IMAGING.IMAGING_CCD_DOWNLOAD_STATUS.ToString())
+                        {
+                            String[] TempValue = Data.Value.ToString().Split(';');
+
+                            if (TempValue.Count() > 1)
+                            {
+                                if (TempValue[0] == "Completed")
+                                {
+                                    //   /files/AIRFORCE/FITS/maIeayp9iEO57G9LXZVPA_TakenFromClient.FITS
+
+                                    String[] TmpFileName = TempValue[1].Split('/');
+                                    String FileName = TmpFileName[(TmpFileName.Count() - 1)];
+                                    String[] TempBlockID = FileName.Split('_');
+                                    String BlockID = TempBlockID[0];
+
+                                    DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+                                }
+                            }
                         }
                     }
 
