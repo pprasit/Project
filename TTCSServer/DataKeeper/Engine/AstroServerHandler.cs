@@ -101,7 +101,7 @@ namespace DataKeeper.Engine
                     if (ThisStation.IsStationConnected && ThisStation.StationName != STATIONNAME.ASTROSERVER)
                     {
                         StationHandler StationCommunication = AstroData.GetStationObject(ThisStation.StationName);
-                        StationCommunication.CheckLastesInformation(DateTime.UtcNow.Ticks, out String Message);
+                        StationCommunication.CheckLastesInformation(DateTime.UtcNow.Ticks);
                     }
                 }
             }

@@ -278,22 +278,34 @@ namespace TTCSConnection
             return true;
         }
    
-        public Boolean ScheduleEvented(ScriptStructureNew Script)
+        public Boolean ScheduleEvented(String ScriptsJSON)
         {
+            ScriptStructureNew Script = (ScriptStructureNew)Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(ScriptStructureNew));
+
             DBScheduleEngine.UpdateSchedule(Script);
             return true;
         }
 
-        public Boolean DelayScheduleEvented(ScriptStructureNew[] Scripts)
+        public Boolean DelayScheduleEvented(String ScriptsJSON)
         {
-            foreach (ScriptStructureNew Script in Scripts)
-            {
-                DBScheduleEngine.UpdateSchedule(Script);
-            }
+            ScriptStructureNew[] Scripts = (ScriptStructureNew[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(ScriptStructureNew[]));
+
+            foreach (ScriptStructureNew Script in Scripts)            
+                DBScheduleEngine.UpdateSchedule(Script);            
 
             return true;
         }
-        
+
+        //public Boolean DelayScheduleEvented(ScriptStructureNew[] Scripts)
+        //{
+        //    foreach (ScriptStructureNew Script in Scripts)
+        //    {
+        //        DBScheduleEngine.UpdateSchedule(Script);
+        //    }
+
+        //    return true;
+        //}
+
 
         public void GetNextScriptPart(STATIONNAME StationName)
         {

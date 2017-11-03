@@ -385,14 +385,12 @@ namespace DataKeeper.Engine
             return ResultState;
         }
 
-        public Boolean CheckLastesInformation(long DateTimeUTC, out String Message)
+        public void CheckLastesInformation(long DateTimeUTC)
         {
-            Boolean ResultState = false;
             String OutputMessage = "";
             if (ServerCallBackObject == null)
             {
-                Message = "Station not connected.";
-                return false;
+                return;
             }
 
             Task TaskPost = Task.Run(() =>
@@ -407,9 +405,7 @@ namespace DataKeeper.Engine
                     catch(Exception e)
                     {
                         Console.WriteLine(e.Message);
-                    }
-                    
-                    ResultState = true;
+                    }                   
                 }
                 catch (Exception e)
                 {
@@ -419,16 +415,6 @@ namespace DataKeeper.Engine
 
             if (!TaskPost.Wait(1000))
                 OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
-            else
-            {
-                if (ResultState)
-                    OutputMessage = "Send script to station successful";
-                else
-                    OutputMessage = "An erroe occur because (" + OutputMessage + ")";
-            }
-
-            Message = OutputMessage;
-            return ResultState;
         }
 
         public void NewTS700MMInformation(DEVICENAME DeviceName, TS700MM FieldName, Object Value, DateTime DataTimestamp)
