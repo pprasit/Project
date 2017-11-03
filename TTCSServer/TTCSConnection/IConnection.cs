@@ -63,10 +63,10 @@ namespace TTCSConnection
         void AddGPS(String DataGroupID, STATIONNAME StationName, DEVICENAME DeviceName, GPS[] FieldName, Object[] Value, DateTime[] DateTime, Boolean IsHistory);
 
         [OperationContract]
-        void AddDeviceData(STATIONNAME StationName, DataPacket[] Datas, Boolean IsInsertDB = true, Boolean IsSentWebSocket = true);
+        void AddDeviceData(STATIONNAME StationName, String ScriptsJSON, Boolean IsInsertDB = true, Boolean IsSentWebSocket = true);
 
         [OperationContract]
-        Boolean AddDelayDeviceData(STATIONNAME StationName, DataPacket[] Datas);
+        Boolean AddDelayDeviceData(STATIONNAME StationName, String ScriptsJSON);
 
         [OperationContract]
         Boolean ScheduleEvented(String ScriptsJSON);

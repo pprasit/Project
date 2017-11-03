@@ -175,12 +175,13 @@ namespace TTCSConnection
             AstroData.ReturnAckState(DataGroupID, StationName, DeviceName);
         }
 
-        public void AddDeviceData(STATIONNAME StationName, DataPacket[] Datas, Boolean IsInsertDB = true, Boolean IsSentWebSocket = true)
+        public void AddDeviceData(STATIONNAME StationName, String ScriptsJSON, Boolean IsInsertDB = true, Boolean IsSentWebSocket = true)
         {
             //Console.WriteLine(StationName);
             Task DeviceTask = Task.Run(() =>
             {
                 //Console.WriteLine("AddDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
+                DataPacket[] Datas = (DataPacket[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(DataPacket[]));
 
                 StationHandler StationCommunication = AstroData.GetStationObject(StationName);
 
@@ -251,10 +252,12 @@ namespace TTCSConnection
             });
         }
 
-        public Boolean AddDelayDeviceData(STATIONNAME StationName, DataPacket[] Datas)
+        public Boolean AddDelayDeviceData(STATIONNAME StationName, String ScriptsJSON)
         {
             Task DelayTask = Task.Run(() =>
             {
+                DataPacket[] Datas = (DataPacket[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(DataPacket[]));
+
                 Console.WriteLine("AddDelayDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
 
                 StationHandler StationCommunication = AstroData.GetStationObject(StationName);
