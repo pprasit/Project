@@ -21,7 +21,7 @@ namespace TTCSConnection
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public partial class Connection : IConnection
     {
-        private Double RequirePackageVersion = 1.2;
+        private Double RequirePackageVersion = 1.3;
 
 
         public Boolean TTCSCheckConnection()
@@ -180,6 +180,8 @@ namespace TTCSConnection
             //Console.WriteLine(StationName);
             Task DeviceTask = Task.Run(() =>
             {
+                if (ScriptsJSON == null) return;
+
                 //Console.WriteLine("AddDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
                 DataPacket[] Datas = (DataPacket[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(DataPacket[]));
 
@@ -256,6 +258,8 @@ namespace TTCSConnection
         {
             Task DelayTask = Task.Run(() =>
             {
+                if (ScriptsJSON == null) return;
+
                 DataPacket[] Datas = (DataPacket[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(DataPacket[]));
 
                 Console.WriteLine("AddDelayDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
