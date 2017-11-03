@@ -21,7 +21,7 @@ namespace TTCSConnection
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public partial class Connection : IConnection
     {
-        private Double RequirePackageVersion = 1.2;
+        private Double RequirePackageVersion = 1.3;
 
 
         public Boolean TTCSCheckConnection()
