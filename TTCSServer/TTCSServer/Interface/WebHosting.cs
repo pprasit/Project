@@ -242,8 +242,9 @@ namespace TTCSServer.Interface
 
                 DEVICECATEGORY ThisDeviceCategory = HostingHelper.ConvertDevicecCategoryStrToDEVICECATEGORY(DeviceCategoryStr);
                 if (TempDeviceName.Length > 1)
-                {
+                {                    
                     ThisDeviceCategory = HostingHelper.ConvertDevicecCategoryStrToDEVICECATEGORY(TempDeviceName[1]);
+                    Console.WriteLine(ThisDeviceCategory);
                 }               
 
                 if (ThisStation == STATIONNAME.NULL)
@@ -328,6 +329,8 @@ namespace TTCSServer.Interface
             if (UserSessionHandler.VerifyTimeout(SessionID))
             {
                 STATIONNAME ThisStation = HostingHelper.ConvertStationNameStrToSTATIONNAME(StationName);
+
+                DeviceCategory.Replace("WEATHER", "WEATHERSTATION");
 
                 var TempDeviceName = DeviceCategory.Split('_');
                 DEVICECATEGORY ThisDeviceCategory = HostingHelper.ConvertDevicecCategoryStrToDEVICECATEGORY(DeviceCategory);

@@ -9,7 +9,7 @@
       <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="SocketServerAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)">wss://192.168.2.110:8096</Value>
+      <Value Profile="(Default)">wss://192.168.2.110:8443</Value>
     </Setting>
     <Setting Name="DatabaseName" Type="System.String" Scope="User">
       <Value Profile="(Default)">AstroDatabase</Value>

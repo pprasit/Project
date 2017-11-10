@@ -127,6 +127,7 @@
     <Compile Include="Engine\ScriptStructure.cs" />
     <Compile Include="Engine\ServerInformationAck.cs" />
     <Compile Include="Engine\StationHandler.cs" />
+    <Compile Include="Engine\StringCompression.cs" />
     <Compile Include="Engine\TTCSCommandHelp.cs" />
     <Compile Include="Engine\AstroServerHandler.cs" />
     <Compile Include="Engine\TTCSLog.cs" />

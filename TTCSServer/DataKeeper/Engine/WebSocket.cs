@@ -634,17 +634,7 @@ namespace DataKeeper.Interface
 
                         ReturnMessage(ThisConnection, "", "", "", "", "", "Authentication", "Login successful.", "Authentication_Successful");
                         return true;
-                    }
-                    else
-                    {
-                        ThisConnection.IsLogin = true;
-                        ThisConnection.UserName = "Guest";
-                        ThisConnection.Password = "";
-                        ThisConnection.UserPermission = "Guest";
-
-                        ReturnMessage(ThisConnection, "", "", "", "", "", "Authentication", "Login successful.", "Authentication_Successful");
-                        return true;
-                    }
+                    }                    
                 }
             }
             else if (ThisConnection.IsLogin)
@@ -772,7 +762,7 @@ namespace DataKeeper.Interface
             ThisResult.ReturnResult = "Subscribe_Error";
             ThisResult.DataTimeStamp = DateTime.UtcNow.ToString();
 
-            if (ThisStation != STATIONNAME.NULL && ThisDeviceCategory != DEVICECATEGORY.NULL && ThisFieldName != null)
+            if (ThisStation != STATIONNAME.NULL && ThisDeviceCategory != DEVICECATEGORY.NULL && !Object.ReferenceEquals(null, ThisFieldName))
             {
                 String Key = ThisStation.ToString() + ":" + ThisDeviceName.ToString() + ":" + ThisFieldName.ToString() + ":" + ThisConnection.IPAddress + ":" + ThisConnection.Port.ToString();
                 SubscribeStructure ThisSubscribe = new SubscribeStructure();
@@ -819,23 +809,32 @@ namespace DataKeeper.Interface
                 }
                 else
                 {
-                    ThisResult.ReturnMessage = "Can not subscribe field name '" + ThisFieldName == null ? "null" : ThisFieldName.ToString() + "'. Because invalid FieldName";
+                    ThisResult.ReturnMessage = "Can not subscribe field name '" + (Object.ReferenceEquals(null, ThisFieldName) ? "null" : ThisFieldName.ToString()) + "'. Because invalid FieldName";
                     ThisResult.ReturnResult = "Subscribe_Error";
                 }
             }
             else if (ThisStation == STATIONNAME.NULL)
-                ThisResult.ReturnMessage = "Can not subscribe field name '" + ThisFieldName == null ? "null" : ThisFieldName.ToString() + "'. Because invalid StationName.";
+                ThisResult.ReturnMessage = "Can not subscribe field name '" + (Object.ReferenceEquals(null, ThisFieldName) ? "null" : ThisFieldName.ToString()) + "'. Because invalid StationName.";
             else if (ThisDeviceCategory == DEVICECATEGORY.NULL)
-                ThisResult.ReturnMessage = "Can not subscribe field name '" + ThisFieldName == null ? "null" : ThisFieldName.ToString() + "'. Because invalid DeviceName.";
+                ThisResult.ReturnMessage = "Can not subscribe field name '" + (Object.ReferenceEquals(null, ThisFieldName) ? "null" : ThisFieldName.ToString()) + "'. Because invalid DeviceName.";
             else if (ThisFieldName == null)
-                ThisResult.ReturnMessage = "Can not subscribe field name '" + ThisFieldName == null ? "null" : ThisFieldName.ToString() + "'. Because invalid FieldName.";
+                ThisResult.ReturnMessage = "Can not subscribe field name '" + (Object.ReferenceEquals(null, ThisFieldName) ? "null" : ThisFieldName.ToString()) + "'. Because invalid FieldName.";
 
             if (ThisReturningState)
             {
                 ResultStructure ReturningResult = new ResultStructure();
                 ReturningResult.StationName = ThisStation.ToString();
                 ReturningResult.DeviceName = ThisDeviceName.ToString();
-                ReturningResult.FieldName = ThisFieldName.ToString();
+
+                if(Object.ReferenceEquals(null, ThisFieldName))
+                {
+                    ReturningResult.FieldName = "null";
+                }
+                else
+                {
+                    ReturningResult.FieldName = ThisFieldName.ToString();
+                }
+                
                 ReturningResult.Value = CommandStr;
                 ReturningResult.DataType = "null";
                 ReturningResult.ParameterName = "null";

@@ -126,10 +126,10 @@ namespace TTCSConnection
         void OnScriptSET(List<ScriptStructure> ThisScript);
 
         [OperationContract(IsOneWay = true)]
-        void OnNewScript(List<ScriptStructureNew> NewScript, Boolean IsHaveNextScript);
+        void OnNewScript(String NewScript, int AllScriptParts, Boolean IsHaveNextScript);
 
         [OperationContract(IsOneWay = true)]
-        void OnNextScript(List<ScriptStructureNew> NewScript, Boolean IsHaveNextScript);
+        void OnNextScript(String NewScript, int PartNo, Boolean IsHaveNextScript);
 
         [OperationContract(IsOneWay = true)]
         void OnCheckLastestInformation(long DateTimeUTC);

@@ -33,6 +33,8 @@ namespace DataKeeper.Engine
         [DataMember]
         public String ScriptID { get; set; }
         [DataMember]
+        public String TargetID { get; set; }
+        [DataMember]
         public String BlockID { get; set; }
         [DataMember]
         public String Life { get; set; }
@@ -51,13 +53,12 @@ namespace DataKeeper.Engine
         [DataMember]
         public String ExecutionTimeEnd { get; set; }
         [DataMember]
-        public String Owner { get; set; }
-        [DataMember]
-        public String MustResent { get; set; }
+        public String Owner { get; set; }        
 
-        public ScriptStructureNew(String ScriptID, String BlockID, String Life, String StationName, String DeviceName, String CommandName, List<String> Parameters, String ScriptState, String ExecutionTimeStart, String ExecutionTimeEnd, String Owner, String MustResent)
+        public ScriptStructureNew(String ScriptID, String TargetID, String BlockID, String Life, String StationName, String DeviceName, String CommandName, List<String> Parameters, String ScriptState, String ExecutionTimeStart, String ExecutionTimeEnd, String Owner)
         {
             this.ScriptID = ScriptID;
+            this.TargetID = TargetID;
             this.BlockID = BlockID;
             this.Life = Life;
             this.StationName = StationName;
@@ -68,12 +69,12 @@ namespace DataKeeper.Engine
             this.ExecutionTimeStart = ExecutionTimeStart;
             this.ExecutionTimeEnd = ExecutionTimeEnd;
             this.Owner = Owner;
-            this.MustResent = MustResent;
         }
     }
 
     public class ScriptStructure
     {
+        public String TargetID { get; set; }
         public String BlockID { get; set; }
         public String BlockName { get; set; }
         public STATIONNAME StationName { get; set; }
@@ -179,6 +180,7 @@ namespace DataKeeper.Engine
         {
             ScriptBuffer NewBuffer = new ScriptBuffer();
             NewBuffer.Script = new ScriptTB();
+            NewBuffer.Script.TargetID = NewScriptStructure.TargetID;
             NewBuffer.Script.BlockID = NewScriptStructure.BlockID;
             NewBuffer.Script.BlockName = NewScriptStructure.BlockName;
             NewBuffer.Script.CommandCounter = NewScriptStructure.CommandCounter;
@@ -251,7 +253,8 @@ namespace DataKeeper.Engine
                         ScriptTB ExistingScript = ScriptDBBuffer.FirstOrDefault(Item => Item.Value.BlockName == ThisBuffer.Script.BlockName && Item.Value.ScriptState != "EXECUTED").Value;
                         if (ExistingScript == null)  //New block name
                         {
-                            ThisBuffer.Script.BlockID = TTCSHelper.GenNewID();
+                            ThisBuffer.Script.TargetID = TTCSHelper.GenNewID();
+                            ThisBuffer.Script.BlockID = ThisBuffer.Script.TargetID;
                             ThisBuffer.Script.ScriptState = "CREATED";
                             ScriptDBBuffer.TryAdd(ThisBuffer.Script.BlockID + ThisBuffer.Script.ExecutionNumber, ThisBuffer.Script);
 
@@ -573,6 +576,7 @@ namespace DataKeeper.Engine
             foreach (ScriptTB ThisScript in ScriptTBArr)
             {
                 ScriptStructure NewSturcture = new ScriptStructure();
+                NewSturcture.TargetID = ThisScript.TargetID;
                 NewSturcture.BlockID = ThisScript.BlockID;
                 NewSturcture.BlockName = ThisScript.BlockName;
                 NewSturcture.CommandCounter = ThisScript.CommandCounter.Value;

@@ -15,6 +15,7 @@ namespace DataKeeper
     public partial class ScriptTB
     {
         public string BlockID { get; set; }
+        public string TargetID { get; set; }        
         public string BlockName { get; set; }
         public string StationName { get; set; }
         public Nullable<System.DateTime> ExecutionTimeStart { get; set; }

@@ -9,6 +9,7 @@ using DataKeeper;
 using System.Threading;
 using DataKeeper.Engine.Command;
 using DataKeeper.Interface;
+using System.Web.Script.Serialization;
 
 namespace DataKeeper.Engine
 {
@@ -25,6 +26,12 @@ namespace DataKeeper.Engine
         public ConcurrentDictionary<DEVICEMAPPER, Object> DeviceStroage;
 
         List<List<ScriptStructureNew>> Buffer;
+
+        public int CountScript = 0;
+        public int NowScript = 1;
+
+        public Boolean IsSendingScriptToStation = false;
+
         int MAX_SCRIPT_PER_SEND = 20;
 
         public ReturnKnowType CreateEngine(String SiteSessionID, Object ServerCallBackObject)
@@ -33,6 +40,7 @@ namespace DataKeeper.Engine
             {
                 this.StationSessionID = SiteSessionID;
                 this.IsStationConnected = true;
+                this.IsSendingScriptToStation = false;
                 this.ServerCallBackObject = ServerCallBackObject;
 
                 db = new DBEngine();
@@ -51,6 +59,8 @@ namespace DataKeeper.Engine
 
         public DEVICECATEGORY GetDeviceCategoryByDeviceName(DEVICENAME DeviceName)
         {
+            if (DeviceName == DEVICENAME.NULL) return DEVICECATEGORY.NULL;
+
             return AvaliableDevices.FirstOrDefault(Item => Item.DeviceName == DeviceName).DeviceCategory;
         }
 
@@ -257,68 +267,61 @@ namespace DataKeeper.Engine
                 {
                     try
                     {
+                        this.IsSendingScriptToStation = true;
+                        NowScript = 1;
+                        CountScript = Buffer.Count;
+                        
+                        String json = new JavaScriptSerializer().Serialize(ScriptCollection);
+                        String jSonC = StringCompression.CompressString(json);
+
+                        Console.WriteLine("Sending Script to ---> " + StationName + " (Parts: " + CountScript + ") | (O: " + json.Length + " | C: " + jSonC.Length + ")");
+
                         MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnNewScript");
-                        MInfo.Invoke(ServerCallBackObject, new Object[] { ScriptCollection, IsHaveNextScript });
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { jSonC, CountScript, IsHaveNextScript });
                         ResultState = true;
                         Buffer.RemoveAt(0);
 
                         if(!IsHaveNextScript)
                         {
+                            ScriptEngine.scriptConfigure.FirstOrDefault(Item => Item.config_name == StationName.ToString()).config_status = true;                            
+
+                            this.IsSendingScriptToStation = false;
                             OutputMessage = "Script Sent to Station Successfully.";
+                            Console.WriteLine("Sending Script to ---> " + StationName + " is successfully");
                         }
                         else
                         {
+                            NowScript++;
                             OutputMessage = "Script Sent to Station (Continue).";
                         }                        
                     }
                     catch (Exception e)
                     {
+                        this.IsSendingScriptToStation = false;
                         OutputMessage = e.Message;
                     }
                 });
 
                 if (!TaskPost.Wait(1000))
+                {
+                    this.IsSendingScriptToStation = false;
                     OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
+                }
                 else
                 {
                     if (ResultState)
                         OutputMessage = "Send script to station successful";
                     else
+                    {
+                        this.IsSendingScriptToStation = false;
                         OutputMessage = "An erroe occur because (" + OutputMessage + ")";
+                    }
                 }
 
                 Message = OutputMessage;
 
                 break;
-            }
-
-            /*           
-            Task TaskPost = Task.Run(() =>
-            {
-                try
-                {
-                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnNewScript");
-                    MInfo.Invoke(ServerCallBackObject, new Object[] { ScriptCollection });
-                    ResultState = true;
-                }
-                catch (Exception e)
-                {
-                    OutputMessage = e.Message;
-                }
-            });
-
-            if (!TaskPost.Wait(1000))
-                OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
-            else
-            {
-                if (ResultState)
-                    OutputMessage = "Send script to station successful";                    
-                else
-                    OutputMessage = "An erroe occur because (" + OutputMessage + ")";
-            }
-
-            Message = OutputMessage;
-            */
+            }          
 
             Message = OutputMessage;
 
@@ -345,34 +348,52 @@ namespace DataKeeper.Engine
                 {
                     try
                     {
+                        this.IsSendingScriptToStation = true;
+                        
+                        String json = new JavaScriptSerializer().Serialize(ScriptCollection);
+                        String jSonC = StringCompression.CompressString(json);
+
+                        Console.WriteLine("Sending Script to ---> " + StationName + " (Continue / " + Buffer.Count + " Lefts) | (O: " + json.Length + " | C: " + jSonC.Length + ")");
+
                         MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnNextScript");
-                        MInfo.Invoke(ServerCallBackObject, new Object[] { ScriptCollection, IsHaveNextScript });
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { jSonC, NowScript, IsHaveNextScript });
                         ResultState = true;
                         Buffer.RemoveAt(0);
 
                         if (!IsHaveNextScript)
                         {
+                            ScriptEngine.scriptConfigure.FirstOrDefault(Item => Item.config_name == StationName.ToString()).config_status = true;
+                            this.IsSendingScriptToStation = false;
                             OutputMessage = "Script Sent to Station Successfully.";
+                            Console.WriteLine("Sending Script to ---> " + StationName + " is successfully");
                         }
                         else
                         {
+                            NowScript++;
                             OutputMessage = "Script Sent to Station (Continue).";
                         }
                     }
                     catch (Exception e)
                     {
+                        this.IsSendingScriptToStation = false;
                         OutputMessage = e.Message;
                     }
                 });
 
                 if (!TaskPost.Wait(1000))
+                {
+                    this.IsSendingScriptToStation = false;
                     OutputMessage = "The TTCS Client is timeout to response due to network problem or TTCS Client is lost connection.";
+                }
                 else
                 {
                     if (ResultState)
                         OutputMessage = "Send script to station successful";
                     else
+                    {
+                        this.IsSendingScriptToStation = false;
                         OutputMessage = "An erroe occur because (" + OutputMessage + ")";
+                    }
                 }
 
                 Message = OutputMessage;
@@ -419,6 +440,9 @@ namespace DataKeeper.Engine
 
         public void NewTS700MMInformation(DEVICENAME DeviceName, TS700MM FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.TS700MM).Value;
             if (ExistingInformation != null)
             {
@@ -433,12 +457,15 @@ namespace DataKeeper.Engine
 
         public void NewASTROHEVENDOMEInformation(DEVICENAME DeviceName, ASTROHEVENDOME FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ASTROHEVENDOME).Value;
             if (ExistingInformation != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
-                {
+                {                   
                     db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
 
                     String State_Temp = Value.ToString();
@@ -461,15 +488,15 @@ namespace DataKeeper.Engine
 
         public void NewWEATHERSTATIONInformation(DEVICENAME DeviceName, WEATHERSTATION FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.WEATHERSTATION).Value;
             if (ExistingInformation != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
-                {
-                    if (db == null)
-                        return;
-
+                {                   
                     db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
 
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
@@ -480,6 +507,9 @@ namespace DataKeeper.Engine
 
         public void NewCCTVInformation(DEVICENAME DeviceName, CCTV FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<CCTV, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<CCTV, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.CCTV).Value;
             if (ExistingInformation != null)
             {
@@ -494,6 +524,9 @@ namespace DataKeeper.Engine
 
         public void NewIMAGINGInformation(DEVICENAME DeviceName, IMAGING FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.IMAGING).Value;
             if (ExistingInformation != null)
             {
@@ -509,12 +542,15 @@ namespace DataKeeper.Engine
 
         public void NewLANOUTLETInformation(DEVICENAME DeviceName, LANOUTLET FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.LANOUTLET).Value;
             if (ExistingInformation != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
-                {
+                {                    
                     db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
 
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
@@ -525,6 +561,9 @@ namespace DataKeeper.Engine
 
         public void NewGPSInformation(String DataGroupID, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp, Boolean IsHistory)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<GPS, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.GPS).Value;
             if (ExistingInformation != null)
             {
@@ -551,6 +590,9 @@ namespace DataKeeper.Engine
 
         public void NewSQMInformation(DEVICENAME DeviceName, SQM FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<SQM, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<SQM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.SQM).Value;
             if (ExistingInformation != null)
             {
@@ -596,6 +638,9 @@ namespace DataKeeper.Engine
 
         public void NewSEEINGInformation(DEVICENAME DeviceName, SEEING FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<SEEING, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<SEEING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.SEEING).Value;
             if (ExistingInformation != null)
             {
@@ -611,6 +656,9 @@ namespace DataKeeper.Engine
 
         public void NewALLSKYInformation(DEVICENAME DeviceName, ALLSKY FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ALLSKY).Value;
             if (ExistingInformation != null)
             {
@@ -622,10 +670,13 @@ namespace DataKeeper.Engine
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
             }
-        }
+        }        
 
         public void NewASTROCLIENTInformation(DEVICENAME DeviceName, ASTROCLIENT FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ASTROCLIENT).Value;
 
             if (ASTROCLIENT.ASTROCLIENT_LASTESTSCRIPT_RECIVED == FieldName ||
@@ -635,7 +686,7 @@ namespace DataKeeper.Engine
                 ScriptManager.ScriptInformationIdentification(StationName, DeviceName, FieldName, Value, DataTimestamp);
             }
 
-            if (ASTROCLIENT.ASTROCLIENT_LASTESTUSER_NAME == FieldName)
+            else if (ASTROCLIENT.ASTROCLIENT_LASTESTUSER_NAME == FieldName)
             {
                 String[] temp_value = Value.ToString().Split(',');
                 DateTime dt = Convert.ToDateTime(temp_value[2]);
@@ -668,6 +719,9 @@ namespace DataKeeper.Engine
 
         public void NewASTROSERVERInformation(DEVICENAME DeviceName, ASTROSERVER FieldName, Object Value, DateTime DataTimestamp)
         {
+            if (db == null)
+                return;
+
             ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ASTROSERVER).Value;
             if (ExistingInformation != null)
             {
@@ -681,7 +735,7 @@ namespace DataKeeper.Engine
         }
 
         public void StationConnected()
-        {
+        {           
             ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == DEVICECATEGORY.ASTROCLIENT).Value;
             if (ExistingInformation != null)
             {
@@ -700,6 +754,7 @@ namespace DataKeeper.Engine
         public void StationDisconnected()
         {
             this.IsStationConnected = false;
+            this.IsSendingScriptToStation = false;
 
             ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceCategory == DEVICECATEGORY.ASTROCLIENT).Value;
             if (ExistingInformation != null)

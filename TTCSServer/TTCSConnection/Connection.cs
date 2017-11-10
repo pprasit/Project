@@ -17,12 +17,13 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Newtonsoft.Json.Linq;
 
+
 namespace TTCSConnection
 {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession)]
     public partial class Connection : IConnection
     {
-        private Double RequirePackageVersion = 1.5;
+        private Double RequirePackageVersion = 1.8;
 
 
         public Boolean TTCSCheckConnection()
@@ -183,6 +184,11 @@ namespace TTCSConnection
             {
                 if (ScriptsJSON == null) return;
 
+                if (ScriptsJSON[0] != '[' && ScriptsJSON['1'] != '{')
+                {
+                    ScriptsJSON = StringCompression.DecompressString(ScriptsJSON);
+                }
+
                 //Console.WriteLine("AddDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
                 DataPacket[] Datas = (DataPacket[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(DataPacket[]));
 
@@ -190,6 +196,12 @@ namespace TTCSConnection
 
                 foreach (DataPacket Data in Datas)
                 {
+
+                    //if (Data.FieldName == "IMAGING_FILTER_FILTERPOSITION")
+                    //{
+                    //    Console.WriteLine(Data.Value);
+                    //}
+
                     if (Data.DeviceCategory == DEVICECATEGORY.CCTV)
                     {
                         //Console.WriteLine(Data.Value);
@@ -200,12 +212,15 @@ namespace TTCSConnection
                         }
                     }
                     else if (Data.DeviceCategory == DEVICECATEGORY.ALLSKY)
-                    {
-                        //Console.WriteLine(Data.Value);
-
+                    {                       
                         if (Data.FieldName.ToString() == ALLSKY.ALLSKY_IMAGE.ToString())
                         {
-                            Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
+                            //Console.WriteLine("RECEIVED ALLSKY: " + IsSentWebSocket);
+
+                            if (typeof(JArray).Equals(Data.Value.GetType()))
+                            {
+                                Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
+                            }                            
                         }
                     }
                     else if (Data.DeviceCategory == DEVICECATEGORY.IMAGING)
@@ -260,6 +275,11 @@ namespace TTCSConnection
             {
                 if (ScriptsJSON == null) return;
 
+                if (ScriptsJSON[0] != '[' && ScriptsJSON['1'] != '{')
+                {
+                    ScriptsJSON = StringCompression.DecompressString(ScriptsJSON);
+                }                
+
                 DataPacket[] Datas = (DataPacket[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(DataPacket[]));
 
                 Console.WriteLine("AddDelayDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
@@ -283,7 +303,18 @@ namespace TTCSConnection
 
                         if (Data.FieldName.ToString() == ALLSKY.ALLSKY_IMAGE.ToString())
                         {
-                            Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
+                            if (typeof(JArray).Equals(Data.Value.GetType()))
+                            {
+                                Data.Value = Convert.ToBase64String(((JArray)Data.Value).ToObject<byte[]>());
+                            }
+                            else if(Data.Value.ToString() == "System.Byte[]")
+                            {
+                                Data.Value = null;
+                            }
+                            else
+                            {
+                                Data.Value = Convert.ToBase64String((byte[])Data.Value);
+                            }
                         }
                     }
                     else if (Data.DeviceCategory == DEVICECATEGORY.IMAGING)
@@ -320,7 +351,8 @@ namespace TTCSConnection
    
         public Boolean ScheduleEvented(String ScriptsJSON)
         {
-            ScriptStructureNew Script = (ScriptStructureNew)Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(ScriptStructureNew));
+            String jSonC = StringCompression.DecompressString(ScriptsJSON);
+            ScriptStructureNew Script = (ScriptStructureNew)Newtonsoft.Json.JsonConvert.DeserializeObject(jSonC, typeof(ScriptStructureNew));
 
             DBScheduleEngine.UpdateSchedule(Script);
             return true;
@@ -328,10 +360,13 @@ namespace TTCSConnection
 
         public Boolean DelayScheduleEvented(String ScriptsJSON)
         {
-            ScriptStructureNew[] Scripts = (ScriptStructureNew[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(ScriptStructureNew[]));
+            String jSonC = StringCompression.DecompressString(ScriptsJSON);
+            ScriptStructureNew[] Scripts = (ScriptStructureNew[])Newtonsoft.Json.JsonConvert.DeserializeObject(jSonC, typeof(ScriptStructureNew[]));
 
             foreach (ScriptStructureNew Script in Scripts)            
-                DBScheduleEngine.UpdateSchedule(Script);            
+                DBScheduleEngine.UpdateSchedule(Script);
+
+            Console.WriteLine("RECEIVED DelayScheduleEvented() = " + Scripts.Count());
 
             return true;
         }

@@ -92,7 +92,7 @@
             var SelectedDevice = null;
             var GetXml = null;
             var SetXml = null;
-            var URL = 'http://192.168.70.222:8093';
+            var URL = 'http://192.168.2.110:8093';
 
             $("#GetPanel").html("");
             $("#SetPanel").html("");
@@ -361,8 +361,8 @@
                 $("#URLExample").val(URL + "/TTCS/Information?StationName=" + SelectedStation + "&DeviceName=" + SelectedDevice + "&CommandName=" + $(this).attr("id") + "&SessionID=P@ss3610a");
                 $("#WebSocketExample").val("Subscribe&StationName=" + SelectedStation + "&DeviceName=" + SelectedStation + "_" + SelectedDevice + "&FieldName=" + CommandName);
                 $("#UnsubscribeExample").val("Unsubscribe&StationName=" + SelectedStation + "&DeviceName=" + SelectedStation + "_" + SelectedDevice + "&FieldName=" + CommandName);
-                $("#SubscribeAPI").val("astro.subscribe_cmd('" + SelectedStation + "', '" + SelectedDevice + "', '" + CommandName + "');");
-                $("#UnSubscribeAPI").val("astro.unsubscribe_cmd('" + SelectedStation + "', '" + SelectedDevice + "', '" + CommandName + "');");
+                $("#SubscribeAPI").val("astro.subscribe_cmd('" + SelectedStation + "', '" + SelectedDevice.replace('STATION','') + "', '" + CommandName + "');");
+                $("#UnSubscribeAPI").val("astro.unsubscribe_cmd('" + SelectedStation + "', '" + SelectedDevice.replace('STATION','') + "', '" + CommandName + "');");
                 $("#StationNameAPI").val(SelectedStation);
                 $("#DeviceNameAPI").val(SelectedStation + "_" + SelectedDevice);
                 $("#FieldNameAPI").val(CommandName);
