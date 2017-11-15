@@ -594,7 +594,7 @@ namespace DataKeeper.Engine
                 return;
 
             ConcurrentDictionary<SQM, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<SQM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.SQM).Value;
-            if (ExistingInformation != null)
+            if (ExistingInformation.Values != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)

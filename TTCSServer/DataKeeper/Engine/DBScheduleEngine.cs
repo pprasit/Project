@@ -16,7 +16,7 @@ namespace DataKeeper.Engine
         public static void ConnectDB()
         {
             _client = new MongoClient("mongodb://192.168.2.215:27017");
-            _database = _client.GetDatabase("STATION_DATA_V2");            
+            _database = _client.GetDatabase("STATION_DATA_V3");            
         }
 
         public static Boolean DropSchedule(STATIONNAME ScriptStationName)
@@ -60,7 +60,8 @@ namespace DataKeeper.Engine
                 { "ScriptState", Script.ScriptState },
                 { "ExecutionTimeStart", Script.ExecutionTimeStart },
                 { "ExecutionTimeEnd", Script.ExecutionTimeEnd },
-                { "Owner", Script.Owner }
+                { "Owner", Script.Owner },
+                { "IsRead", false },
             };
 
             collection = _database.GetCollection<BsonDocument>(Script.StationName + "_SCHEDULE");
@@ -74,7 +75,7 @@ namespace DataKeeper.Engine
             var collection = _database.GetCollection<BsonDocument>(StationName + "_SCHEDULE");
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Eq("ScriptState", SCRIPTSTATE.EXECUTING.ToString());
-            var update = Builders<BsonDocument>.Update.Set("ScriptState", SCRIPTSTATE.FAILED.ToString());
+            var update = Builders<BsonDocument>.Update.Set("ScriptState", SCRIPTSTATE.FAILED.ToString()).Set("IsRead", false);
 
             collection.UpdateMany(filter, update);
             return true;
@@ -88,7 +89,7 @@ namespace DataKeeper.Engine
             var collection = _database.GetCollection<BsonDocument>(Script.StationName + "_SCHEDULE");
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Eq("StationName", Script.StationName) & builder.Eq("BlockID", Script.BlockID) & builder.Eq("ScriptID", Script.ScriptID);
-            var update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState);
+            var update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState).Set("IsRead", false);
 
             collection.UpdateMany(filter, update);
 
@@ -120,20 +121,30 @@ namespace DataKeeper.Engine
             if (_database == null)
                 return;
 
+            /*
             var document = new BsonDocument
             {
                 { "DataId", DataId },
                 { "DeviceCategory", DeviceCategory.ToString() },
-                { "DeviceName", DeviceName.ToString() },
                 { "FieldName", FieldName },
                 { "Value", Value.ToString() },
                 { "DataType", Value.GetType().ToString() },
-                { "DateTimeUTC", DateTimeUTC }
+                { "DateTimeUTC", DateTimeUTC },
+                { "Updated", new DateTime(DateTimeUTC) }
+            };
+            */
+
+            var document = new BsonDocument
+            {
+                { "Value", Value.ToString() },
+                { "DateTimeUTC", DateTimeUTC },
+                { "Updated", new DateTime(DateTimeUTC) },
+                { "ServerTimeStamp", new DateTime(DateTime.UtcNow.Ticks) }
             };
 
             Task DatabaseTask = Task.Run(() =>
             {
-                var collection = _database.GetCollection<BsonDocument>(StationName.ToString() + "_" + DeviceCategory.ToString());
+                var collection = _database.GetCollection<BsonDocument>(StationName.ToString() + "_"+ FieldName);
                 collection.InsertOne(document);
             });
         }

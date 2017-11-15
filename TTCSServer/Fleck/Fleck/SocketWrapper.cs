@@ -49,15 +49,23 @@ namespace Fleck
         {
             var ssl = new SslStream(_stream, false);
             _stream = new QueuedStream(ssl);
-            Func<AsyncCallback, object, IAsyncResult> begin =
-                (cb, s) => ssl.BeginAuthenticateAsServer(certificate, false, enabledSslProtocols, false, cb, s);
 
-            Task task = Task.Factory.FromAsync(begin, ssl.EndAuthenticateAsServer, null);
-            task.ContinueWith(t => callback(), TaskContinuationOptions.NotOnFaulted)
-                .ContinueWith(t => error(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
-            task.ContinueWith(t => error(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+            try
+            {
+                Func<AsyncCallback, object, IAsyncResult> begin =
+                    (cb, s) => ssl.BeginAuthenticateAsServer(certificate, false, enabledSslProtocols, false, cb, s);
 
-            return task;
+                Task task = Task.Factory.FromAsync(begin, ssl.EndAuthenticateAsServer, null);
+                task.ContinueWith(t => callback(), TaskContinuationOptions.NotOnFaulted)
+                    .ContinueWith(t => error(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+                task.ContinueWith(t => error(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+
+                return task;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public void Listen(int backlog)

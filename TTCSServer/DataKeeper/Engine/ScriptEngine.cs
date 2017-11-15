@@ -119,8 +119,9 @@ namespace DataKeeper.Engine
 
                             if (ThisStation != null)
                             {
+                                if (!ThisStation.IsStationConnected) continue;
                                 if (ThisStation.ServerCallBackObject == null) continue;
-                                if (ThisStation.IsSendingScriptToStation) continue;
+                                if (ThisStation.IsSendingScriptToStation) continue;                                
 
                                 StationScript stationScript = GetStationScript(StationName);
 

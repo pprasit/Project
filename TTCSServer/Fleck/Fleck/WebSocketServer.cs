@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 using System.Security.Authentication;
 using Fleck.Helpers;
+using System.Threading.Tasks;
 
 namespace Fleck
 {
@@ -139,11 +140,18 @@ namespace Fleck
             if (IsSecure)
             {
                 FleckLog.Debug("Authenticating Secure Connection");
-                clientSocket
+                Task client = clientSocket
                     .Authenticate(Certificate,
                                   EnabledSslProtocols,
                                   connection.StartReceiving,
                                   e => FleckLog.Warn("Failed to Authenticate", e));
+
+                if(client == null)
+                {
+                    Console.WriteLine("SSL Fail to Authentication Admin Please check SSL.");
+                    FleckLog.Debug("SSL Fail to Authentication Admin Please check SSL.");
+                    connection.Close();
+                }
             }
             else
             {

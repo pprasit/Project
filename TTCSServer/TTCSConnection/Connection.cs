@@ -238,13 +238,15 @@ namespace TTCSConnection
                                     //   /files/AIRFORCE/FITS/maIeayp9iEO57G9LXZVPA_TakenFromClient.FITS
 
                                     String[] TmpFileName = TempValue[1].Split('/');
-                                    String FileName = TmpFileName[(TmpFileName.Count() - 1)];
+                                    String FileName = TmpFileName[(TmpFileName.Count() - 1)] + ".FITS";
                                     String[] TempBlockID = FileName.Split('_');
                                     String BlockID = TempBlockID[0];
 
                                     DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+
+                                    Data.Value = "Completed";
                                 }
-                            }
+                            }                            
                         }
                         else if (Data.FieldName.ToString() == IMAGING.IMAGING_PREVIEW_DOWNLOAD_STATUS.ToString())
                         {       
