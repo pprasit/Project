@@ -51,6 +51,7 @@ namespace DataKeeper.Engine
             var document = new BsonDocument
             {
                 { "ScriptID", Script.ScriptID },
+                { "TargetID", Script.TargetID },
                 { "BlockID", Script.BlockID },
                 { "Life", Script.Life },
                 { "StationName", Script.StationName },
@@ -60,8 +61,10 @@ namespace DataKeeper.Engine
                 { "ScriptState", Script.ScriptState },
                 { "ExecutionTimeStart", Script.ExecutionTimeStart },
                 { "ExecutionTimeEnd", Script.ExecutionTimeEnd },
+                { "ActualTimeStart", "" },
+                { "ActualTimeEnd", "" },
                 { "Owner", Script.Owner },
-                { "IsRead", false },
+                { "IsRead", true },
             };
 
             collection = _database.GetCollection<BsonDocument>(Script.StationName + "_SCHEDULE");
@@ -89,9 +92,43 @@ namespace DataKeeper.Engine
             var collection = _database.GetCollection<BsonDocument>(Script.StationName + "_SCHEDULE");
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Eq("StationName", Script.StationName) & builder.Eq("BlockID", Script.BlockID) & builder.Eq("ScriptID", Script.ScriptID);
-            var update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState).Set("IsRead", false);
 
-            collection.UpdateMany(filter, update);
+            var IsRead = false;
+
+            if (Script.ScriptState.ToString() == SCRIPTSTATE.SENDINGTOSTATION.ToString())
+            {
+                IsRead = true;
+            }
+            else
+            {
+                IsRead = false;
+            }
+
+            var update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState).Set("IsRead", IsRead);
+
+            if(Script.ScriptState == SCRIPTSTATE.EXECUTING.ToString())
+            {
+                update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState).Set("IsRead", IsRead).Set("ActualTimeStart", Script.ActualTimeStart);
+            }
+            else if(Script.ScriptState == SCRIPTSTATE.EXECUTED.ToString())
+            {
+                update = Builders<BsonDocument>.Update.Set("ScriptState", Script.ScriptState).Set("IsRead", IsRead).Set("ActualTimeStart", Script.ActualTimeStart).Set("ActualTimeEnd", Script.ActualTimeEnd);
+            }
+
+            while (true)
+            {
+                try
+                {
+                    collection.UpdateMany(filter, update);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Mongo Connection Error !!");
+                }
+
+                Task.Delay(1000);
+            }            
 
             return true;            
         }
@@ -144,8 +181,21 @@ namespace DataKeeper.Engine
 
             Task DatabaseTask = Task.Run(() =>
             {
-                var collection = _database.GetCollection<BsonDocument>(StationName.ToString() + "_"+ FieldName);
-                collection.InsertOne(document);
+                for (int i=0; i<= 10; i++)
+                {
+                    try
+                    {
+                        var collection = _database.GetCollection<BsonDocument>(StationName.ToString() + "_" + FieldName);
+                        collection.InsertOne(document);
+                        break;
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine("Mongo Connection Error !!");
+                    }
+
+                    Task.Delay(1000);
+                }           
             });
         }
 
@@ -165,8 +215,21 @@ namespace DataKeeper.Engine
 
             Task DatabaseTask = Task.Run(() =>
             {
-                var collection = _database.GetCollection<BsonDocument>("FITS");
-                collection.InsertOne(document);
+                while (true)
+                {
+                    try
+                    {
+                        var collection = _database.GetCollection<BsonDocument>("FITS");
+                        collection.InsertOne(document);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Mongo Connection Error !!");
+                    }
+
+                    Task.Delay(1000);
+                }
             });
         }
     }
