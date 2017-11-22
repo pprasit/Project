@@ -109,6 +109,7 @@ namespace DataKeeper.Engine.Command
         NULL,
         IMAGING_CONNECTED,
 
+        IMAGING_CCD_CAMERA,
         IMAGING_CCD_BINX,
         IMAGING_CCD_BINY,
         IMAGING_CCD_CAMERANAME,

@@ -282,6 +282,7 @@ namespace DataKeeper.Engine.Command
 
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_CONNECT, null, null);
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_DISCONNECT, null, null);
+            CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_CAMERA, Decare1Parameter(typeof(int)), ParaDesc1("Parameter 1 : Camera No. -> 0 = Main CCD, 1 = Second CCD"));
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_EXPOSE, Decare4Parameter(typeof(String), typeof(Double), typeof(Boolean), typeof(String)), ParaDesc4("Parameter 1 : Image Name -> Data type String. Example Jupiter_03022016", "Parameter 2 : Exposure time -> Data type Double seconds. Example 30.5", "Parameter 3 : Taking light frame -> Data Type Boolean Double. Example true, false", "Parameter 4 : PI Name Lastname  -> Data Type String. Example BugBunny"));
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_ABORTEXPOSE, null, null);
             CrateCommand(T07StationList(), DEVICECATEGORY.IMAGING, IMAGINGSET.IMAGING_CCD_QUIT, null, null);

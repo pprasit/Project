@@ -93,6 +93,7 @@ namespace DataKeeper.Engine.Command
 
         IMAGING_CCD_CONNECT,
         IMAGING_CCD_DISCONNECT,
+        IMAGING_CCD_CAMERA,
         IMAGING_CCD_EXPOSE,
         IMAGING_CCD_ABORTEXPOSE,
         IMAGING_CCD_QUIT,
