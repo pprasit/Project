@@ -235,14 +235,20 @@ namespace TTCSConnection
                             {
                                 if (TempValue[0] == "Completed")
                                 {
-                                    //   /files/AIRFORCE/FITS/maIeayp9iEO57G9LXZVPA_TakenFromClient.FITS
+                                    //   BlockID#/files/AIRFORCE/FITS/maIeayp9iEO57G9LXZVPA_TakenFromClient.FITS
+                                    String[] PreFileName = TempValue[1].Split('#');
 
-                                    String[] TmpFileName = TempValue[1].Split('/');
-                                    String FileName = TmpFileName[(TmpFileName.Count() - 1)] + ".FITS";
-                                    String[] TempBlockID = FileName.Split('_');
-                                    String BlockID = TempBlockID[0];
+                                    if (PreFileName.Count() > 1)
+                                    {
+                                        String BlockID = PreFileName[0];
 
-                                    DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+                                        String[] TmpFileName = PreFileName[1].Split('/');
+                                        String FileName = TmpFileName[(TmpFileName.Count() - 1)] + ".FITS";
+                                        String[] TempTargetID = FileName.Split('_');
+                                        String TargetID = TempTargetID[0];
+
+                                        DBScheduleEngine.InsertFITSData(TargetID, BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+                                    }
 
                                     Data.Value = "Completed";
                                 }
@@ -336,9 +342,10 @@ namespace TTCSConnection
                                     String[] TmpFileName = TempValue[1].Split('/');
                                     String FileName = TmpFileName[(TmpFileName.Count() - 1)];
                                     String[] TempBlockID = FileName.Split('_');
-                                    String BlockID = TempBlockID[0];
+                                    String TargetID = TempBlockID[0];
+                                    String BlockID = TempBlockID[1];
 
-                                    DBScheduleEngine.InsertFITSData(BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
+                                    DBScheduleEngine.InsertFITSData(TargetID, BlockID, StationName, FileName, Data.DateTimeUTC, DateTime.UtcNow.Ticks);
                                 }
                             }
                         }

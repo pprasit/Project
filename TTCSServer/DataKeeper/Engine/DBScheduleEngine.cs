@@ -199,13 +199,14 @@ namespace DataKeeper.Engine
             });
         }
 
-        public static void InsertFITSData(String BlockID, STATIONNAME StationName, String FileName, long DateTimeUTC, long ReceivedUTC)
+        public static void InsertFITSData(String TargetID, String BlockID, STATIONNAME StationName, String FileName, long DateTimeUTC, long ReceivedUTC)
         {
             if (_database == null)
                 return;
 
             var document = new BsonDocument
             {
+                { "TargetID", TargetID },
                 { "BlockID", BlockID },
                 { "StationName", StationName.ToString() },
                 { "FileName", FileName },                
