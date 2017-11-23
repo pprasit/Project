@@ -73,6 +73,26 @@ namespace DataKeeper.Engine
             return document["_id"].ToString();
         }
 
+        public static bool IsFoundScheduleByTargetID(String StationName, String TargetID)
+        {
+            if (_database == null)
+                return false;
+
+            var collection = _database.GetCollection<BsonDocument>(StationName + "_SCHEDULE");
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("TargetID", TargetID);
+
+            List<BsonDocument> value = collection.Find(filter).Project("{_id:1}").Limit(1).ToList();
+
+            //var document = collection.Find(filter).Limit(1).ToList();
+            //List<BsonDocument> value = document;
+
+            if (value.Count > 0)
+                return true;
+            else
+                return false;
+        }
+
         public static Boolean UpdateFailSchedule(STATIONNAME StationName)
         {
             var collection = _database.GetCollection<BsonDocument>(StationName + "_SCHEDULE");

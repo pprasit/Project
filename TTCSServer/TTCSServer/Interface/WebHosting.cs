@@ -293,10 +293,17 @@ namespace TTCSServer.Interface
                 if (ThisStation == STATIONNAME.NULL)
                     return HostingHelper.ReturnError("Invalid station name. Please check.", myXml, xNav);
 
-                StationHandler StationHandle = AstroData.GetStationObject(ThisStation);
-                StationHandle.CancleScript(TargetIDStr);
+                if (DBScheduleEngine.IsFoundScheduleByTargetID(StationNameStr, TargetIDStr))
+                {
+                    StationHandler StationHandle = AstroData.GetStationObject(ThisStation);
+                    StationHandle.CancleScript(TargetIDStr);
 
-                return new HttpResponseMessage() { Content = new StringContent("[OK]", Encoding.UTF8, "application/json") };
+                    return HostingHelper.ReturnSuccess(ThisStation, "OK", myXml, xNav);                    
+                }
+                else
+                {
+                    return HostingHelper.ReturnError("There are no TargetID in Database.", myXml, xNav);
+                }
 
                 /*
                 TTCSCommandDisplay[] ListOfDisplayCommand = CommandDefinition.GetListCommandName(ThisStation, ThisDeviceCategory).ToArray();
@@ -558,6 +565,20 @@ namespace TTCSServer.Interface
             ThisOutput.FieldName = "NULL";
             ThisOutput.Value = Message;
             ThisOutput.DataType = "Get_Error";
+            ThisOutput.UpdateTime = DateTime.UtcNow.ToString();
+
+            var json = new JavaScriptSerializer().Serialize(ThisOutput);
+            return new HttpResponseMessage() { Content = new StringContent(json, Encoding.UTF8, "application/json") };
+        }
+
+        public static HttpResponseMessage ReturnSuccess(STATIONNAME StationName, String Message, XmlDocument myXml, XPathNavigator xNav)
+        {
+            OUTPUTSTRUCT ThisOutput = new OUTPUTSTRUCT();
+            ThisOutput.StationName = StationName;
+            ThisOutput.DeviceCategory = DEVICECATEGORY.NULL;
+            ThisOutput.FieldName = "NULL";
+            ThisOutput.Value = Message;
+            ThisOutput.DataType = "Get_Success";
             ThisOutput.UpdateTime = DateTime.UtcNow.ToString();
 
             var json = new JavaScriptSerializer().Serialize(ThisOutput);
