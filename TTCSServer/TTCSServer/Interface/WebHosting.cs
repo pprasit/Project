@@ -30,6 +30,7 @@ using System.Net.WebSockets;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using DataKeeper.Interface;
+using System.Reflection;
 
 namespace TTCSServer.Interface
 {
@@ -261,6 +262,52 @@ namespace TTCSServer.Interface
                 }
                 else
                     return HostingHelper.ReturnError("There are no set command avaliable on this stationName and DeviceName.", myXml, xNav);
+            }
+            else
+                return HostingHelper.ReturnError("Session is timeout. Please login to the system.", myXml, xNav);
+        }
+    }
+
+    public class ScheduleCancleController : ApiController
+    {
+        //http://192.168.70.210:8093/TTCS/ScheduleCancle?StationName=T07Airfoce&TargetID=T07TS&SessionID=P@ss3610a
+        public HttpResponseMessage Get(String StationName, String TargetID, String SessionID)
+        {
+            return GetSetCommandStructure(StationName, TargetID, SessionID);
+        }
+
+        public HttpResponseMessage Post(String StationName, String TargetID, String SessionID)
+        {
+            return GetSetCommandStructure(StationName, TargetID, SessionID);
+        }
+
+        private HttpResponseMessage GetSetCommandStructure(String StationNameStr, String TargetIDStr, String SessionID)
+        {
+            XmlDocument myXml = new XmlDocument();
+            XPathNavigator xNav = myXml.CreateNavigator();
+
+            if (UserSessionHandler.VerifyTimeout(SessionID))
+            {
+                STATIONNAME ThisStation = HostingHelper.ConvertStationNameStrToSTATIONNAME(StationNameStr);                
+
+                if (ThisStation == STATIONNAME.NULL)
+                    return HostingHelper.ReturnError("Invalid station name. Please check.", myXml, xNav);
+
+                StationHandler StationHandle = AstroData.GetStationObject(ThisStation);
+                StationHandle.CancleScript(TargetIDStr);
+
+                return new HttpResponseMessage() { Content = new StringContent("[OK]", Encoding.UTF8, "application/json") };
+
+                /*
+                TTCSCommandDisplay[] ListOfDisplayCommand = CommandDefinition.GetListCommandName(ThisStation, ThisDeviceCategory).ToArray();
+                if (ListOfDisplayCommand != null)
+                {
+                    var json = new JavaScriptSerializer().Serialize(ListOfDisplayCommand);
+                    return new HttpResponseMessage() { Content = new StringContent(json, Encoding.UTF8, "application/json") };
+                }
+                else
+                    return HostingHelper.ReturnError("There are no set command avaliable on this stationName and DeviceName.", myXml, xNav);
+                */
             }
             else
                 return HostingHelper.ReturnError("Session is timeout. Please login to the system.", myXml, xNav);

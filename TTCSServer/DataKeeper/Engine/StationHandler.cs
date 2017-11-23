@@ -220,7 +220,23 @@ namespace DataKeeper.Engine
             NewField.ClientSubscribe = new ConcurrentDictionary<string, object>();
 
             return NewField;
-        }        
+        }
+
+        public Boolean CancleScript(String TargetID)
+        {
+            if (ServerCallBackObject == null)
+            {
+                Console.WriteLine("Station not connected.");
+                return false;
+            }
+
+            Console.WriteLine("TargetID: " + TargetID + " Cancled");
+
+            MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnCancleScript");
+            MInfo.Invoke(ServerCallBackObject, new Object[] { TargetID });
+
+            return true;
+        }
 
         public Boolean NewScriptInformation(List<ScriptStructureNew> ScriptCollections, out String Message)
         {

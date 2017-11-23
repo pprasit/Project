@@ -129,6 +129,9 @@ namespace TTCSConnection
         void OnNewScript(String NewScript, int AllScriptParts, Boolean IsHaveNextScript);
 
         [OperationContract(IsOneWay = true)]
+        void OnCancleScript(String TargetId);
+
+        [OperationContract(IsOneWay = true)]
         void OnNextScript(String NewScript, int PartNo, Boolean IsHaveNextScript);
 
         [OperationContract(IsOneWay = true)]
