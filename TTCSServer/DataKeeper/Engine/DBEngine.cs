@@ -8,18 +8,18 @@ using MongoDB.Driver;
 
 namespace DataKeeper.Engine
 {
-    class DBEngine
+    public static class DBEngine
     {
-        protected static IMongoClient _client;
-        protected static IMongoDatabase _database;
+        public static IMongoClient _client;
+        public static IMongoDatabase _database;
 
-        public DBEngine()
+        public static void ConnectDB()
         {
             _client = new MongoClient("mongodb://192.168.2.215:27017");
             _database = _client.GetDatabase("STATION_DATA_V3");
         }
 
-        public void insert(String StationName, String DeviceName, String FieldName, String Value, DateTime DataTimestamp)
+        public static void insert(String StationName, String DeviceName, String FieldName, String Value, DateTime DataTimestamp)
         {
             var document = new BsonDocument
                     {
@@ -35,7 +35,7 @@ namespace DataKeeper.Engine
             });
         }
 
-        public void insert_unit(String StationName, String DeviceName, String FieldName, String Value, String Unit, DateTime DataTimestamp)
+        public static void insert_unit(String StationName, String DeviceName, String FieldName, String Value, String Unit, DateTime DataTimestamp)
         {
             var document = new BsonDocument
                     {
@@ -52,7 +52,7 @@ namespace DataKeeper.Engine
             });
         }
 
-        public void insert_user_login(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
+        public static void insert_user_login(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
         {
             Task TTask = Task.Run(() =>
             {
@@ -80,7 +80,7 @@ namespace DataKeeper.Engine
             });
         }
 
-        public void insert_user_logout(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
+        public static void insert_user_logout(String StationName, String DeviceName, String FieldName, String Value, String State, DateTime AccessDate, DateTime DataTimestamp)
         {
             Task TTask = Task.Run(() =>
             {
@@ -105,7 +105,7 @@ namespace DataKeeper.Engine
           
          */
 
-        public void insert_dome_open(String StationName, String DeviceName, String FieldName, String Value, DateTime AccessDate, DateTime DataTimestamp)
+        public static void insert_dome_open(String StationName, String DeviceName, String FieldName, String Value, DateTime AccessDate, DateTime DataTimestamp)
         {
             Task TTask = Task.Run(() =>
             {
@@ -180,7 +180,7 @@ namespace DataKeeper.Engine
             });
         }
 
-        public void insert_dome_close(String StationName, String DeviceName, String FieldName, String Value, DateTime AccessDate, DateTime DataTimestamp)
+        public static void insert_dome_close(String StationName, String DeviceName, String FieldName, String Value, DateTime AccessDate, DateTime DataTimestamp)
         {
             Task TTask = Task.Run(() =>
             {

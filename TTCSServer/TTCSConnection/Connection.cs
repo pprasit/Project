@@ -189,6 +189,9 @@ namespace TTCSConnection
                     ScriptsJSON = StringCompression.DecompressString(ScriptsJSON);
                 }
 
+                if (ScriptsJSON == null) return;
+
+
                 //Console.WriteLine("AddDeviceData - " + StationName.ToString() + " (" + Datas[0].DataId + ") - Packet: " + Datas.Count() + " Rows");
                 DataPacket[] Datas = (DataPacket[])Newtonsoft.Json.JsonConvert.DeserializeObject(ScriptsJSON, typeof(DataPacket[]));
 

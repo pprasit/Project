@@ -186,10 +186,21 @@ namespace DataKeeper.Engine
 
                 foreach (ScriptStructureNew Script in StationScript.ScriptCollection)
                 {
+                    //if (Script.ScriptState != SCRIPTSTATE.CANCELED.ToString())
+                    //{
+                    //    Script.ScriptState = SCRIPTSTATE.SENDINGTOSTATION.ToString();
+                    //    DBScheduleEngine.UpdateSchedule(Script);
+                    //}
+                    //else
+                    //{
+                    //    Console.WriteLine("CANCEL");
+                    //}
                     Script.ScriptState = SCRIPTSTATE.SENDINGTOSTATION.ToString();
                     DBScheduleEngine.UpdateSchedule(Script);
-                }                
+                }
 
+
+                Console.WriteLine("Sending Script to "+ ScriptStationName + " ...");
                 if (StationCommunication.NewScriptInformation(StationScript.GetScript(), out Message))
                 {       
                     
@@ -360,8 +371,7 @@ namespace DataKeeper.Engine
                                                     //DUMMY ONLY
                                                     //Script.TargetID = "XXXXXX";
                                                     if (IsMustInsertToDB)
-                                                    {
-                                                        Script.ScriptState = SCRIPTSTATE.WAITINGSERVER.ToString();
+                                                    {                                                        
                                                         String _id = DBScheduleEngine.InsertSchedule(Script);
                                                         if (_id != null)
                                                         {
@@ -374,6 +384,11 @@ namespace DataKeeper.Engine
                                                         Script._id = _id;
                                                         //Console.WriteLine("OLD ID: " + _id);
                                                     }
+
+                                                    //if (Script.ScriptState != SCRIPTSTATE.CANCELED.ToString())
+                                                    //{
+                                                    //    Script.ScriptState = SCRIPTSTATE.WAITINGSERVER.ToString();
+                                                    //}
                                                 }
 
                                                 Console.WriteLine("Add Script to Object... : " + FilePathStr);

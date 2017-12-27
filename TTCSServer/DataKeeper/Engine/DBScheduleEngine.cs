@@ -15,8 +15,8 @@ namespace DataKeeper.Engine
 
         public static void ConnectDB()
         {
-            _client = new MongoClient("mongodb://192.168.2.215:27017");
-            _database = _client.GetDatabase("STATION_DATA_V3");            
+            _client = DBEngine._client;
+            _database = DBEngine._database;
         }
 
         public static Boolean DropSchedule(STATIONNAME ScriptStationName)

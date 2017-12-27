@@ -268,9 +268,9 @@ namespace TTCSServer.Interface
         }
     }
 
-    public class ScheduleCancleController : ApiController
+    public class ScheduleCancelController : ApiController
     {
-        //http://192.168.70.210:8093/TTCS/ScheduleCancle?StationName=T07Airfoce&TargetID=T07TS&SessionID=P@ss3610a
+        //http://192.168.70.210:8093/TTCS/ScheduleCancel?StationName=T07Airfoce&TargetID=T07TS&SessionID=P@ss3610a
         public HttpResponseMessage Get(String StationName, String TargetID, String SessionID)
         {
             return GetSetCommandStructure(StationName, TargetID, SessionID);
@@ -296,7 +296,7 @@ namespace TTCSServer.Interface
                 if (DBScheduleEngine.IsFoundScheduleByTargetID(StationNameStr, TargetIDStr))
                 {
                     StationHandler StationHandle = AstroData.GetStationObject(ThisStation);
-                    StationHandle.CancleScript(TargetIDStr);
+                    StationHandle.CancelScript(TargetIDStr);
 
                     return HostingHelper.ReturnSuccess(ThisStation, "OK", myXml, xNav);                    
                 }

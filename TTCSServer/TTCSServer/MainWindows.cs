@@ -28,7 +28,9 @@ namespace TTCSServer
 
         public MainWindows()
         {
-            DBScheduleEngine.ConnectDB();
+            DBEngine.ConnectDB();
+            DBScheduleEngine.ConnectDB();            
+
             InitializeComponent();
             InitializeInterface();
             InitializeServer();

@@ -15,8 +15,6 @@ namespace DataKeeper.Engine
 {
     public class StationHandler
     {
-        DBEngine db;
-
         public STATIONNAME StationName;
         public String StationSessionID = null;
         public Boolean IsStationConnected = false;
@@ -32,7 +30,7 @@ namespace DataKeeper.Engine
 
         public Boolean IsSendingScriptToStation = false;
 
-        int MAX_SCRIPT_PER_SEND = 20;
+        int MAX_SCRIPT_PER_SEND = 20;        
 
         public ReturnKnowType CreateEngine(String SiteSessionID, Object ServerCallBackObject)
         {
@@ -43,7 +41,7 @@ namespace DataKeeper.Engine
                 this.IsSendingScriptToStation = false;
                 this.ServerCallBackObject = ServerCallBackObject;
 
-                db = new DBEngine();
+                
                 return ReturnKnowType.DefineReturn(ReturnStatus.SUCESSFUL, null);
             }
             catch (Exception e)
@@ -222,7 +220,7 @@ namespace DataKeeper.Engine
             return NewField;
         }
 
-        public Boolean CancleScript(String TargetID)
+        public Boolean CancelScript(String TargetID)
         {
             if (ServerCallBackObject == null)
             {
@@ -456,7 +454,7 @@ namespace DataKeeper.Engine
 
         public void NewTS700MMInformation(DEVICENAME DeviceName, TS700MM FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<TS700MM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.TS700MM).Value;
@@ -473,7 +471,7 @@ namespace DataKeeper.Engine
 
         public void NewASTROHEVENDOMEInformation(DEVICENAME DeviceName, ASTROHEVENDOME FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROHEVENDOME, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ASTROHEVENDOME).Value;
@@ -481,18 +479,18 @@ namespace DataKeeper.Engine
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
-                {                   
-                    db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
+                {
+                    DBEngine.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
 
                     String State_Temp = Value.ToString();
 
                     if (State_Temp.Equals("Open") || State_Temp.Equals("Opening"))
                     {
-                        db.insert_dome_open(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
+                        DBEngine.insert_dome_open(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
                     }
                     else if (State_Temp.Equals("Closed"))
                     {
-                        db.insert_dome_close(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
+                        DBEngine.insert_dome_close(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp, DataTimestamp);
                     }
 
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
@@ -504,7 +502,7 @@ namespace DataKeeper.Engine
 
         public void NewWEATHERSTATIONInformation(DEVICENAME DeviceName, WEATHERSTATION FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<WEATHERSTATION, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.WEATHERSTATION).Value;
@@ -512,8 +510,8 @@ namespace DataKeeper.Engine
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
-                {                   
-                    db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
+                {
+                    DBEngine.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
 
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
@@ -523,7 +521,7 @@ namespace DataKeeper.Engine
 
         public void NewCCTVInformation(DEVICENAME DeviceName, CCTV FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<CCTV, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<CCTV, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.CCTV).Value;
@@ -540,7 +538,7 @@ namespace DataKeeper.Engine
 
         public void NewIMAGINGInformation(DEVICENAME DeviceName, IMAGING FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<IMAGING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.IMAGING).Value;
@@ -558,7 +556,7 @@ namespace DataKeeper.Engine
 
         public void NewLANOUTLETInformation(DEVICENAME DeviceName, LANOUTLET FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<LANOUTLET, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.LANOUTLET).Value;
@@ -566,8 +564,8 @@ namespace DataKeeper.Engine
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
-                {                    
-                    db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
+                {
+                    DBEngine.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), DataTimestamp);
 
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
@@ -577,7 +575,7 @@ namespace DataKeeper.Engine
 
         public void NewGPSInformation(String DataGroupID, DEVICENAME DeviceName, GPS FieldName, Object Value, DateTime DataTimestamp, Boolean IsHistory)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<GPS, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<GPS, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.GPS).Value;
@@ -606,7 +604,7 @@ namespace DataKeeper.Engine
 
         public void NewSQMInformation(DEVICENAME DeviceName, SQM FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<SQM, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<SQM, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.SQM).Value;
@@ -645,7 +643,7 @@ namespace DataKeeper.Engine
                     }
 
 
-                    db.insert_unit(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), Unit.ToString(), DataTimestamp);
+                    DBEngine.insert_unit(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Value.ToString(), Unit.ToString(), DataTimestamp);
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
@@ -654,7 +652,7 @@ namespace DataKeeper.Engine
 
         public void NewSEEINGInformation(DEVICENAME DeviceName, SEEING FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<SEEING, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<SEEING, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.SEEING).Value;
@@ -663,7 +661,7 @@ namespace DataKeeper.Engine
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
                 if (ThisField != null)
                 {
-                    db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Convert.ToBase64String((byte[])Value), DataTimestamp);
+                    DBEngine.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Convert.ToBase64String((byte[])Value), DataTimestamp);
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
@@ -672,16 +670,16 @@ namespace DataKeeper.Engine
 
         public void NewALLSKYInformation(DEVICENAME DeviceName, ALLSKY FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ALLSKY, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ALLSKY).Value;
             if (ExistingInformation != null)
             {
                 INFORMATIONSTRUCT ThisField = ExistingInformation.FirstOrDefault(Item => Item.Key == FieldName).Value;
-                if (ThisField != null && db != null)
+                if (ThisField != null)
                 {
-                    db.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Convert.ToBase64String((byte[])Value), DataTimestamp);
+                    DBEngine.insert(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), Convert.ToBase64String((byte[])Value), DataTimestamp);
                     UpdateInformation(ThisField, DeviceName, Value, DataTimestamp);
                     WebSockets.ReturnWebSubscribe(StationName, DeviceName, FieldName.ToString(), Value, DataTimestamp);
                 }
@@ -690,7 +688,7 @@ namespace DataKeeper.Engine
 
         public void NewASTROCLIENTInformation(DEVICENAME DeviceName, ASTROCLIENT FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROCLIENT, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ASTROCLIENT).Value;
@@ -713,11 +711,11 @@ namespace DataKeeper.Engine
                 {
                     if (temp_value[1].ToString() == "LOGIN")
                     {
-                        db.insert_user_login(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
+                        DBEngine.insert_user_login(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
                     }
                     else
                     {
-                        db.insert_user_logout(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
+                        DBEngine.insert_user_logout(StationName.ToString(), DeviceName.ToString(), FieldName.ToString(), temp_value[0].ToString(), temp_value[1].ToString(), dt, DataTimestamp);
                     }
                 }
             }
@@ -735,7 +733,7 @@ namespace DataKeeper.Engine
 
         public void NewASTROSERVERInformation(DEVICENAME DeviceName, ASTROSERVER FieldName, Object Value, DateTime DataTimestamp)
         {
-            if (db == null)
+            if (DBEngine._client == null)
                 return;
 
             ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT> ExistingInformation = (ConcurrentDictionary<ASTROSERVER, INFORMATIONSTRUCT>)DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName && Item.Key.DeviceCategory == DEVICECATEGORY.ASTROSERVER).Value;

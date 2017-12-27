@@ -33,6 +33,8 @@ namespace DataKeeper.Engine
         /// <param name="compressedString">String to decompress.</param>
         public static string DecompressString(string compressedString)
         {
+            try
+            { 
             var decompressedStream = new MemoryStream();
             var compressedStream = new MemoryStream(Convert.FromBase64String(compressedString));
 
@@ -42,6 +44,11 @@ namespace DataKeeper.Engine
             }
 
             return Encoding.UTF8.GetString(decompressedStream.ToArray());
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public string CompressString(object json)
