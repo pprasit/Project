@@ -98,7 +98,8 @@ namespace DataKeeper.Engine.Command
         TS700MM_TEMPERATURE_BACKPLATE,
         TS700MM_TEMPERATURE_M3,
 
-        TS700MM_FANS_ON
+        TS700MM_FANS_ON,
+        TS700MM_TIMEZONE
     }
 
     public enum ASTROHEVENDOME

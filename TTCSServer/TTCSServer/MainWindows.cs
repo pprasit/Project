@@ -16,6 +16,7 @@ using System.ServiceModel.Description;
 using TTCSConnection;
 using DataKeeper.Engine.Command;
 using DataKeeper.Interface;
+using AstroNET.QueueSchedule;
 
 namespace TTCSServer
 {
@@ -29,14 +30,41 @@ namespace TTCSServer
         public MainWindows()
         {
             DBEngine.ConnectDB();
-            DBScheduleEngine.ConnectDB();            
+            DBScheduleEngine.ConnectDB();
+            DBQueueEngine.ConnectDB();
 
             InitializeComponent();
             InitializeInterface();
             InitializeServer();
             InitializeWebService();
             InitializeSetCommand();
-            InitializeWS();            
+            InitializeWS();
+
+            
+            Task TaskPost = Task.Run(async() =>
+            {
+                while (true)
+                {
+                    IQueryable<AstroQueueImpl> astroQueues = DBQueueEngine.Find(STATIONNAME.ASTROPARK, QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.IDLE);
+
+                    if (astroQueues.Count() > 0)
+                    {
+                        StationHandler StationCommunication = AstroData.GetStationObject(STATIONNAME.ASTROPARK);
+
+                        if (StationCommunication != null)
+                        {
+                            StationCommunication.SendingNewTarget(astroQueues.ToList());
+                        }
+                    }
+
+                    await Task.Delay(1000);
+                }
+            });
+            
+            /*
+            QueueStatus astroQueues2 = DBQueueEngine.FindLastestStatus(STATIONNAME.ASTROPARK, "5a4db62e30932557d4ba7445");
+            Console.WriteLine(astroQueues2);
+            */
         }
 
         private void InitializeSetCommand()

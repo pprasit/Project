@@ -8,6 +8,7 @@ using DataKeeper.Engine;
 using DataKeeper.Engine.Command;
 using DataKeeper;
 using MongoDB.Bson;
+using AstroNET.QueueSchedule;
 
 namespace TTCSConnection
 {
@@ -111,7 +112,10 @@ namespace TTCSConnection
         List<INFORMATIONSTRUCT> GetInformation(STATIONNAME StationName, DEVICENAME DeviceName, dynamic FieldName);
 
         [OperationContract]
-        void GetNextScriptPart(STATIONNAME StationName);        
+        void GetNextScriptPart(STATIONNAME StationName);
+
+        [OperationContract]
+        void AstroQueueUpdate(String jSon);
     }
 
     public interface ServerCallBack
@@ -163,5 +167,11 @@ namespace TTCSConnection
 
         [OperationContract(IsOneWay = true)]
         void OnUpdateUser(String UserID, String UserName, String UserLoginName, String UserLoginPassword, String UserPermissionType, String UserStationPermission, DATAACTION UserAction);
+
+        [OperationContract(IsOneWay = true)]
+        void OnNewTarget(String jSon);
+
+        [OperationContract(IsOneWay = true)]
+        void OnReceivedTarget(String jSon);
     }
 }

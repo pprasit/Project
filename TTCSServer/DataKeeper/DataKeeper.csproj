@@ -131,8 +131,15 @@
     <Compile Include="Engine\Command\InformationFieldNames.cs" />
     <Compile Include="Engine\DatabaseSynchronization.cs" />
     <Compile Include="Engine\DataPacket.cs" />
+    <Compile Include="Engine\QueueSchedule\DBQueueEngine.cs" />
     <Compile Include="Engine\DBScheduleEngine.cs" />
     <Compile Include="Engine\DBEngine.cs" />
+    <Compile Include="Engine\QueueSchedule\ExposedHistory.cs" />
+    <Compile Include="Engine\QueueSchedule\ExposureInfo.cs" />
+    <Compile Include="Engine\QueueSchedule\StarCatalog.cs" />
+    <Compile Include="Engine\QueueSchedule\Target.cs" />
+    <Compile Include="Engine\QueueSchedule\AstroQueue.cs" />
+    <Compile Include="Engine\QueueSchedule\User.cs" />
     <Compile Include="Engine\ScriptConfigure.cs" />
     <Compile Include="Engine\ScriptEngine.cs" />
     <Compile Include="Engine\ScriptStructure.cs" />

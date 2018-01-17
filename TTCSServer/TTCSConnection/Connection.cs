@@ -16,7 +16,7 @@ using System.Drawing;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Newtonsoft.Json.Linq;
-
+using AstroNET.QueueSchedule;
 
 namespace TTCSConnection
 {
@@ -513,5 +513,40 @@ namespace TTCSConnection
         {
 
         }
+
+        //--------------------------------------------------------------------------------------Queue----------------------------------------------------------------------------------
+
+        public void AstroQueueUpdate(String jSon)
+        {
+            jSon = StringCompression.DecompressString(jSon);
+
+            JObject obj = JObject.Parse(jSon);
+
+            STATIONNAME stationName = TTCSHelper.StationStrConveter(obj["StationName"].ToString());
+            String Id = obj["Id"].ToString();
+            String Event = obj["Event"].ToString();
+            DateTime TimeStamp = DateTime.Parse(obj["TimeStamp"].ToString());
+
+            Console.WriteLine("[AstroQueueUpdate] " + obj["StationName"] + " : " + obj["Event"]);
+
+            AstroQueueImpl astroQueue = DBQueueEngine.FindById(stationName, Id);
+
+            if(Event == "RECEIVED")
+            {
+                QueueStatus queueStatus = new QueueStatus(QUEUE_STATUS.WAITINGSTATION, SENDING_STATUS.COMPLETED, TimeStamp);
+
+                astroQueue.QueueStatus.Add(queueStatus);
+                astroQueue.Save(stationName);
+            }
+
+            Task task = Task.Run(async () =>
+            {
+                await Task.Delay(100);
+
+                StationHandler StationCommunication = AstroData.GetStationObject(stationName);
+                StationCommunication.AckTarget(astroQueue, QUEUE_STATUS.WAITINGSTATION, SENDING_STATUS.COMPLETED);
+            });            
+        }
+
     }
 }

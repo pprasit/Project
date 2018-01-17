@@ -10,6 +10,9 @@ using System.Threading;
 using DataKeeper.Engine.Command;
 using DataKeeper.Interface;
 using System.Web.Script.Serialization;
+using AstroNET.QueueSchedule;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DataKeeper.Engine
 {
@@ -987,7 +990,7 @@ namespace DataKeeper.Engine
             OUTPUTSTRUCT ThisOutput = TempList.FirstOrDefault(Item => Item.FieldName == FieldName.ToString());
             return ThisOutput;
         }
-
+        
         public OUTPUTSTRUCT GetInformation(DEVICENAME DeviceName, dynamic FieldName, Object[] Parameter)
         {
             DEVICEMAPPER ThisDevice = DeviceStroage.FirstOrDefault(Item => Item.Key.DeviceName == DeviceName).Key;
@@ -1231,5 +1234,143 @@ namespace DataKeeper.Engine
         }
 
         #endregion
+
+        public bool SendingNewTarget(List<AstroQueueImpl> astroQueues)
+        {
+            bool returnData = false;
+            
+            if (ServerCallBackObject == null)
+            {
+                return returnData;
+            }
+
+            if(!IsStationConnected)
+            {
+                return returnData;
+            }            
+
+            Task TaskPost = Task.Run(() =>
+            {
+                try
+                {
+                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnNewTarget");
+                    try
+                    {
+                        AstroQueueHandle(astroQueues, QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.IDLE, SENDING_STATUS.SENDING);
+
+                        List<AstroQueue> astroQueueList = AstroQueue.Clone(astroQueues);
+
+                        String jSon = JsonConvert.SerializeObject(astroQueueList);
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { StringCompression.CompressString(jSon) });
+
+                        AstroQueueHandle(astroQueues, QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.SENDING, SENDING_STATUS.COMPLETED);
+
+                        returnData = true;
+                    }
+                    catch (Exception e)
+                    {
+                        AstroQueueHandle(astroQueues, QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.SENDING, SENDING_STATUS.FAILED, e.Message);
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                catch (Exception e)
+                {
+                    AstroQueueHandle(astroQueues, QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.SENDING, SENDING_STATUS.FAILED, e.Message);
+                    //OutputMessage = e.Message;
+                }
+            });
+
+            if (!TaskPost.Wait(1000))
+            {
+                AstroQueueHandle(astroQueues, QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.SENDING, SENDING_STATUS.FAILED, "New target sending failed. (Timeout)");
+                //OutputMessage = "New target sending failed.";                
+            }
+
+            return returnData;
+        }
+
+        public bool AckTarget(AstroQueueImpl astroQueue, QUEUE_STATUS queueStatus, SENDING_STATUS sendingStatus)
+        {
+
+            Task TaskPost = Task.Run(() =>
+            {
+                try
+                {
+                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnReceivedTarget");
+
+                    try
+                    {
+                        JObject jSonObject = new JObject(
+                            new JProperty("Id", astroQueue.Id),
+                            new JProperty("Event", "ACK"),
+                            new JProperty("TimeStamp", DateTime.UtcNow)
+                        );
+                        
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { StringCompression.CompressString(jSonObject.ToString()) });
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                catch (Exception e)
+                {
+                    //OutputMessage = e.Message;
+                }
+            });
+
+            if (!TaskPost.Wait(1000))
+            {
+                //OutputMessage = "New target sending failed.";                
+            }
+
+            return true;
+        }
+
+        public void AstroQueueHandle(List<AstroQueueImpl> astroQueues, QUEUE_STATUS queueStatus, SENDING_STATUS sendingStatus, SENDING_STATUS updatedStatus, String FailMessage = null)
+        {
+            Console.WriteLine(queueStatus.ToString() + " : " + sendingStatus.ToString() + " --> " + updatedStatus.ToString());
+
+            astroQueues.ToList().ForEach(q =>
+            {
+                QueueStatus query = q.QueueStatus.Where(x => x.queueStatus == queueStatus && x.sendingStatus == sendingStatus).First();
+                query.sendingStatus = updatedStatus;
+                query.timeStamp = DateTime.UtcNow;
+
+                if (updatedStatus == SENDING_STATUS.FAILED)
+                {
+                    query.message = FailMessage;
+
+                    q.QueueStatus.Add(new QueueStatus(queueStatus, SENDING_STATUS.IDLE, null));
+                }
+                else if(updatedStatus == SENDING_STATUS.COMPLETED)
+                {
+                    if (q.Target.exposedHistory.Count() <= 0)
+                    {
+                        List<ExposureInfo> exposureInfos = Exposure.generate(q);
+
+                        if (q.Target.exposedHistory == null)
+                        {
+                            q.Target.exposedHistory = new List<ExposedHistory>();
+                        }
+
+                        int z = 0;
+                        foreach (ExposureInfo exposureInfo in exposureInfos)
+                        {
+                            ExposedHistory exposedHistory = new ExposedHistory();
+                            exposedHistory.filterName = exposureInfo.filterName;
+                            exposedHistory.executedStatus = EXECUTESTATUS.WAIT;
+                            //exposedHistory.executedDate = DateTime.UtcNow;
+                            q.Target.exposedHistory.Add(exposedHistory);
+                            //Console.WriteLine(z + " - " + exposureInfo.filterName + " : " + exposureInfo.exposureTime);
+                            ++z;
+                        }
+                    }
+                }
+
+                DBQueueEngine.UpdateObject(this.StationName, q);
+            });
+        }      
     }
 }

@@ -111,7 +111,16 @@ namespace DataKeeper.Interface
             var server = new WebSocketServer(SocketServerAddress);
             String CerPath = "C:\\Users\\AstroNET\\AppData\\Roaming\\letsencrypt-win-simple\\httpsacme-v01.api.letsencrypt.org\\Default Web Site-all.pfx";
 
-            server.Certificate = new X509Certificate2(CerPath);
+            if(File.Exists(CerPath))
+            {
+                server.Certificate = new X509Certificate2(CerPath);
+            }
+            else
+            {
+                TTCSLog.NewLogInformation(STATIONNAME.ASTROSERVER, DateTime.UtcNow, "Server running on NON-SSL Mode. SSL File not found!", LogType.COMMUNICATION, null);                
+            }
+
+            
             server.Start(socket =>
             {
                 socket.OnOpen = () =>
