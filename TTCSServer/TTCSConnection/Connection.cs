@@ -527,7 +527,7 @@ namespace TTCSConnection
             String Event = obj["Event"].ToString();
             DateTime TimeStamp = DateTime.Parse(obj["TimeStamp"].ToString());
 
-            Console.WriteLine("[AstroQueueUpdate] " + obj["StationName"] + " : " + obj["Event"]);
+            Console.WriteLine("[AstroQueueUpdate] " + obj["StationName"] + " : " + obj["Event"] + " --> " + Id);
 
             AstroQueueImpl astroQueue = DBQueueEngine.FindById(stationName, Id);
 
@@ -536,7 +536,7 @@ namespace TTCSConnection
                 QueueStatus queueStatus = new QueueStatus(QUEUE_STATUS.WAITINGSTATION, SENDING_STATUS.COMPLETED, TimeStamp);
 
                 astroQueue.QueueStatus.Add(queueStatus);
-                astroQueue.Save(stationName);
+                astroQueue.Save();
             }
 
             Task task = Task.Run(async () =>

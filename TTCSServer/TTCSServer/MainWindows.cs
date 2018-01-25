@@ -45,17 +45,47 @@ namespace TTCSServer
             {
                 while (true)
                 {
-                    IQueryable<AstroQueueImpl> astroQueues = DBQueueEngine.Find(STATIONNAME.ASTROPARK, QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.IDLE);
+                    IQueryable<AstroQueueImpl> IAstroQueues = DBQueueEngine.Find(QUEUE_STATUS.WAITINGSERVER, SENDING_STATUS.IDLE);
 
-                    if (astroQueues.Count() > 0)
+                    if (IAstroQueues.Count() > 0)
                     {
-                        StationHandler StationCommunication = AstroData.GetStationObject(STATIONNAME.ASTROPARK);
+                        Dictionary<STATIONNAME, List<AstroQueueImpl>> dictionaryGroup = new Dictionary<STATIONNAME, List<AstroQueueImpl>>();
 
-                        if (StationCommunication != null)
+                        List<AstroQueueImpl> astroQueues = IAstroQueues.ToList();
+
+                        foreach (AstroQueueImpl astroQueue in astroQueues)
                         {
-                            StationCommunication.SendingNewTarget(astroQueues.ToList());
+                            if (!dictionaryGroup.ContainsKey(astroQueue.Target.StationName))
+                            {
+                                dictionaryGroup.Add(astroQueue.Target.StationName, new List<AstroQueueImpl>());
+                            }
+
+                            dictionaryGroup[astroQueue.Target.StationName].Add(astroQueue);
+                        }
+
+                        if (dictionaryGroup.Count() > 0)
+                        {
+                            foreach (KeyValuePair<STATIONNAME, List<AstroQueueImpl>> groupAstroQueues in dictionaryGroup)
+                            {
+                                StationHandler StationCommunication = AstroData.GetStationObject(groupAstroQueues.Key);
+
+                                if (StationCommunication != null)
+                                {
+                                    StationCommunication.SendingNewTarget(groupAstroQueues.Value);
+                                }
+                            }
                         }
                     }
+
+                    
+                    /*
+                    StationHandler StationCommunication = AstroData.GetStationObject(astroQueue.Target.StationName);
+
+                    if (StationCommunication != null)
+                    {
+                        StationCommunication.SendingNewTarget(astroQueue);
+                    }
+                    */
 
                     await Task.Delay(1000);
                 }

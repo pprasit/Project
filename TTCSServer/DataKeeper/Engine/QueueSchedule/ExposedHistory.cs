@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AstroNET.QueueSchedule
-{    
+{
     public enum EXECUTESTATUS
     {
         WAIT = 0,
@@ -15,7 +15,10 @@ namespace AstroNET.QueueSchedule
 
     public class ExposedHistory
     {
+        public int bin = 0;
         public String filterName = null;
+        public String suffix = null;
+        public double exposureTime = 0;
         public EXECUTESTATUS executedStatus;
         public DateTime? executedDate = null;
     }

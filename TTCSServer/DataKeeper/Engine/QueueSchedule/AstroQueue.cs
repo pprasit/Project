@@ -57,6 +57,8 @@ namespace AstroNET.QueueSchedule
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
+        public int sequenceNo;
+
         public User User { get; set; }
         public Target Target { get; set; }
 
@@ -82,9 +84,9 @@ namespace AstroNET.QueueSchedule
     {
         public List<QueueStatus> QueueStatus = new List<QueueStatus>();
 
-        public bool Save(STATIONNAME stationName)
+        public bool Save()
         {
-            return DBQueueEngine.UpdateObject(stationName, this);
+            return DBQueueEngine.UpdateObject(this);
         }
     }
 }

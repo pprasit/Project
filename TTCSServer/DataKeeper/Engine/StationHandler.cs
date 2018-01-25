@@ -1361,6 +1361,9 @@ namespace DataKeeper.Engine
                             ExposedHistory exposedHistory = new ExposedHistory();
                             exposedHistory.filterName = exposureInfo.filterName;
                             exposedHistory.executedStatus = EXECUTESTATUS.WAIT;
+                            exposedHistory.exposureTime = exposureInfo.exposureTime;
+                            exposedHistory.suffix = exposureInfo.suffix;
+                            exposedHistory.bin = exposureInfo.bin;
                             //exposedHistory.executedDate = DateTime.UtcNow;
                             q.Target.exposedHistory.Add(exposedHistory);
                             //Console.WriteLine(z + " - " + exposureInfo.filterName + " : " + exposureInfo.exposureTime);
@@ -1369,7 +1372,7 @@ namespace DataKeeper.Engine
                     }
                 }
 
-                DBQueueEngine.UpdateObject(this.StationName, q);
+                DBQueueEngine.UpdateObject(q);
             });
         }      
     }

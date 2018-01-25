@@ -9,7 +9,20 @@ using DataKeeper.Engine.Command;
 
 namespace DataKeeper.Engine
 {
-    public enum STATIONNAME { NULL, TNO, AIRFORCE, SONGKLA, CHACHOENGSAO, ASTROPARK, NAKHONRATCHASIMA, CHINA, USA, AUSTRALIA, ASTROSERVER }
+    public enum STATIONNAME
+    {
+        NULL = 0,
+        TNO = 1,
+        AIRFORCE = 2,
+        SONGKLA = 3,
+        CHACHOENGSAO = 4,
+        ASTROPARK = 5,
+        NAKHONRATCHASIMA = 6,
+        CHINA = 7,
+        USA = 8,
+        AUSTRALIA = 9,
+        ASTROSERVER = 10
+    }
 
     public enum DEVICENAME
     {

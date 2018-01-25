@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DataKeeper.Engine;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 
 namespace AstroNET.QueueSchedule
@@ -18,8 +21,7 @@ namespace AstroNET.QueueSchedule
 
     public class Target
     {
-        public int id;
-
+        public STATIONNAME StationName;
         public String RA;
         public String DEC;
 
@@ -38,15 +40,15 @@ namespace AstroNET.QueueSchedule
         public bool autoTimeExposure;
 
         //value of start expose
-        public double maxAirmass;
+        public double? maxAirmass;
 
-        public DateTime airmassDateStart;
-        public DateTime airmassDateEnd;
+        public DateTime? airmassDateStart;
+        public DateTime? airmassDateEnd;
 
-        public double dither;
+        public double? dither;
 
         public bool ignorePA;
-        public double commandPA;
+        public double? commandPA;
 
         public List<ExposedHistory> exposedHistory = new List<ExposedHistory>();
     }

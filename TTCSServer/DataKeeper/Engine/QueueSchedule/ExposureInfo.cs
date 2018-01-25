@@ -10,6 +10,7 @@ namespace AstroNET.QueueSchedule
     {
         public int bin;
         public String filterName;
+        public String suffix;
         public double exposureTime;
         public int exposureAmount;
     }

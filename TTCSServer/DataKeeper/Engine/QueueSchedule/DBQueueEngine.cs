@@ -24,7 +24,7 @@ namespace DataKeeper.Engine
         {
             if (_database == null) return null;
 
-            var collection = _database.GetCollection<AstroQueueImpl>(stationName + "_QUEUE");
+            var collection = _database.GetCollection<AstroQueueImpl>("QUEUES");
 
             var query = collection.AsQueryable()
                  .Where(x => x.Id == Id).First();
@@ -32,11 +32,11 @@ namespace DataKeeper.Engine
             return query;
         }
 
-        public static IQueryable<AstroQueueImpl> Find(STATIONNAME stationName, QUEUE_STATUS queueStatus, SENDING_STATUS sendingStatus)
+        public static IQueryable<AstroQueueImpl> Find(QUEUE_STATUS queueStatus, SENDING_STATUS sendingStatus)
         {
             if (_database == null) return null;
 
-            var collection = _database.GetCollection<AstroQueueImpl>(stationName + "_QUEUE");
+            var collection = _database.GetCollection<AstroQueueImpl>("QUEUES");
 
             var query = collection.AsQueryable()
                 .Where(e => e.QueueStatus.Where(
@@ -50,11 +50,11 @@ namespace DataKeeper.Engine
             return query;
         }
 
-        public static IQueryable<AstroQueueImpl> FindNE(STATIONNAME stationName, QUEUE_STATUS queueStatus)
+        public static IQueryable<AstroQueueImpl> FindNE(QUEUE_STATUS queueStatus)
         {
             if (_database == null) return null;
 
-            var collection = _database.GetCollection<AstroQueueImpl>(stationName + "_QUEUE");
+            var collection = _database.GetCollection<AstroQueueImpl>("QUEUES");
 
             var query = collection.AsQueryable()
                 .Where(e => e.QueueStatus.Where(
@@ -66,11 +66,11 @@ namespace DataKeeper.Engine
             return query;
         }
 
-        public static QueueStatus FindLastestStatus(STATIONNAME stationName, String Id)
+        public static QueueStatus FindLastestStatus(String Id)
         {
             if (_database == null) return null;
 
-            var collection = _database.GetCollection<AstroQueueImpl>(stationName + "_QUEUE");
+            var collection = _database.GetCollection<AstroQueueImpl>("QUEUES");
 
             var query = collection.AsQueryable()
                 .Where(x => x.Id == Id)
@@ -80,14 +80,14 @@ namespace DataKeeper.Engine
             return query;
         }
 
-        public static bool UpdateObject(STATIONNAME stationName, AstroQueueImpl astroQueue)
+        public static bool UpdateObject(AstroQueueImpl astroQueue)
         {
             if (_database == null)
                 return false;
 
             try
             {
-                var collection = _database.GetCollection<AstroQueueImpl>(stationName + "_QUEUE");
+                var collection = _database.GetCollection<AstroQueueImpl>("QUEUES");
                 var filter = Builders<AstroQueueImpl>.Filter.Eq("_id", ObjectId.Parse(astroQueue.Id));
                 var Doc = collection.ReplaceOne(filter, astroQueue);
                 return true;
