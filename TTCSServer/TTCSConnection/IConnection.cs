@@ -116,6 +116,10 @@ namespace TTCSConnection
 
         [OperationContract]
         void AstroQueueUpdate(String jSon);
+
+        [OperationContract]
+        void AstroQueueUpdateExposure(String jSon);
+        
     }
 
     public interface ServerCallBack
@@ -173,5 +177,8 @@ namespace TTCSConnection
 
         [OperationContract(IsOneWay = true)]
         void OnReceivedTarget(String jSon);
+
+        [OperationContract(IsOneWay = true)]
+        void OnReceivedExposeReport(String jSon);        
     }
 }

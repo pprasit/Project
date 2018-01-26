@@ -13,6 +13,7 @@ using System.Web.Script.Serialization;
 using AstroNET.QueueSchedule;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using DataKeeper.Engine.QueueSchedule;
 
 namespace DataKeeper.Engine
 {
@@ -1308,6 +1309,45 @@ namespace DataKeeper.Engine
                         
                         MInfo.Invoke(ServerCallBackObject, new Object[] { StringCompression.CompressString(jSonObject.ToString()) });
                         
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                catch (Exception e)
+                {
+                    //OutputMessage = e.Message;
+                }
+            });
+
+            if (!TaskPost.Wait(1000))
+            {
+                //OutputMessage = "New target sending failed.";                
+            }
+
+            return true;
+        }
+
+        public bool AckExposure(String exposureReportId, SENDING_STATUS sendingStatus)
+        {
+
+            Task TaskPost = Task.Run(() =>
+            {
+                try
+                {
+                    MethodInfo MInfo = ServerCallBackObject.GetType().GetMethod("OnReceivedExposeReport");
+
+                    try
+                    {
+                        JObject jSonObject = new JObject(
+                            new JProperty("Id", exposureReportId),
+                            new JProperty("Event", "ACK"),
+                            new JProperty("TimeStamp", DateTime.UtcNow)
+                        );
+
+                        MInfo.Invoke(ServerCallBackObject, new Object[] { StringCompression.CompressString(jSonObject.ToString()) });
+
                     }
                     catch (Exception e)
                     {

@@ -136,6 +136,7 @@
     <Compile Include="Engine\DBEngine.cs" />
     <Compile Include="Engine\QueueSchedule\ExposedHistory.cs" />
     <Compile Include="Engine\QueueSchedule\ExposureInfo.cs" />
+    <Compile Include="Engine\QueueSchedule\ExposureReport.cs" />
     <Compile Include="Engine\QueueSchedule\StarCatalog.cs" />
     <Compile Include="Engine\QueueSchedule\Target.cs" />
     <Compile Include="Engine\QueueSchedule\AstroQueue.cs" />

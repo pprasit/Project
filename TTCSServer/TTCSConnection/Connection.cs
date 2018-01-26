@@ -17,6 +17,8 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Newtonsoft.Json.Linq;
 using AstroNET.QueueSchedule;
+using Newtonsoft.Json;
+using DataKeeper.Engine.QueueSchedule;
 
 namespace TTCSConnection
 {
@@ -519,7 +521,6 @@ namespace TTCSConnection
         public void AstroQueueUpdate(String jSon)
         {
             jSon = StringCompression.DecompressString(jSon);
-
             JObject obj = JObject.Parse(jSon);
 
             STATIONNAME stationName = TTCSHelper.StationStrConveter(obj["StationName"].ToString());
@@ -546,6 +547,39 @@ namespace TTCSConnection
                 StationHandler StationCommunication = AstroData.GetStationObject(stationName);
                 StationCommunication.AckTarget(astroQueue, QUEUE_STATUS.WAITINGSTATION, SENDING_STATUS.COMPLETED);
             });            
+        }
+
+        public void AstroQueueUpdateExposure(String jSon)
+        {
+            jSon = StringCompression.DecompressString(jSon);
+            JObject obj = JObject.Parse(jSon);
+
+            STATIONNAME stationName = TTCSHelper.StationStrConveter(obj["StationName"].ToString());
+            String Id = obj["Id"].ToString();
+            String AstroQueueId = obj["AstroQueueId"].ToString();
+            ExposedHistory exposedHistoryRecv = (ExposedHistory)JsonConvert.DeserializeObject(obj["ExposedHistory"].ToString(), typeof(ExposedHistory));
+
+            Console.WriteLine("[AstroQueueUpdateExposure] " + obj["StationName"] + " : " + exposedHistoryRecv.filterName + " --> " + Id);
+
+            AstroQueueImpl astroQueue = DBQueueEngine.FindById(stationName, AstroQueueId);
+            ExposedHistory exposedHistory = astroQueue.Target.exposedHistory.Find(Item => Item.filterName == exposedHistoryRecv.filterName && Item.executedStatus == EXECUTESTATUS.WAIT);
+
+            if (exposedHistory != null)
+            {
+
+                exposedHistory.executedStatus = exposedHistoryRecv.executedStatus;
+                exposedHistory.executedDate = exposedHistoryRecv.executedDate;
+
+                astroQueue.Save();
+
+                Task task = Task.Run(async () =>
+                {
+                    await Task.Delay(100);
+
+                    StationHandler StationCommunication = AstroData.GetStationObject(stationName);
+                    StationCommunication.AckExposure(Id, SENDING_STATUS.COMPLETED);
+                });
+            }
         }
 
     }
